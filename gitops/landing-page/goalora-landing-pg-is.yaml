@@ -1,0 +1,15 @@
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  name: goalora-landing-page
+  labels:
+    app: goalora-landing-page
+    app.kubernetes.io/component: goalora-landing-page
+    app.kubernetes.io/instance: goalora-landing-page
+    app.kubernetes.io/name: goalora-landing-page
+    app.kubernetes.io/part-of: goalora-landing-page
+    app.openshift.io/runtime: httpd
+    app.openshift.io/runtime-version: 2.4-el7
+spec:
+  lookupPolicy:
+    local: false

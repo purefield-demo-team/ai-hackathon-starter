@@ -1,0 +1,50 @@
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: strapi
+  namespace: goalsetter
+  labels:
+    app: strapi
+    app.kubernetes.io/component: strapi
+    app.kubernetes.io/instance: strapi
+    app.kubernetes.io/name: strapi
+    app.kubernetes.io/part-of: strapi
+    app.openshift.io/runtime: nodejs
+    app.openshift.io/runtime-version: 16-ubi8
+spec:
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'strapi:latest'
+  resources: {}
+  successfulBuildsHistoryLimit: 5
+  failedBuildsHistoryLimit: 5
+  strategy:
+    type: Source
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        namespace: openshift
+        name: 'nodejs:16-ubi8'
+  postCommit: {}
+  source:
+    type: Git
+    git:
+      uri: 'git@github.com:deanpeterson/card-cms.git'
+    contextDir: /
+    sourceSecret:
+      name: github
+  triggers:
+    - type: Generic
+      generic:
+        secretReference:
+          name: strapi-generic-webhook-secret
+    - type: GitHub
+      github:
+        secretReference:
+          name: strapi-github-webhook-secret
+    - type: ImageChange
+      imageChange: {}
+    - type: ConfigChange
+  runPolicy: Serial

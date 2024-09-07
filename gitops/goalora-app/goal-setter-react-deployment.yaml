@@ -1,0 +1,50 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: goal-setter-react
+  namespace: goalsetter
+  labels:
+    app: goal-setter-react
+    app.kubernetes.io/component: goal-setter-react
+    app.kubernetes.io/instance: goal-setter-react
+    app.kubernetes.io/name: goal-setter-react
+    app.kubernetes.io/part-of: goal-setter-react
+    app.openshift.io/runtime: httpd
+    app.openshift.io/runtime-version: 2.4-el7
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: goal-setter-react
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: goal-setter-react
+        deployment: goal-setter-react
+    spec:
+      containers:
+        - name: goal-setter-react
+          image: >-
+            image-registry.openshift-image-registry.svc:5000/goalsetter/goal-setter-react
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+            - containerPort: 8443
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600

@@ -1,0 +1,28 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: redis-stack
+  labels:
+    app: redis-stack
+    app.kubernetes.io/component: redis-stack
+    app.kubernetes.io/instance: redis-stack
+    app.kubernetes.io/name: redis-stack
+    app.kubernetes.io/part-of: redis-stack-app
+    app.openshift.io/runtime-version: latest
+spec:
+  ports:
+    - name: 6379-tcp
+      protocol: TCP
+      port: 6379
+      targetPort: 6379
+    - name: 8001-tcp
+      protocol: TCP
+      port: 8001
+      targetPort: 8001
+  internalTrafficPolicy: Cluster
+  type: ClusterIP
+  ipFamilyPolicy: SingleStack
+  sessionAffinity: None
+  selector:
+    app: redis-stack
+    deployment: redis-stack

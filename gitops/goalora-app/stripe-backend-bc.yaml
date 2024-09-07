@@ -1,0 +1,49 @@
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: stripe-backend
+  labels:
+    app: stripe-backend
+    app.kubernetes.io/component: stripe-backend
+    app.kubernetes.io/instance: stripe-backend
+    app.kubernetes.io/name: stripe-backend
+    app.kubernetes.io/part-of: stripe-backend
+    app.openshift.io/runtime: nodejs
+    app.openshift.io/runtime-version: 16-ubi8
+spec:
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'stripe-backend:latest'
+  resources: {}
+  successfulBuildsHistoryLimit: 5
+  failedBuildsHistoryLimit: 5
+  strategy:
+    type: Source
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        namespace: openshift
+        name: 'nodejs:16-ubi8'
+  postCommit: {}
+  source:
+    type: Git
+    git:
+      uri: 'git@github.com:deanpeterson/stripe-backend.git'
+    contextDir: /
+    sourceSecret:
+      name: github
+  triggers:
+    - type: Generic
+      generic:
+        secretReference:
+          name: stripe-backend-generic-webhook-secret
+    - type: GitHub
+      github:
+        secretReference:
+          name: stripe-backend-github-webhook-secret
+    - type: ImageChange
+      imageChange: {}
+    - type: ConfigChange
+  runPolicy: Serial

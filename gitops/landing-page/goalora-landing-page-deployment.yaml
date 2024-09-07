@@ -1,0 +1,48 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: goalora-landing-page
+  labels:
+    app: goalora-landing-page
+    app.kubernetes.io/component: goalora-landing-page
+    app.kubernetes.io/instance: goalora-landing-page
+    app.kubernetes.io/name: goalora-landing-page
+    app.kubernetes.io/part-of: goalora-landing-page
+    app.openshift.io/runtime: httpd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: goalora-landing-page
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: goalora-landing-page
+        deployment: goalora-landing-page
+    spec:
+      containers:
+        - name: goalora-landing-page
+          image: >-
+            image-registry.openshift-image-registry.svc:5000/goalsetter/goalora-landing-page
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+            - containerPort: 8443
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600

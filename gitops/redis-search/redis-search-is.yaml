@@ -1,0 +1,26 @@
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  name: redis-stack
+  labels:
+    app: redis-stack
+    app.kubernetes.io/component: redis-stack
+    app.kubernetes.io/instance: redis-stack
+    app.kubernetes.io/name: redis-stack
+    app.kubernetes.io/part-of: redis-stack-app
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+    - name: latest
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+        openshift.io/imported-from: redis/redis-stack:7.0.6-RC9
+      from:
+        kind: DockerImage
+        name: redis/redis-stack:7.0.6-RC9
+      generation: 2
+      importPolicy:
+        importMode: Legacy
+      referencePolicy:
+        type: Local

@@ -1,0 +1,59 @@
+apiVersion: postgres-operator.crunchydata.com/v1beta1
+kind: PostgresCluster
+metadata:
+  name: goalora
+  namespace: goalsetter
+spec:
+  port: 5432
+  dataSource:
+    pgbackrest:
+      stanza: db
+      repo:
+        s3:
+          bucket: strapi-goalora-backup
+          endpoint: s3.amazonaws.com
+          region: us-east-2
+        name: repo1
+  users:
+    - password:
+        type: ASCII
+      name: itd-admin
+      options: superuser
+  standby:
+    enabled: false
+    repoName: repo1
+  proxy:
+    pgBouncer:
+      port: 5432
+      replicas: 1
+  service:
+    type: NodePort
+  backups:
+    pgbackrest:
+      configuration:
+        - secret:
+            name: s3-key
+      manual:
+        repoName: repo1
+      repos:
+        - name: repo1
+          s3:
+            bucket: strapi-goalora-backup-3
+            endpoint: s3.amazonaws.com
+            region: us-east-2
+      restore:
+        enabled: true
+        repoName: repo1
+  patroni:
+    leaderLeaseDurationSeconds: 30
+    port: 8008
+    syncPeriodSeconds: 10
+  instances:
+    - dataVolumeClaimSpec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+      replicas: 1
+  postgresVersion: 13

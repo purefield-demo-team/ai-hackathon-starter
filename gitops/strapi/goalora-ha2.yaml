@@ -1,0 +1,29 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: goalora-ha2
+  namespace: goalsetter
+  labels:
+    postgres-operator.crunchydata.com/cluster: goalora
+    postgres-operator.crunchydata.com/patroni: goalora-ha
+    velero.io/backup-name: backup
+    velero.io/restore-name: restore-itd
+  finalizers:
+    - service.kubernetes.io/load-balancer-cleanup
+spec:
+  externalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ports:
+    - name: postgres
+      protocol: TCP
+      port: 5432
+      targetPort: postgres
+      nodePort: 32118
+  internalTrafficPolicy: Cluster
+  allocateLoadBalancerNodePorts: true
+  type: LoadBalancer
+  ipFamilyPolicy: SingleStack
+  sessionAffinity: None
+  selector:
+    postgres-operator.crunchydata.com/patroni: goalora-ha

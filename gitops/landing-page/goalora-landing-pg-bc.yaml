@@ -1,0 +1,49 @@
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: goalora-landing-page
+  namespace: goalsetter
+  labels:
+    app: goalora-landing-page
+    app.kubernetes.io/component: goalora-landing-page
+    app.kubernetes.io/instance: goalora-landing-page
+    app.kubernetes.io/name: goalora-landing-page
+    app.kubernetes.io/part-of: goalora-landing-page
+    app.openshift.io/runtime: httpd
+spec:
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'goalora-landing-page:latest'
+  resources: {}
+  successfulBuildsHistoryLimit: 5
+  failedBuildsHistoryLimit: 5
+  strategy:
+    type: Source
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        namespace: openshift
+        name: 'httpd:2.4-el7'
+  postCommit: {}
+  source:
+    type: Git
+    git:
+      uri: 'git@github.com:deanpeterson/goalora-landing-page.git'
+    contextDir: /_site
+    sourceSecret:
+      name: github
+  triggers:
+    - type: Generic
+      generic:
+        secretReference:
+          name: goalora-landing-page-generic-webhook-secret
+    - type: GitHub
+      github:
+        secretReference:
+          name: goalora-landing-page-github-webhook-secret
+    - type: ImageChange
+      imageChange: {}
+    - type: ConfigChange
+  runPolicy: Serial

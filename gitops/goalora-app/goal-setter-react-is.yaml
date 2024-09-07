@@ -1,0 +1,15 @@
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  name: goal-setter-react
+  labels:
+    app: goal-setter-react
+    app.kubernetes.io/component: goal-setter-react
+    app.kubernetes.io/instance: goal-setter-react
+    app.kubernetes.io/name: goal-setter-react
+    app.kubernetes.io/part-of: goal-setter-react
+    app.openshift.io/runtime: httpd
+    app.openshift.io/runtime-version: 2.4-el7
+spec:
+  lookupPolicy:
+    local: false

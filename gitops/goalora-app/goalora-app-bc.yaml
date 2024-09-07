@@ -1,0 +1,50 @@
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: goal-setter-react
+  namespace: goalsetter
+  labels:
+    app: goal-setter-react
+    app.kubernetes.io/component: goal-setter-react
+    app.kubernetes.io/instance: goal-setter-react
+    app.kubernetes.io/name: goal-setter-react
+    app.kubernetes.io/part-of: goal-setter-react
+    app.openshift.io/runtime: httpd
+    app.openshift.io/runtime-version: 2.4-el7
+spec:
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'goal-setter-react:latest'
+  resources: {}
+  successfulBuildsHistoryLimit: 5
+  failedBuildsHistoryLimit: 5
+  strategy:
+    type: Source
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        namespace: openshift
+        name: 'httpd:2.4-el7'
+  postCommit: {}
+  source:
+    type: Git
+    git:
+      uri: 'git@github.com:deanpeterson/goalsetter.git'
+    contextDir: /build
+    sourceSecret:
+      name: github
+  triggers:
+    - type: Generic
+      generic:
+        secretReference:
+          name: goal-setter-react-generic-webhook-secret
+    - type: GitHub
+      github:
+        secretReference:
+          name: goal-setter-react-github-webhook-secret
+    - type: ImageChange
+      imageChange: {}
+    - type: ConfigChange
+  runPolicy: Serial

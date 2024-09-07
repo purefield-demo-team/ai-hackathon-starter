@@ -1,0 +1,24 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: redis-stack
+  namespace: redis-search
+  labels:
+    app: redis-stack
+    app.kubernetes.io/component: redis-stack
+    app.kubernetes.io/instance: redis-stack
+    app.kubernetes.io/name: redis-stack
+    app.kubernetes.io/part-of: redis-stack-app
+    app.openshift.io/runtime-version: latest
+spec:
+  host: redis-stack-redis-search.apps.ocpai.enterprisewebservice.com
+  to:
+    kind: Service
+    name: redis-stack
+    weight: 100
+  port:
+    targetPort: 6379-tcp
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None

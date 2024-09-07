@@ -1,0 +1,24 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: stripe-backend
+  labels:
+    app: stripe-backend
+    app.kubernetes.io/component: stripe-backend
+    app.kubernetes.io/instance: stripe-backend
+    app.kubernetes.io/name: stripe-backend
+    app.kubernetes.io/part-of: stripe-backend
+    app.openshift.io/runtime: nodejs
+    app.openshift.io/runtime-version: 16-ubi8
+spec:
+  host: stripe-backend-goalsetter.apps.ocpai.enterprisewebservice.com
+  to:
+    kind: Service
+    name: stripe-backend
+    weight: 100
+  port:
+    targetPort: 3001-tcp
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None

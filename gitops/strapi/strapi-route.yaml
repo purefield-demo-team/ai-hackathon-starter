@@ -1,0 +1,27 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: strapi
+  namespace: goalsetter
+  labels:
+    app: strapi
+    app.kubernetes.io/component: strapi
+    app.kubernetes.io/instance: strapi
+    app.kubernetes.io/name: strapi
+    app.kubernetes.io/part-of: strapi
+    app.openshift.io/runtime: nodejs
+    app.openshift.io/runtime-version: 16-ubi8
+  annotations:
+    openshift.io/host.generated: 'true'
+spec:
+  host: strapi-goalsetter.apps.ocpai.enterprisewebservice.com
+  to:
+    kind: Service
+    name: strapi
+    weight: 100
+  port:
+    targetPort: 1337-tcp
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None

@@ -1,0 +1,83 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: keycloak-postgresql
+  namespace: goalsetter
+  labels:
+    app: keycloak
+    component: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+      component: database
+  template:
+    metadata:
+      name: keycloak-postgresql
+      namespace: goalsetter
+      creationTimestamp: null
+      labels:
+        app: keycloak
+        component: database
+    spec:
+      volumes:
+        - name: keycloak-postgresql-claim
+          persistentVolumeClaim:
+            claimName: keycloak-postgresql-claim
+      containers:
+        - resources: {}
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - '-c'
+                - >-
+                  psql -h 127.0.0.1 -U $POSTGRESQL_USER -q -d
+                  $POSTGRESQL_DATABASE -c 'SELECT 1'
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          terminationMessagePath: /dev/termination-log
+          name: keycloak-postgresql
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          env:
+            - name: POSTGRESQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-db-secret
+                  key: POSTGRES_USERNAME
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-db-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRESQL_DATABASE
+              value: root
+          ports:
+            - containerPort: 5432
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: keycloak-postgresql-claim
+              mountPath: /var/lib/pgsql/data
+          terminationMessagePolicy: File
+          image: 'registry.access.redhat.com/rhscl/postgresql-10-rhel7:1'
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: Recreate
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600

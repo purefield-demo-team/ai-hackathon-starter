@@ -1,0 +1,47 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: stripe-backend
+  labels:
+    app: stripe-backend
+    app.kubernetes.io/component: stripe-backend
+    app.kubernetes.io/instance: stripe-backend
+    app.kubernetes.io/name: stripe-backend
+    app.kubernetes.io/part-of: stripe-backend
+    app.openshift.io/runtime: nodejs
+    app.openshift.io/runtime-version: 16-ubi8
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stripe-backend
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: stripe-backend
+        deployment: stripe-backend
+    spec:
+      containers:
+        - name: stripe-backend
+          image: >-
+            image-registry.openshift-image-registry.svc:5000/goalsetter/stripe-backend
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
