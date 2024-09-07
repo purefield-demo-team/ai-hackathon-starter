@@ -1,0 +1,8 @@
+{
+    "realm": "fihr-rag-llm",
+    "auth-server-url": "https://keycloak-fihr-rag.apps.salamander.aimlworkbench.com",
+    "ssl-required": "external",
+    "resource": "fihr-rag-chat",
+    "public-client": true,
+    "confidential-port": 0
+  }

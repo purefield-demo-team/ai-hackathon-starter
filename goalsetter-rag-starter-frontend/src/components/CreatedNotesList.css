@@ -1,0 +1,19 @@
+  
+ 
+  .notes-list {
+    width: 100%; /* Make sure this container takes up the full width */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .notes-item {
+    display: flex;
+    flex-direction: row; /* Change this to 'row' to have text and button in one line */
+    justify-content: space-between; /* Add this to align the items on opposite ends */
+    width: 100%;
+  }
+
+  
+  
+  
