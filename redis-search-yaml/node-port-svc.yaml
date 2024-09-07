@@ -1,0 +1,19 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: redis-nodeport
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+    - name: redis
+      protocol: TCP
+      port: 6379
+      targetPort: 6379
+      nodePort: 32132
+  internalTrafficPolicy: Cluster
+  allocateLoadBalancerNodePorts: true
+  type: LoadBalancer
+  ipFamilyPolicy: SingleStack
+  sessionAffinity: None
+  selector:
+    app: redis-stack
