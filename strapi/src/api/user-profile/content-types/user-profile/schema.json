@@ -1,0 +1,57 @@
+{
+  "kind": "collectionType",
+  "collectionName": "user_profiles",
+  "info": {
+    "singularName": "user-profile",
+    "pluralName": "user-profiles",
+    "displayName": "user-profile"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "keycloaksubject": {
+      "type": "string"
+    },
+    "verified": {
+      "type": "boolean"
+    },
+    "verifiedTime": {
+      "type": "datetime"
+    },
+    "preferredUsername": {
+      "type": "string"
+    },
+    "givenName": {
+      "type": "string"
+    },
+    "emailVerified": {
+      "type": "boolean"
+    },
+    "familyName": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "subscriptionStatus": {
+      "type": "string"
+    },
+    "subscriptionExpiresAt": {
+      "type": "datetime"
+    },
+    "planTier": {
+      "type": "string"
+    },
+    "gptAPIQuota": {
+      "type": "biginteger"
+    },
+    "gptAPIQuotaRemaining": {
+      "type": "biginteger"
+    }
+  }
+}

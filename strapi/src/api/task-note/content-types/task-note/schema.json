@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "task_notes",
+  "info": {
+    "singularName": "task-note",
+    "pluralName": "task-notes",
+    "displayName": "TaskNote"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "note": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::note.note"
+    },
+    "task": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::task.task"
+    }
+  }
+}
