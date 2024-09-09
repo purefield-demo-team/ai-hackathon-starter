@@ -33,7 +33,7 @@ spec:
       containers:
         - name: redis-stack
           image: >-
-            image-registry.openshift-image-registry.svc:5000/redis-search/redis-stack
+            image-registry.openshift-image-registry.svc:5000/ai-hackathon-starter-kit/redis-stack
           ports:
             - containerPort: 6379
               protocol: TCP
