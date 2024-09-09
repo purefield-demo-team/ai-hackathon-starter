@@ -3,6 +3,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: redis-data
+  namespace: ai-hackathon-starter-kit
 spec:
   accessModes:
     - ReadWriteOnce
@@ -15,6 +16,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: redis-db
+  namespace: ai-hackathon-starter-kit
 spec:
   accessModes:
     - ReadWriteOnce
