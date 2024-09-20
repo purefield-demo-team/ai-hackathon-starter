@@ -1,0 +1,51 @@
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  annotations:
+    app.openshift.io/vcs-ref: ''
+    app.openshift.io/vcs-uri: 'https://github.com/purefield-demo-team/ai-hackathon-starter.git'
+    openshift.io/generated-by: OpenShiftWebConsole
+  name: vector-ask
+  labels:
+    app: vector-ask
+    app.kubernetes.io/component: vector-ask
+    app.kubernetes.io/instance: vector-ask
+    app.kubernetes.io/name: vector-ask
+    app.kubernetes.io/part-of: ai-hackathon-starter-backend
+    app.openshift.io/runtime: java
+    app.openshift.io/runtime-version: openjdk-17-ubi8
+spec:
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'vector-ask:latest'
+  resources: {}
+  successfulBuildsHistoryLimit: 5
+  failedBuildsHistoryLimit: 5
+  strategy:
+    type: Source
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        namespace: openshift
+        name: 'java:openjdk-17-ubi8'
+  postCommit: {}
+  source:
+    type: Git
+    git:
+      uri: 'https://github.com/purefield-demo-team/ai-hackathon-starter.git'
+    contextDir: /vector-ask
+  triggers:
+    - type: Generic
+      generic:
+        secretReference:
+          name: vector-ask-generic-webhook-secret
+    - type: GitHub
+      github:
+        secretReference:
+          name: vector-ask-github-webhook-secret
+    - type: ImageChange
+      imageChange: {}
+    - type: ConfigChange
+  runPolicy: Serial

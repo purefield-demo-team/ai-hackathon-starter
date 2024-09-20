@@ -1,0 +1,19 @@
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  annotations:
+    app.openshift.io/vcs-ref: ''
+    app.openshift.io/vcs-uri: 'https://github.com/purefield-demo-team/ai-hackathon-starter.git'
+    openshift.io/generated-by: OpenShiftWebConsole
+  name: vector-ask
+  labels:
+    app: vector-ask
+    app.kubernetes.io/component: vector-ask
+    app.kubernetes.io/instance: vector-ask
+    app.kubernetes.io/name: vector-ask
+    app.kubernetes.io/part-of: ai-hackathon-starter-backend
+    app.openshift.io/runtime: java
+    app.openshift.io/runtime-version: openjdk-17-ubi8
+spec:
+  lookupPolicy:
+    local: false
