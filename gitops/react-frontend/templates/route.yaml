@@ -20,7 +20,7 @@ spec:
     name: {{ .Release.Name }}
     weight: 100
   port:
-    targetPort: {{ printf "%d-tcp" .Values.service.port }}
+    targetPort: "{{ .Values.service.port }}-tcp"
   tls:
     termination: {{ .Values.route.tls.termination }}
     insecureEdgeTerminationPolicy: Redirect

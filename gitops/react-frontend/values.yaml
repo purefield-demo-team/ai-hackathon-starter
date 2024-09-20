@@ -8,13 +8,13 @@ image:
 containerPort: 3000
 
 strapi:
-  url: "http://strapi.example.com"
+  url: "https://your-strapi-url/api"
 
 keycloak:
-  url: "http://keycloak.example.com"
+  url: "https://your-red-hat-build-of-keycloak-url/"
 
 openaiapi:
-  key: "your-openai-api-key"
+  key: "your opan ai api key"
 
 service:
   port: 3000
@@ -28,7 +28,7 @@ route:
 build:
   output:
     to:
-      name: '{{ .Release.Name }}:latest'  # Default output ImageStreamTag name
+      name: ""  # Leave empty to use the default in the template
   strategy:
     sourceStrategy:
       from:
@@ -36,8 +36,12 @@ build:
   source:
     git:
       uri: 'https://github.com/purefield-demo-team/ai-hackathon-starter.git'  # Git repository URI
-    contextDir: '/react-frontend' 
+    contextDir: '/react-frontend'
 
 imagestream:
   lookupPolicy:
     local: false  # Set to true if you want the image lookup to prefer local image streams
+
+cluster:
+  name: cluster name       # Replace with your actual cluster name
+  domain: cluster domain
