@@ -1,0 +1,31 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: react-frontend
+  labels:
+    app: react-frontend
+    app.kubernetes.io/component: react-frontend
+    app.kubernetes.io/instance: react-frontend
+    app.kubernetes.io/name: react-frontend
+    app.kubernetes.io/part-of: ai-hackathon-starter-frontend
+    app.openshift.io/runtime: nodejs
+    app.openshift.io/runtime-version: 18-ubi8
+  annotations:
+    app.openshift.io/vcs-ref: ''
+    app.openshift.io/vcs-uri: 'https://github.com/purefield-demo-team/ai-hackathon-starter.git'
+    openshift.io/generated-by: OpenShiftWebConsole
+spec:
+  ipFamilies:
+    - IPv4
+  ports:
+    - name: 3000-tcp
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+  internalTrafficPolicy: Cluster
+  type: ClusterIP
+  ipFamilyPolicy: SingleStack
+  sessionAffinity: None
+  selector:
+    app: react-frontend
+    deployment: react-frontend

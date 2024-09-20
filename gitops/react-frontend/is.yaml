@@ -1,0 +1,20 @@
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  annotations:
+    app.openshift.io/vcs-ref: ''
+    app.openshift.io/vcs-uri: 'https://github.com/purefield-demo-team/ai-hackathon-starter.git'
+    openshift.io/generated-by: OpenShiftWebConsole
+  resourceVersion: '636818064'
+  name: react-frontend
+  labels:
+    app: react-frontend
+    app.kubernetes.io/component: react-frontend
+    app.kubernetes.io/instance: react-frontend
+    app.kubernetes.io/name: react-frontend
+    app.kubernetes.io/part-of: ai-hackathon-starter-frontend
+    app.openshift.io/runtime: nodejs
+    app.openshift.io/runtime-version: 18-ubi8
+spec:
+  lookupPolicy:
+    local: false

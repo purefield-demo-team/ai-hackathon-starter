@@ -1,0 +1,62 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  annotations:
+    alpha.image.policy.openshift.io/resolve-names: '*'
+    app.openshift.io/route-disabled: 'false'
+    app.openshift.io/vcs-ref: ''
+    app.openshift.io/vcs-uri: 'https://github.com/purefield-demo-team/ai-hackathon-starter.git'
+    deployment.kubernetes.io/revision: '2'
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"react-frontend:latest","namespace":"ai-hackathon-starter-kit"},"fieldPath":"spec.template.spec.containers[?(@.name==\"react-frontend\")].image","paused":"false"}]'
+    openshift.io/generated-by: OpenShiftWebConsole
+  resourceVersion: '636821674'
+  name: react-frontend
+  labels:
+    app: react-frontend
+    app.kubernetes.io/component: react-frontend
+    app.kubernetes.io/instance: react-frontend
+    app.kubernetes.io/name: react-frontend
+    app.kubernetes.io/part-of: ai-hackathon-starter-frontend
+    app.openshift.io/runtime: nodejs
+    app.openshift.io/runtime-version: 18-ubi8
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: react-frontend
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: react-frontend
+        deployment: react-frontend
+    spec:
+      containers:
+        - name: react-frontend
+          image: 'image-registry.openshift-image-registry.svc:5000/{{namespace}}/react-frontend:latest'
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: REACT_APP_STRAPI_API_URL
+              value: '{{strapi.url}}'
+            - name: REACT_APP_KEYCLOAK_URL
+              value: '{{keycloak.url}}'
+            - name: REACT_APP_OPENAI_API_KEY
+              value: '{{openaiapi.key}}'
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
