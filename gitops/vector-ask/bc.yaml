@@ -36,16 +36,4 @@ spec:
     git:
       uri: 'https://github.com/purefield-demo-team/ai-hackathon-starter.git'
     contextDir: /vector-ask
-  triggers:
-    - type: Generic
-      generic:
-        secretReference:
-          name: vector-ask-generic-webhook-secret
-    - type: GitHub
-      github:
-        secretReference:
-          name: vector-ask-github-webhook-secret
-    - type: ImageChange
-      imageChange: {}
-    - type: ConfigChange
   runPolicy: Serial
