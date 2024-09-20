@@ -5,34 +5,34 @@ metadata:
     alpha.image.policy.openshift.io/resolve-names: '*'
     app.openshift.io/route-disabled: 'false'
     app.openshift.io/vcs-ref: ''
-    app.openshift.io/vcs-uri: 'git@github.com:deanpeterson/vector-ask.git'
+    app.openshift.io/vcs-uri: 'https://github.com/purefield-demo-team/ai-hackathon-starter.git'
     deployment.kubernetes.io/revision: '10'
-    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"quarkus-embeddings:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\"quarkus-embeddings\")].image","paused":"false"}]'
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"vector-ask:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\"vector-ask\")].image","paused":"false"}]'
     openshift.io/generated-by: OpenShiftWebConsole
-  name: quarkus-embeddings
+  name: vector-ask
   labels:
-    app: quarkus-embeddings
-    app.kubernetes.io/component: quarkus-embeddings
-    app.kubernetes.io/instance: quarkus-embeddings
-    app.kubernetes.io/name: quarkus-embeddings
-    app.kubernetes.io/part-of: ai-starter-kit-backend
+    app: vector-ask
+    app.kubernetes.io/component: vector-ask
+    app.kubernetes.io/instance: vector-ask
+    app.kubernetes.io/name: vector-ask
+    app.kubernetes.io/part-of: ai-hackathon-starter-backend
     app.openshift.io/runtime: java
     app.openshift.io/runtime-version: openjdk-17-ubi8
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: quarkus-embeddings
+      app: vector-ask
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: quarkus-embeddings
-        deployment: quarkus-embeddings
+        app: vector-ask
+        deployment: vector-ask
     spec:
       containers:
-        - name: quarkus-embeddings
-          image: 'image-registry.openshift-image-registry.svc:5000/{{namespace}}/quarkus-embeddings:latest'
+        - name: vector-ask
+          image: 'image-registry.openshift-image-registry.svc:5000/{{namespace}}/vector-ask:latest'
           ports:
             - containerPort: 8080
               protocol: TCP
