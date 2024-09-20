@@ -3,7 +3,8 @@ import React, { useEffect } from 'react';
 import { useKeycloak } from "@react-keycloak/web";
 import keycloak from './keycloak';
 
-const backendUrl = 'https://prod-strapi-strapi.apps.salamander.aimlworkbench.com/api'; // Replace with your backend URL
+
+const  backendUrl = process.env.REACT_APP_STRAPI_API_URL;
 
 const api = axios.create({
   baseURL: backendUrl,

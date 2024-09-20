@@ -1,6 +1,6 @@
 schemaVersion: 2.2.2
 metadata:
-  name: llm-frontend
+  name: fhir-llm-frontend
 components:
   - name: tools
     container:
