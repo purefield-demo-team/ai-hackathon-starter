@@ -1,0 +1,43 @@
+replicas: 1
+
+image:
+  name: react-frontend
+  tag: latest
+  pullPolicy: Always
+
+containerPort: 3000
+
+strapi:
+  url: "http://strapi.example.com"
+
+keycloak:
+  url: "http://keycloak.example.com"
+
+openaiapi:
+  key: "your-openai-api-key"
+
+service:
+  port: 3000
+
+route:
+  enabled: true
+  host: ""  # Leave empty to auto-generate based on release name and namespace
+  tls:
+    termination: edge
+
+build:
+  output:
+    to:
+      name: '{{ .Release.Name }}:latest'  # Default output ImageStreamTag name
+  strategy:
+    sourceStrategy:
+      from:
+        name: 'nodejs:18-ubi8'            # Base image for the build
+  source:
+    git:
+      uri: 'https://github.com/purefield-demo-team/ai-hackathon-starter.git'  # Git repository URI
+    contextDir: '/react-frontend' 
+
+imagestream:
+  lookupPolicy:
+    local: false  # Set to true if you want the image lookup to prefer local image streams

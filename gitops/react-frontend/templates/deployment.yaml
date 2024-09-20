@@ -1,6 +1,7 @@
-kind: Deployment
 apiVersion: apps/v1
+kind: Deployment
 metadata:
+  name: {{ .Release.Name }}
   annotations:
     alpha.image.policy.openshift.io/resolve-names: '*'
     app.openshift.io/route-disabled: 'false'
@@ -9,44 +10,42 @@ metadata:
     deployment.kubernetes.io/revision: '2'
     image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"react-frontend:latest","namespace":"ai-hackathon-starter-kit"},"fieldPath":"spec.template.spec.containers[?(@.name==\"react-frontend\")].image","paused":"false"}]'
     openshift.io/generated-by: OpenShiftWebConsole
-  name: react-frontend
   labels:
-    app: react-frontend
-    app.kubernetes.io/component: react-frontend
-    app.kubernetes.io/instance: react-frontend
-    app.kubernetes.io/name: react-frontend
-    app.kubernetes.io/part-of: ai-hackathon-starter-frontend
+    app: {{ .Release.Name }}
+    app.kubernetes.io/component: {{ .Release.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/part-of: {{ .Chart.Name }}
     app.openshift.io/runtime: nodejs
     app.openshift.io/runtime-version: 18-ubi8
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
-      app: react-frontend
+      app: {{ .Release.Name }}
   template:
     metadata:
-      creationTimestamp: null
       labels:
-        app: react-frontend
-        deployment: react-frontend
+        app: {{ .Release.Name }}
+        deployment: {{ .Release.Name }}
     spec:
       containers:
-        - name: react-frontend
-          image: 'image-registry.openshift-image-registry.svc:5000/{{namespace}}/react-frontend:latest'
+        - name: {{ .Release.Name }}
+          image: 'image-registry.openshift-image-registry.svc:5000/{{ .Release.Namespace }}/{{ .Values.image.name }}:{{ .Values.image.tag }}'
           ports:
-            - containerPort: 8080
+            - containerPort: {{ .Values.containerPort }}
               protocol: TCP
           env:
             - name: REACT_APP_STRAPI_API_URL
-              value: '{{strapi.url}}'
+              value: "{{ .Values.strapi.url }}"
             - name: REACT_APP_KEYCLOAK_URL
-              value: '{{keycloak.url}}'
+              value: "{{ .Values.keycloak.url }}"
             - name: REACT_APP_OPENAI_API_KEY
-              value: '{{openaiapi.key}}'
+              value: "{{ .Values.openaiapi.key }}"
           resources: {}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
-          imagePullPolicy: Always
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst

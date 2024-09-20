@@ -1,0 +1,28 @@
+{{- if .Values.route.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+    app.kubernetes.io/component: {{ .Release.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/part-of: {{ .Chart.Name }}
+    app.openshift.io/runtime: nodejs
+    app.openshift.io/runtime-version: 18-ubi8
+  annotations:
+    openshift.io/host.generated: 'true'
+spec:
+  host: {{ .Values.route.host | default (printf "%s-%s.apps.%s.%s" .Release.Name .Release.Namespace .Values.cluster.name .Values.cluster.domain) }}
+  to:
+    kind: Service
+    name: {{ .Release.Name }}
+    weight: 100
+  port:
+    targetPort: {{ printf "%d-tcp" .Values.service.port }}
+  tls:
+    termination: {{ .Values.route.tls.termination }}
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
+{{- end }}
