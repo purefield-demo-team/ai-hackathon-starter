@@ -9,7 +9,6 @@ metadata:
     deployment.kubernetes.io/revision: '2'
     image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"react-frontend:latest","namespace":"ai-hackathon-starter-kit"},"fieldPath":"spec.template.spec.containers[?(@.name==\"react-frontend\")].image","paused":"false"}]'
     openshift.io/generated-by: OpenShiftWebConsole
-  resourceVersion: '636821674'
   name: react-frontend
   labels:
     app: react-frontend
