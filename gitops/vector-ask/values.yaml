@@ -1,0 +1,67 @@
+replicas: 1
+
+image:
+  name: vector-ask
+  tag: latest
+  pullPolicy: Always
+
+containerPort: 8080
+containerPortTLS: 8443
+
+app:
+  vcsUri: 'https://github.com/purefield-demo-team/ai-hackathon-starter.git'
+
+service:
+  ipFamilies:
+    - IPv4
+  internalTrafficPolicy: Cluster
+  type: ClusterIP
+  ipFamilyPolicy: SingleStack
+  sessionAffinity: None
+
+openai:
+  key: "your open ai key"  # Replace with your actual OpenAI key
+
+strapi:
+  host: "your strapi host:1337"  # Replace with your Strapi host (service url with port 1337 but without /api at the end)
+  token: "your strapi api token"  # Replace with your Strapi token
+
+redis:
+  host: "your redis search service uri"  # Replace with your Redis host
+
+service:
+  port: 8080
+  tlsPort: 8443
+
+route:
+  enabled: true
+  host: ""
+  tls:
+    termination: edge
+
+build:
+  output:
+    to:
+      name: ""  # Leave empty to use the default value
+  strategy:
+    sourceStrategy:
+      from:
+        name: 'java:openjdk-17-ubi8'  # Base image for the build
+  source:
+    git:
+      uri: 'https://github.com/purefield-demo-team/ai-hackathon-starter.git'  # Git repository URI
+    contextDir: '/vector-ask'  # Context directory within the Git repo
+
+imagestream:
+  lookupPolicy:
+    local: false  # Set to true if you want the image lookup to prefer local image streams
+
+route:
+  enabled: true
+  host: ""  # Leave empty to auto-generate, or specify a custom host
+  tls:
+    termination: edge
+
+cluster:
+  name: salamander    # Replace with your actual cluster name
+  domain: aimlworkbench.com  # Replace with your actual cluster domain

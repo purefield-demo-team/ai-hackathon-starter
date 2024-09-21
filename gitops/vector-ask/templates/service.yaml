@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+    app.kubernetes.io/component: {{ .Release.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/part-of: ai-hackathon-starter-backend
+    app.openshift.io/runtime: java
+    app.openshift.io/runtime-version: openjdk-17-ubi8
+  annotations:
+    app.openshift.io/vcs-ref: ''
+    app.openshift.io/vcs-uri: '{{ .Values.app.vcsUri }}'
+    openshift.io/generated-by: OpenShiftWebConsole
+spec:
+  ipFamilies:
+    - IPv4
+  ports:
+    - name: {{ .Values.containerPort }}-tcp
+      protocol: TCP
+      port: {{ .Values.containerPort }}
+      targetPort: {{ .Values.containerPort }}
+    - name: {{ .Values.containerPortTLS }}-tcp
+      protocol: TCP
+      port: {{ .Values.containerPortTLS }}
+      targetPort: {{ .Values.containerPortTLS }}
+  internalTrafficPolicy: Cluster
+  type: ClusterIP
+  ipFamilyPolicy: SingleStack
+  sessionAffinity: None
+  selector:
+    app: {{ .Release.Name }}
+    deployment: {{ .Release.Name }}

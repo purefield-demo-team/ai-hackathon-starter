@@ -1,16 +1,16 @@
-kind: BuildConfig
 apiVersion: build.openshift.io/v1
+kind: BuildConfig
 metadata:
+  name: {{ .Release.Name }}
   annotations:
     app.openshift.io/vcs-ref: ''
-    app.openshift.io/vcs-uri: 'https://github.com/purefield-demo-team/ai-hackathon-starter.git'
+    app.openshift.io/vcs-uri: '{{ .Values.build.source.git.uri }}'
     openshift.io/generated-by: OpenShiftWebConsole
-  name: vector-ask
   labels:
-    app: vector-ask
-    app.kubernetes.io/component: vector-ask
-    app.kubernetes.io/instance: vector-ask
-    app.kubernetes.io/name: vector-ask
+    app: {{ .Release.Name }}
+    app.kubernetes.io/component: {{ .Release.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Chart.Name }}
     app.kubernetes.io/part-of: ai-hackathon-starter-backend
     app.openshift.io/runtime: java
     app.openshift.io/runtime-version: openjdk-17-ubi8
@@ -19,7 +19,7 @@ spec:
   output:
     to:
       kind: ImageStreamTag
-      name: 'vector-ask:latest'
+      name: {{ default (printf "%s:latest" .Release.Name) .Values.build.output.to.name | quote }}
   resources: {}
   successfulBuildsHistoryLimit: 5
   failedBuildsHistoryLimit: 5
@@ -29,11 +29,11 @@ spec:
       from:
         kind: ImageStreamTag
         namespace: openshift
-        name: 'java:openjdk-17-ubi8'
+        name: '{{ .Values.build.strategy.sourceStrategy.from.name }}'
   postCommit: {}
   source:
     type: Git
     git:
-      uri: 'https://github.com/purefield-demo-team/ai-hackathon-starter.git'
-    contextDir: /vector-ask
+      uri: '{{ .Values.build.source.git.uri }}'
+    contextDir: '{{ .Values.build.source.contextDir }}'
   runPolicy: Serial
