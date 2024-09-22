@@ -1,22 +1,22 @@
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
-  name: strapi-postgresql
+  name: {{ .Release.Name }}-postgresql
   labels:
     template: postgresql-persistent-template
   annotations:
-    template.openshift.io/expose-uri: 'postgres://{.spec.clusterIP}:{.spec.ports[?(.name=="postgresql")].port}'
+    template.openshift.io/expose-uri: 'postgres://{.spec.clusterIP}:{{ .Values.postgresql.port }}'
 spec:
   ipFamilies:
     - IPv4
   ports:
     - name: postgresql
       protocol: TCP
-      port: 5432
-      targetPort: 5432
+      port: {{ .Values.postgresql.port }}
+      targetPort: {{ .Values.postgresql.port }}
   internalTrafficPolicy: Cluster
   type: ClusterIP
   ipFamilyPolicy: SingleStack
   sessionAffinity: None
   selector:
-    name: strapi-postgresql
+    name: {{ .Release.Name }}-postgresql

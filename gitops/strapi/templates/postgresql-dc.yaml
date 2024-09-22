@@ -1,0 +1,100 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: {{ .Release.Name }}-postgresql
+  annotations:
+    template.alpha.openshift.io/wait-for-ready: 'true'
+  labels:
+    app.kubernetes.io/part-of: {{ .Chart.Name }}
+    template: postgresql-persistent-template
+    template.openshift.io/template-instance-owner: {{ .Release.Service }}
+spec:
+  strategy:
+    type: Recreate
+    recreateParams:
+      timeoutSeconds: 600
+    resources: {}
+    activeDeadlineSeconds: 21600
+  triggers:
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - postgresql
+        from:
+          kind: ImageStreamTag
+          namespace: openshift
+          name: '{{ .Values.postgresql.image }}'
+    - type: ConfigChange
+  replicas: {{ .Values.postgresql.replicas }}
+  revisionHistoryLimit: 10
+  test: false
+  selector:
+    name: {{ .Release.Name }}-postgresql
+  template:
+    metadata:
+      labels:
+        name: {{ .Release.Name }}-postgresql
+    spec:
+      volumes:
+        - name: {{ .Release.Name }}-postgresql-data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-postgresql
+      containers:
+        - name: postgresql
+          image: '{{ .Values.postgresql.image }}'
+          ports:
+            - containerPort: {{ .Values.postgresql.port }}
+              protocol: TCP
+          env:
+            - name: POSTGRESQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgresql
+                  key: database-user
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgresql
+                  key: database-password
+            - name: POSTGRESQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgresql
+                  key: database-name
+          resources:
+            limits:
+              memory: {{ .Values.postgresql.resources.limits.memory }}
+          volumeMounts:
+            - name: {{ .Release.Name }}-postgresql-data
+              mountPath: /var/lib/pgsql/data
+          livenessProbe:
+            exec:
+              command:
+                - /usr/libexec/check-container
+                - '--live'
+            initialDelaySeconds: 120
+            timeoutSeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - /usr/libexec/check-container
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          imagePullPolicy: {{ .Values.postgresql.imagePullPolicy }}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          securityContext:
+            capabilities: {}
+            privileged: false
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler

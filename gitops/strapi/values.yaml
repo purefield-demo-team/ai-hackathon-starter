@@ -1,0 +1,57 @@
+replicas: 1
+
+image:
+  registry: image-registry.openshift-image-registry.svc:5000
+  name: strapi
+  tag: latest
+  pullPolicy: Always
+  triggers: '[{"from":{"kind":"ImageStreamTag","name":"strapi:latest","namespace":"{{ .Release.Namespace }}"},"fieldPath":"spec.template.spec.containers[?(@.name==\\"strapi\\")].image","paused":"false"}]'
+
+app:
+  vcsUri: 'https://github.com/purefield-demo-team/ai-hackathon-starter.git'
+
+
+route:
+  enabled: true
+  host: ""
+  tls:
+    termination: edge
+
+postgresql:
+  image: 'postgresql:10-el8'  # Base image for PostgreSQL
+  replicas: 1
+  port: 5432
+  resources:
+    limits:
+      memory: 512Mi
+  imagePullPolicy: IfNotPresent
+  volume:
+    size: 1Gi  # Adjust the size as needed
+  user: "strapi"
+  password: "strapi_password"
+  database: "strapi_db"
+
+database:
+  name: "strapi_db"
+  user: "strapi"
+  password: "strapi_password"  
+
+build:
+  output:
+    to:
+      name: ""  # Leave empty to use the default value of '{{ .Release.Name }}:latest'
+  strategy:
+    sourceStrategy:
+      from:
+        name: 'nodejs:18-ubi8'  # Base image for the build
+  source:
+    git:
+      uri: 'https://github.com/purefield-demo-team/ai-hackathon-starter.git'  # Git repository URI
+    contextDir: '/strapi'  # Context directory within the Git repo
+
+imagestream:
+  lookupPolicy:
+    local: false  # Set to true if you want the image lookup to prefer local image streams
+
+strapi:
+  port: 1337  # Port Strapi listens on

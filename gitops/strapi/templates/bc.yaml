@@ -1,0 +1,39 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: {{ .Release.Name }}
+  annotations:
+    app.openshift.io/vcs-ref: ''
+    app.openshift.io/vcs-uri: '{{ .Values.build.source.git.uri }}'
+    openshift.io/generated-by: OpenShiftWebConsole
+  labels:
+    app: {{ .Release.Name }}
+    app.kubernetes.io/component: {{ .Release.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/part-of: {{ .Chart.Name }}
+    app.openshift.io/runtime: nodejs
+    app.openshift.io/runtime-version: 18-ubi8
+spec:
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: {{ default (printf "%s:latest" .Release.Name) .Values.build.output.to.name | quote }}
+  resources: {}
+  successfulBuildsHistoryLimit: 5
+  failedBuildsHistoryLimit: 5
+  strategy:
+    type: Source
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        namespace: openshift
+        name: '{{ .Values.build.strategy.sourceStrategy.from.name }}'
+  postCommit: {}
+  source:
+    type: Git
+    git:
+      uri: '{{ .Values.build.source.git.uri }}'
+    contextDir: '{{ .Values.build.source.contextDir }}'
+  runPolicy: Serial

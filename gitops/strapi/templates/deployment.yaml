@@ -1,45 +1,44 @@
-kind: Deployment
 apiVersion: apps/v1
+kind: Deployment
 metadata:
+  name: {{ .Release.Name }}
   annotations:
     alpha.image.policy.openshift.io/resolve-names: '*'
     app.openshift.io/route-disabled: 'false'
     app.openshift.io/vcs-ref: ''
-    app.openshift.io/vcs-uri: 'https://github.com/purefield-demo-team/ai-hackathon-starter.git'
+    app.openshift.io/vcs-uri: '{{ .Values.app.vcsUri }}'
     deployment.kubernetes.io/revision: '1'
-    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"strapi:latest","namespace":"ai-hackathon-starter-kit"},"fieldPath":"spec.template.spec.containers[?(@.name==\"strapi\")].image","paused":"false"}]'
+    image.openshift.io/triggers: '{{ .Values.image.triggers | quote }}'
     openshift.io/generated-by: OpenShiftWebConsole
-  name: strapi
   labels:
-    app: strapi
-    app.kubernetes.io/component: strapi
-    app.kubernetes.io/instance: strapi
-    app.kubernetes.io/name: strapi
+    app: {{ .Release.Name }}
+    app.kubernetes.io/component: {{ .Release.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Chart.Name }}
     app.kubernetes.io/part-of: ai-hackathon-starter-backend
     app.openshift.io/runtime: nodejs
     app.openshift.io/runtime-version: 18-ubi8
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
-      app: strapi
+      app: {{ .Release.Name }}
   template:
     metadata:
-      creationTimestamp: null
       labels:
-        app: strapi
-        deployment: strapi
+        app: {{ .Release.Name }}
+        deployment: {{ .Release.Name }}
     spec:
       containers:
-        - name: strapi
-          image: 'image-registry.openshift-image-registry.svc:5000/{{namespace}}/strapi:latest'
+        - name: {{ .Release.Name }}
+          image: '{{ .Values.image.registry }}/{{ .Release.Namespace }}/{{ .Values.image.name }}:{{ .Values.image.tag }}'
           ports:
-            - containerPort: 8080
+            - containerPort: {{ .Values.containerPort }}
               protocol: TCP
           resources: {}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
-          imagePullPolicy: Always
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst

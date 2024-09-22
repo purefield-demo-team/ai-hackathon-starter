@@ -33,12 +33,6 @@ service:
   port: 8080
   tlsPort: 8443
 
-route:
-  enabled: true
-  host: ""
-  tls:
-    termination: edge
-
 build:
   output:
     to:
