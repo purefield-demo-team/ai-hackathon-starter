@@ -14,7 +14,7 @@ metadata:
   annotations:
     openshift.io/host.generated: 'true'
 spec:
-  host: {{ .Values.route.host | default (printf "%s-%s.apps.%s.%s" .Release.Name .Values.projectName .Values.cluster.name .Values.cluster.domain) | quote }}
+  host: {{ .Values.route.host | default (printf "%s-%s.apps.%s.%s" .Release.Name .Release.Namespace .Values.cluster.name .Values.cluster.domain) }}
   to:
     kind: Service
     name: {{ .Release.Name }}

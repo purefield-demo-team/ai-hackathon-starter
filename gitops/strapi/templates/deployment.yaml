@@ -8,7 +8,18 @@ metadata:
     app.openshift.io/vcs-ref: ''
     app.openshift.io/vcs-uri: '{{ .Values.app.vcsUri }}'
     deployment.kubernetes.io/revision: '1'
-    image.openshift.io/triggers: '{{ .Values.image.triggers | quote }}'
+    image.openshift.io/triggers: |
+      [
+        {
+          "from": {
+            "kind": "ImageStreamTag",
+            "name": "{{ .Release.Name }}:{{ .Values.image.tag }}",
+            "namespace": "{{ .Release.Namespace }}"
+          },
+          "fieldPath": "spec.template.spec.containers[?(@.name==\"{{ .Release.Name }}\")].image",
+          "paused": "false"
+        }
+      ]
     openshift.io/generated-by: OpenShiftWebConsole
   labels:
     app: {{ .Release.Name }}
@@ -31,14 +42,78 @@ spec:
     spec:
       containers:
         - name: {{ .Release.Name }}
-          image: '{{ .Values.image.registry }}/{{ .Release.Namespace }}/{{ .Values.image.name }}:{{ .Values.image.tag }}'
+          image: '{{ .Release.Name }}:latest'
+          imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: {{ .Values.containerPort }}
+            - containerPort: {{ .Values.strapi.port }}
               protocol: TCP
-          resources: {}
+          env:
+            - name: HOST
+              value: "{{ .Values.strapi.host }}"
+            - name: PORT
+              value: "{{ .Values.strapi.port }}"
+            - name: APP_KEYS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgresql
+                  key: app_keys
+            - name: API_TOKEN_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgresql
+                  key: api_token_salt
+            - name: ADMIN_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgresql
+                  key: admin_jwt_secret
+            - name: TRANSFER_TOKEN_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgresql
+                  key: transfer_token_salt
+            - name: DATABASE_CLIENT
+              value: "{{ .Values.strapi.database.client }}"
+            - name: DATABASE_HOST
+              value: "{{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc.cluster.local"
+            - name: DATABASE_PORT
+              value: "{{ .Values.strapi.database.port }}"
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgresql
+                  key: database-name
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgresql
+                  key: database-user
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgresql
+                  key: database-password
+            - name: DATABASE_SSL
+              value: "{{ .Values.strapi.database.ssl }}"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgresql
+                  key: jwt_secret
+            - name: NODE_TLS_REJECT_UNAUTHORIZED
+              value: "{{ .Values.strapi.node_tls_reject_unauthorized }}"
+          resources:
+            requests:
+              memory: "{{ .Values.resources.requests.memory }}"
+              cpu: "{{ .Values.resources.requests.cpu }}"
+            limits:
+              memory: "{{ .Values.resources.limits.memory }}"
+              cpu: "{{ .Values.resources.limits.cpu }}"
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            capabilities: {}
+            privileged: false
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst

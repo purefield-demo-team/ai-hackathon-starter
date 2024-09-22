@@ -27,14 +27,14 @@ postgresql:
   imagePullPolicy: IfNotPresent
   volume:
     size: 1Gi  # Adjust the size as needed
-  user: "strapi"
-  password: "strapi_password"
-  database: "strapi_db"
+  user: "userVTA"
+  password: "Ng1TjS46XVOAVpb4"
+  database: "strapi"
 
 database:
-  name: "strapi_db"
-  user: "strapi"
-  password: "strapi_password"  
+  name: "strapi"
+  user: "userVTA"
+  password: "Ng1TjS46XVOAVpb4"  
 
 build:
   output:
@@ -54,4 +54,28 @@ imagestream:
     local: false  # Set to true if you want the image lookup to prefer local image streams
 
 strapi:
-  port: 1337  # Port Strapi listens on
+  host: "0.0.0.0"
+  port: "1337"
+  node_tls_reject_unauthorized: "0"
+  database:
+    client: "postgres"
+    port: 5432
+    ssl: false
+  secrets:
+    app_keys: "4UDPEyvYkrTUEF89J4wCvg==,b4trjWDqAi9RwyYEevZ5Dg==,SK+2gUVIky9TV/y0dSvcQQ==,L7WRIf5vk4XckkA4+biE9w=="
+    api_token_salt: "S2ozFZTuUBE9JmUG/hw0TA=="
+    admin_jwt_secret: "/40ttMKfZU416/trBpDjPw=="
+    transfer_token_salt: "VLqGOyi4T0rL4gbW3CftpA=="
+    jwt_secret: "LKEGc+nffqBecBTr9WcBLA=="
+
+cluster:
+  name: salamander       # Replace with your actual cluster name
+  domain: aimlworkbench.com
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
