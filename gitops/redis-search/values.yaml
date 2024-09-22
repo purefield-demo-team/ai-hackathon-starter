@@ -1,0 +1,112 @@
+# Default values for redis-stack.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: image-registry.openshift-image-registry.svc:5000/fhir-rag-backend/redis-stack
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+service:
+  name: redis-stack
+  type: ClusterIP # Options: ClusterIP, NodePort, LoadBalancer, etc.
+  ports:
+    - name: redis-tcp
+      protocol: TCP
+      port: 6379
+      targetPort: 6379
+    - name: redisinsight-tcp
+      protocol: TCP
+      port: 8001
+      targetPort: 8001
+  internalTrafficPolicy: Cluster
+  ipFamilyPolicy: SingleStack
+  sessionAffinity: None
+  selector:
+    app: redis-stack
+    deployment: redis-stack
+
+persistence:
+  db:
+    enabled: true
+    storageClass: "" # Specify your storage class or leave empty for default
+    accessModes:
+      - ReadWriteOnce
+    size: 1Gi
+  data:
+    enabled: true
+    storageClass: "" # Specify your storage class or leave empty for default
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+routes:
+  redisstack:
+    enabled: true
+    name: "redis-stack"
+    host: ""  # Leave empty to auto-generate, or specify a custom host
+    tls:
+      termination: edge
+  redisinsight:
+    enabled: true
+    name: "redisinsight"
+    host: ""  # Leave empty to auto-generate, or specify a custom host
+    tls:
+      termination: edge
+
+imageStream:
+  name: redis-stack
+  lookupPolicy:
+    local: false
+  tags:
+    - name: latest
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+        openshift.io/imported-from: redis/redis-stack:7.0.6-RC9
+      from:
+        kind: DockerImage
+        name: redis/redis-stack:7.0.6-RC9
+      generation: 2
+      importPolicy:
+        importMode: Legacy
+      referencePolicy:
+        type: Local
+
+cluster:
+  name: salamander
+  domain: aimlworkbench.com
+
+persistence:
+  db:
+    storageClass: "ocs-storagecluster-cephfs"
+    size: 2Gi
+    accessModes:
+      - ReadWriteOnce
+    volumeMode: Filesystem
+  data:
+    storageClass: "ocs-storagecluster-cephfs"
+    size: 2Gi
+    accessModes:
+      - ReadWriteOnce
+    volumeMode: Filesystem
+
+secrets:
+  redisPassword: "password"
+
+env:
+  # Define non-sensitive environment variables here if any

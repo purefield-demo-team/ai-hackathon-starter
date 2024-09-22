@@ -1,0 +1,25 @@
+{{- if .Values.routes.redisstack.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ .Values.routes.redisstack.name }}
+  labels:
+    app: redis-stack
+    app.kubernetes.io/component: redis-stack
+    app.kubernetes.io/instance: redis-stack
+    app.kubernetes.io/name: redis-stack
+    app.kubernetes.io/part-of: redis-stack-app
+    app.openshift.io/runtime-version: latest
+spec:
+  host: {{ .Values.routes.host | default (printf "%s-%s-%s.apps.%s.%s" .Release.Name .Values.routes.redisstack.name .Release.Namespace .Values.cluster.name .Values.cluster.domain) }}
+  to:
+    kind: Service
+    name: {{ .Values.service.name }}
+    weight: 100
+  port:
+    targetPort: {{ (index .Values.service.ports 0).name }}
+  tls:
+    termination: {{ .Values.routes.redisstack.tls.termination }}
+    insecureEdgeTerminationPolicy: {{ .Values.routes.redisstack.tls.insecureEdgeTerminationPolicy }}
+  wildcardPolicy: None
+{{- end }}

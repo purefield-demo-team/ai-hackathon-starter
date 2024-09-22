@@ -1,0 +1,22 @@
+{{- if .Values.persistence.data.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.persistence.data.name }}
+  labels:
+    app: redis-stack
+    app.kubernetes.io/component: redis-stack
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: redis-stack
+    app.kubernetes.io/part-of: redis-stack-app
+spec:
+  accessModes:
+    {{- range .Values.persistence.data.accessModes }}
+    - {{ . }}
+    {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.data.size }}
+  storageClassName: "{{ .Values.persistence.data.storageClass }}"
+  volumeMode: {{ .Values.persistence.data.volumeMode }}
+{{- end }}

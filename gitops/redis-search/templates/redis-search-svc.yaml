@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name }}
+  labels:
+    app: {{ include "redis-stack.name" . }}
+    app.kubernetes.io/component: redis-stack
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: redis-stack
+    app.kubernetes.io/part-of: redis-stack-app
+    app.openshift.io/runtime-version: latest
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    {{- range .Values.service.ports }}
+    - name: {{ .name }}
+      protocol: {{ .protocol }}
+      port: {{ .port }}
+      targetPort: {{ .targetPort }}
+    {{- end }}
+  internalTrafficPolicy: {{ .Values.service.internalTrafficPolicy }}
+  ipFamilyPolicy: {{ .Values.service.ipFamilyPolicy }}
+  sessionAffinity: {{ .Values.service.sessionAffinity }}
+  selector:
+    app: {{ .Values.service.selector.app }}
+    deployment: {{ .Values.service.selector.deployment }}

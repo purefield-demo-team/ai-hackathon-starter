@@ -1,0 +1,31 @@
+{{- if .Values.imageStream.enabled }}
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: {{ .Values.imageStream.name }}
+  labels:
+    app: redis-stack
+    app.kubernetes.io/component: redis-stack
+    app.kubernetes.io/instance: redis-stack
+    app.kubernetes.io/name: redis-stack
+    app.kubernetes.io/part-of: redis-stack-app
+spec:
+  lookupPolicy:
+    local: {{ .Values.imageStream.lookupPolicy.local }}
+  tags:
+    {{- range .Values.imageStream.tags }}
+    - name: {{ .name }}
+      annotations:
+        {{- range $key, $value := .annotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+      from:
+        kind: {{ .from.kind }}
+        name: {{ .from.name | quote }}
+      generation: {{ .generation }}
+      importPolicy:
+        importMode: {{ .importPolicy.importMode }}
+      referencePolicy:
+        type: {{ .referencePolicy.type }}
+    {{- end }}
+{{- end }}
