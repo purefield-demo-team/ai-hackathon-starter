@@ -39,7 +39,7 @@ public class ChatService {
 
     @Inject
     @RestClient
-    OpenAICompletionClient openAICompletionClient;
+    VllmCompletionClient openAICompletionClient;
 
 
     public CompletionResponse ask(String keycloakSubject, String query, int topN) throws IOException {
@@ -67,7 +67,7 @@ public class ChatService {
         message.append("\n\nMore Info: The Question above should be answered by giving me extra information about each of the items discussed. Don't just paste the question content back, do some research with the articles I gave you as well as your knowledge and give me a comprehensive response.");
         // Create completion request
         CompletionRequest completionRequest = new CompletionRequest();
-        completionRequest.setModel("gpt-4");
+        //completionRequest.setModel("gpt-4");
         completionRequest.setMessages(Arrays.asList(
                 new Message("system", "You are a helpful assistant."),
                 new Message("user", message.toString())
