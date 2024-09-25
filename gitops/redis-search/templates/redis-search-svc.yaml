@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: {{ .Values.service.name }}
   labels:
-    app: {{ include "redis-stack.name" . }}
-    app.kubernetes.io/component: redis-stack
+    app: {{ .Release.Name }}
+    app.kubernetes.io/component: {{ .Release.Name }}
     app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/name: redis-stack
+    app.kubernetes.io/name: {{ .Release.Name }}
     app.kubernetes.io/part-of: redis-stack-app
     app.openshift.io/runtime-version: latest
 spec:
@@ -22,5 +22,4 @@ spec:
   ipFamilyPolicy: {{ .Values.service.ipFamilyPolicy }}
   sessionAffinity: {{ .Values.service.sessionAffinity }}
   selector:
-    app: {{ .Values.service.selector.app }}
-    deployment: {{ .Values.service.selector.deployment }}
+    app: {{ .Release.Name }}

@@ -5,6 +5,7 @@
 replicaCount: 1
 
 image:
+  name: redis-stack
   repository: image-registry.openshift-image-registry.svc:5000/fhir-rag-backend/redis-stack
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
@@ -88,18 +89,22 @@ imageStream:
         type: Local
 
 cluster:
-  name: salamander
-  domain: aimlworkbench.com
+  name: rosa.rosa-t8j8w.ft2c.p3
+  domain: openshiftapps.com
 
 persistence:
   db:
-    storageClass: "ocs-storagecluster-cephfs"
+    enabled: true
+    name: "redis-db"
+    storageClass: "gp3-csi"
     size: 2Gi
     accessModes:
       - ReadWriteOnce
     volumeMode: Filesystem
   data:
-    storageClass: "ocs-storagecluster-cephfs"
+    enabled: true
+    name: "redis-data"
+    storageClass: "gp3-csi"
     size: 2Gi
     accessModes:
       - ReadWriteOnce

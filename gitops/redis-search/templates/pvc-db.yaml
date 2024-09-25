@@ -4,10 +4,10 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ .Values.persistence.db.name }}
   labels:
-    app: redis-stack
-    app.kubernetes.io/component: redis-stack
+    app:  {{ .Release.Name }}
+    app.kubernetes.io/component:  {{ .Release.Name }}
     app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/name: redis-stack
+    app.kubernetes.io/name:  {{ .Release.Name }}
     app.kubernetes.io/part-of: redis-stack-app
 spec:
   accessModes:

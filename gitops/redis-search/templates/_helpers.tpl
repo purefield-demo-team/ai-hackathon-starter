@@ -33,7 +33,6 @@ Selector labels
 */}}
 {{- define "redis-stack.selectorLabels" -}}
 app: {{ include "redis-stack.name" . }}
-release: {{ .Release.Name }}
 {{- end -}}
 
 {{/*

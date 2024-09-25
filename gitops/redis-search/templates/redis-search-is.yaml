@@ -1,13 +1,12 @@
-{{- if .Values.imageStream.enabled }}
 apiVersion: image.openshift.io/v1
 kind: ImageStream
 metadata:
-  name: {{ .Values.imageStream.name }}
+  name: {{ .Release.Name }}
   labels:
-    app: redis-stack
-    app.kubernetes.io/component: redis-stack
-    app.kubernetes.io/instance: redis-stack
-    app.kubernetes.io/name: redis-stack
+    app: {{ .Release.Name }}
+    app.kubernetes.io/component: {{ .Release.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Release.Name }}
     app.kubernetes.io/part-of: redis-stack-app
 spec:
   lookupPolicy:
@@ -28,4 +27,3 @@ spec:
       referencePolicy:
         type: {{ .referencePolicy.type }}
     {{- end }}
-{{- end }}

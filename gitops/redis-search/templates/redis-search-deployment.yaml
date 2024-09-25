@@ -1,33 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "redis-stack.fullname" . }}
+  name: {{ .Release.Name }}
   labels:
     {{- include "redis-stack.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "redis-stack.name" . }}
-      release: {{ .Release.Name }}
+      app: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ include "redis-stack.name" . }}
-        release: {{ .Release.Name }}
+        app: {{ .Release.Name }}
       annotations:
         openshift.io/generated-by: OpenShiftWebConsole
     spec:
       volumes:
         - name: db
           persistentVolumeClaim:
-            claimName: {{ include "redis-stack.fullname" . }}-db
+            claimName: {{ .Values.persistence.db.name }}
         - name: data
           persistentVolumeClaim:
-            claimName: {{ include "redis-stack.fullname" . }}-data
+            claimName: {{ .Values.persistence.data.name }}
       containers:
         - name: redis-stack
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: 'image-registry.openshift-image-registry.svc:5000/{{ .Release.Namespace }}/{{ .Release.Name }}:{{ .Values.image.tag }}'
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 6379
