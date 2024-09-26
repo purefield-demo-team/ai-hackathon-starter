@@ -42,7 +42,7 @@ spec:
     spec:
       containers:
         - name: {{ .Release.Name }}
-          image: '{{ .Release.Name }}:latest'
+          image: 'image-registry.openshift-image-registry.svc:5000/{{ .Release.Namespace }}/{{ .Values.image.name }}:{{ .Values.image.tag }}'
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: {{ .Values.strapi.port }}
