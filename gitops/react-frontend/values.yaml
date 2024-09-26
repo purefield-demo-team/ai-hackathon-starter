@@ -8,7 +8,7 @@ image:
 containerPort: 3000
 
 strapi:
-  url: "https://your-strapi-url/api"
+  url: "https://strapi-ai-rag-starter-kit.apps.rosa.rosa-t8j8w.ft2c.p3.openshiftapps.com/api"
 
 keycloak:
   url: "https://your-red-hat-build-of-keycloak-url/"
@@ -43,5 +43,5 @@ imagestream:
     local: false  # Set to true if you want the image lookup to prefer local image streams
 
 cluster:
-  name: cluster name       # Replace with your actual cluster name
-  domain: cluster domain
+  name: rosa.rosa-t8j8w.ft2c.p3
+  domain: openshiftapps.com
