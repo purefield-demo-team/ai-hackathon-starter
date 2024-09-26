@@ -57,5 +57,5 @@ route:
     termination: edge
 
 cluster:
-  name: salamander    # Replace with your actual cluster name
-  domain: aimlworkbench.com  # Replace with your actual cluster domain
+  name: rosa.rosa-t8j8w.ft2c.p3
+  domain: openshiftapps.com  # Replace with your actual cluster domain
