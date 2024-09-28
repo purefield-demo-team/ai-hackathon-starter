@@ -11,7 +11,7 @@ strapi:
   url: "https://strapi-ai-rag-starter-kit.apps.rosa.rosa-t8j8w.ft2c.p3.openshiftapps.com/api"
 
 keycloak:
-  url: "https://your-red-hat-build-of-keycloak-url/"
+  url: "https://ai-rag-starter-kit-keycloak.apps.rosa.rosa-t8j8w.ft2c.p3.openshiftapps.com/"
 
 openaiapi:
   key: "your opan ai api key"

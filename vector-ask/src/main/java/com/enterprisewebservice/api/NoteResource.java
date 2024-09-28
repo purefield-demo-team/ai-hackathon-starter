@@ -196,6 +196,7 @@ public class NoteResource {
             redisSearchIndexer.indexEmbeddings(embeddingResponse, note.getId().toString(), chunks, keycloakSubject);
 
              // Fetch the TaskNote objects by Note id
+            System.out.println("note id: " + note.getId());
             StrapiServiceResponse<List<TaskNote>> taskNotes = taskNoteService.getByNoteId(note.getId().toString(), false);
             List<Task> uniqueTasks = new ArrayList<>();
             for (TaskNote taskNote : taskNotes.getData()) {

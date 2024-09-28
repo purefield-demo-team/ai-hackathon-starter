@@ -32,7 +32,7 @@ const UsernameDisplay: React.FC = () => {
   };
 
   const handleLinkDiscord = () => {
-    window.open('https://keycloak-fihr-rag.apps.salamander.aimlworkbench.com/realms/fihr-rag-llm/account/#/security/linked-accounts', "_blank", "noreferrer");
+    window.open('https://ai-rag-starter-kit-keycloak.apps.rosa.rosa-t8j8w.ft2c.p3.openshiftapps.com/realms/fihr-rag-llm/account/#/security/linked-accounts', "_blank", "noreferrer");
     handleMenuClose();
   };
 

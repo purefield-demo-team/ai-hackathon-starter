@@ -83,7 +83,7 @@ const userProfileService = {
   getFederatedIdentity: async (realm: string, userId: string, token: string): Promise<any> => {
     try {
       const response = await axios.get(
-        `https://keycloak-fihr-rag.apps.salamander.aimlworkbench.com/admin/realms/${realm}/users/${userId}/federated-identity`,
+        `${process.env.REACT_APP_KEYCLOAK_URL}admin/realms/${realm}/users/${userId}/federated-identity`,
         {
           headers: {
             'Authorization': `Bearer ${token}`
