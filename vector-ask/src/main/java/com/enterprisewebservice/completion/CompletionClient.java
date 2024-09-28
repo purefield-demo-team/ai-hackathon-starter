@@ -22,7 +22,8 @@ public interface CompletionClient {
     CompletionResponse createCompletion(CompletionRequest request);
 
     default String generateAuthHeader() {
-        return "Bearer xxx-openapi-key-xxx";
+        String openaikey = ConfigProvider.getConfig().getValue("openaikey", String.class);
+        return "Bearer " + openaikey;
     }
 
 }
