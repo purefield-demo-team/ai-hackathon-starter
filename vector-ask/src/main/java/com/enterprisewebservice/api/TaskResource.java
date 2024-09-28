@@ -24,6 +24,7 @@ import com.enterprisewebservice.embeddings.ChunkingService;
 import com.enterprisewebservice.completion.ChatService;
 import com.enterprisewebservice.completion.CompletionResponse;
 import com.enterprisewebservice.RedisSearchIndexer;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.enterprisewebservice.completion.vllm.*;
 
@@ -38,6 +39,9 @@ public class TaskResource {
     @Inject
     ChatService chatService;
 
+    @ConfigProperty(name = "llmmodel")
+    String llmModel;
+
     @GET
     @Path("/ask/{id}/question")
     public Response askQuestion(@PathParam("id") Integer id, @QueryParam("keycloakSubject") String keycloakSubject) {
@@ -48,7 +52,16 @@ public class TaskResource {
                 + " and description: " 
                 + (result.getData() != null && result.getData().getDescription() != null ? result.getData().getDescription() : "");
             
-            CompletionResponse answer = chatService.ask(keycloakSubject, query, 3);
+            if(llmModel.equals("llama3"))
+            {
+                CompletionResponse answer = chatService.askVllm(keycloakSubject, query, 3);
+            }
+            else
+            {
+                CompletionResponse answer = chatService.ask(keycloakSubject, query, 3);
+            }
+
+            
 
             return Response.ok(answer.getChoices().get(0).getMessage().getContent()).build();
 

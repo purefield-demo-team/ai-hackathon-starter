@@ -9,6 +9,8 @@ import com.enterprisewebservice.model.Tag;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.io.IOException;
@@ -24,6 +26,9 @@ public class TaskService {
 
     @Inject
     ChatService chatService;
+
+    @ConfigProperty(name = "llmmodel")
+    String llmModel;
     
     private final ObjectMapper objectMapper = new ObjectMapper(); // replace with your actual JSON library
 
@@ -84,7 +89,16 @@ public class TaskService {
             + " and description: " 
             + (result.getData() != null && result.getData().getDescription() != null ? result.getData().getDescription() : "");
 
-        return chatService.ask(keycloakSubject, query, 3);
+        CompletionResponse answer = null;
+         if(llmModel.equals("llama3"))
+        {
+            answer = chatService.askVllm(keycloakSubject, query, 3);
+        }
+        else
+        {
+            answer = chatService.ask(keycloakSubject, query, 3);
+        }
+        return answer;
     }
 
     // Note: For methods requiring POST, PUT and DELETE, you will have to implement similar methods in ApiClient and use them here.
