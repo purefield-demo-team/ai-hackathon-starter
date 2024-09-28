@@ -12,7 +12,7 @@ const taskNoteService = {
     try {
       const currentDate = new Date().toISOString();
       
-      const sortOrder = `&sort[0]=task.status%3Aasc&sort[1]=task.dueDate%3C${encodeURIComponent(currentDate)}%3Adesc&sort[2]=task.dueDate%3Aasc`;
+      const sortOrder = `&sort[0]=task.status%3Aasc&sort[1]=task.dueDate%3Adesc&sort[2]=task.dueDate%3Aasc`;
       if (!id) {
         const result: StrapiServiceResponse<TaskNote[]> = {
           data: null,
