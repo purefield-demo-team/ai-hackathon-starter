@@ -84,7 +84,7 @@ public class TaskService {
             + " and description: " 
             + (result.getData() != null && result.getData().getDescription() != null ? result.getData().getDescription() : "");
 
-        return chatService.askVllm(keycloakSubject, query, 3);
+        return chatService.ask(keycloakSubject, query, 3);
     }
 
     // Note: For methods requiring POST, PUT and DELETE, you will have to implement similar methods in ApiClient and use them here.

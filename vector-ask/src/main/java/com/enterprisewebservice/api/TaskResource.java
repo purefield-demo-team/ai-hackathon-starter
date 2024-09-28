@@ -48,7 +48,7 @@ public class TaskResource {
                 + " and description: " 
                 + (result.getData() != null && result.getData().getDescription() != null ? result.getData().getDescription() : "");
             
-            CompletionResponse answer = chatService.askVllm(keycloakSubject, query, 3);
+            CompletionResponse answer = chatService.ask(keycloakSubject, query, 3);
 
             return Response.ok(answer.getChoices().get(0).getMessage().getContent()).build();
 
