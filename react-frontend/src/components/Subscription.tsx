@@ -10,7 +10,7 @@ import { useUserProfile } from '../contexts/UserProfileContext';
 import { Container, Typography, Button, Box, Grid } from '@mui/material';
 import './Subscription.css';
 
-const stripePromise = loadStripe('pk_live_51MxDKIJzOPb9siYpx8iuKDnoE2QTV8EJ6XcDXy5KXpFeCWF0ZyFNfaiXQ82IKn0UIlLQZbX3p6AvHfdxxrZ6gNwQ008ET35xWN');
+const stripePromise = loadStripe('xxx');
 
 const CheckoutForm: React.FC = () => {
   const stripe = useStripe();
