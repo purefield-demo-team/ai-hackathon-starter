@@ -52,16 +52,15 @@ public class TaskResource {
                 + " and description: " 
                 + (result.getData() != null && result.getData().getDescription() != null ? result.getData().getDescription() : "");
             
+            CompletionResponse answer = null;
             if(llmModel.equals("llama3"))
             {
-                CompletionResponse answer = chatService.askVllm(keycloakSubject, query, 3);
+                answer = chatService.askVllm(keycloakSubject, query, 3);
             }
             else
             {
-                CompletionResponse answer = chatService.ask(keycloakSubject, query, 3);
+                answer = chatService.ask(keycloakSubject, query, 3);
             }
-
-            
 
             return Response.ok(answer.getChoices().get(0).getMessage().getContent()).build();
 
