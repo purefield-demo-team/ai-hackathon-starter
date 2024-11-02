@@ -38,6 +38,7 @@ interface TaskSelectorProps {
         <Autocomplete
           multiple
           options={tasks}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
           getOptionLabel={(option) => option.title} // Assuming tasks have a 'title' property
           value={selectedTasks}
           onChange={(event, newValue) => {
