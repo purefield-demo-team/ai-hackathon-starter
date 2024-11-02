@@ -76,6 +76,7 @@ export const NoteTagInput: React.FC<TagInputProps> = ({ note, keycloakSubject, o
             options={[]}
             value={tags}
             inputValue={inputValue}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
             onChange={(event, value: (string | Tag)[]) => setTags(value.filter((v): v is Tag => v instanceof Object))}
             onInputChange={handleInputChange}
             renderTags={(value: Tag[], getTagProps) =>

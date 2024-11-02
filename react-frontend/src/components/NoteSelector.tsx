@@ -48,6 +48,7 @@ const NoteSelector: React.FC<NoteSelectorProps> = ({ notes, preSelectedNotes, on
         multiple
         options={notes}
         getOptionLabel={(option) => option.name}
+        isOptionEqualToValue={(option, value) => option.id === value.id}
         value={selectedNotes}
         onChange={(event, newValue) => {
           setSelectedNotes(newValue);
