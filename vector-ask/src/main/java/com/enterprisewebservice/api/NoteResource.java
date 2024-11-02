@@ -13,6 +13,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.GET;
 import java.util.List;
+import java.util.Set;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,13 +67,15 @@ public class NoteResource {
     @Inject
     GPTAssessmentService gptAssessmentService;
 
+    private Set<Long> processingSet = ConcurrentHashMap.newKeySet();
+
     // Concurrent hashmap to store payload IDs with their timestamps
     // private ConcurrentHashMap<Long, ScheduledFuture<?>> noteMap = new ConcurrentHashMap<>();
     // private ConcurrentHashMap<Long, ScheduledFuture<?>> taskMap = new ConcurrentHashMap<>();
     // private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(10);
 
     private ConcurrentHashMap<Long, ScheduledFuture<?>> assessmentMap = new ConcurrentHashMap<>();
-     private ConcurrentHashMap<Long, ReentrantLock> lockMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Long, ReentrantLock> lockMap = new ConcurrentHashMap<>();
     private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(10);
 
 
@@ -86,62 +89,49 @@ public class NoteResource {
     @Path("/create-assessment")
     public Response createAssessment(StrapiEventPayload payload) {
         try {
-            System.out.println("Payload model in create-assessment: " + payload.getModel().toString());
-            
+            System.out.println("Payload model in create-assessment: " + payload.getModel());
+    
             // Check for both "task" and "task-note"
             if (payload == null || (!payload.getModel().equals("task-note") && !payload.getModel().equals("task"))) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Payload is neither a task nor a task note").build();
             }
+    
             Long id = null;
             if (payload.getModel().equals("task-note")) {
-                            
-                TaskNote taskNote = (TaskNote) (payload.getEntry());
+                TaskNote taskNote = (TaskNote) payload.getEntry();
                 id = taskNote.getId();
             } else if (payload.getModel().equals("task")) {
-                Task task = (Task) (payload.getEntry());
+                Task task = (Task) payload.getEntry();
                 id = task.getId();
             }
-
+    
             System.out.println("Payload: " + payload.toString());
-           
     
-            lockMap.putIfAbsent(id, new ReentrantLock());
-            ReentrantLock lock = lockMap.get(id);
-    
-            lock.lock();
-    
+            // Attempt to mark the id as being processed
+            boolean isNew = processingSet.add(id);
+            if (!isNew) {
+                return Response.ok().entity("Assessment already processed for id: " + id).build();
+            }
+
             try {
-                ScheduledFuture<?> previousTask = assessmentMap.remove(id);
-                if (previousTask != null) {
-                    previousTask.cancel(false);
+                // Process the assessment immediately
+                if (payload.getModel().equals("task-note")) {
+                    processAssessment(payload);
+                } else if (payload.getModel().equals("task")) {
+                    Task taskEntry = (Task) payload.getEntry();
+                    StrapiServiceResponse<Task> taskData = taskService.getTask(taskEntry.getId().intValue());
+                    processAssessment(taskData.getData(), taskData.getData().getUserProfile().getKeycloaksubject());
                 }
-    
-                ScheduledFuture<?> future = executorService.schedule(() -> {
-                    try {
-                        if (payload.getModel().equals("task-note")) {
-                            
-                            processAssessment(payload);
-                        } else if (payload.getModel().equals("task")) {
-                            Task task = (Task) (payload.getEntry());
-                            StrapiServiceResponse<Task> taskData = taskService.getTask(task.getId().intValue());
-                            processAssessment(taskData.getData(), taskData.getData().getUserProfile().getKeycloaksubject());
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }, 1, TimeUnit.MINUTES);
-    
-                assessmentMap.put(id, future);
             } finally {
-                lock.unlock();
+                // Ensure the id is removed from the set
+                processingSet.remove(id);
             }
     
         } catch (Exception e) {
-            // Handle exception appropriately
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
-        return Response.ok().build(); 
+        return Response.ok().build();
     }
     
 

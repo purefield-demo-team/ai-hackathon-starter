@@ -20,14 +20,14 @@ service:
   sessionAffinity: None
 
 openai:
-  key: "your open ai key"  # Replace with your actual OpenAI key
+  key: "xxxxxxxxx"  # Replace with your actual OpenAI key
 
 strapi:
-  host: "your strapi host:1337"  # Replace with your Strapi host (service url with port 1337 but without /api at the end)
-  token: "your strapi api token"  # Replace with your Strapi token
+  host: "https://strapi-raft-infra.apps.salamander.aimlworkbench.com:1337"  # Replace with your Strapi host (service url with port 1337 but without /api at the end)
+  token: "xxxxxxxx"  # Replace with your Strapi token
 
 redis:
-  host: "your redis search service uri"  # Replace with your Redis host
+  host: "https://redis-search-redis-stack-raft-infra.apps.salamander.aimlworkbench.com"  # Replace with your Redis host
 
 service:
   port: 8080
@@ -57,5 +57,5 @@ route:
     termination: edge
 
 cluster:
-  name: rosa.rosa-t8j8w.ft2c.p3
-  domain: openshiftapps.com  # Replace with your actual cluster domain
+  name: salamander
+  domain: aimlworkbench.com  # Replace with your actual cluster domain

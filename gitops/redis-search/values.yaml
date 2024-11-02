@@ -89,14 +89,14 @@ imageStream:
         type: Local
 
 cluster:
-  name: rosa.rosa-t8j8w.ft2c.p3
-  domain: openshiftapps.com
+  name: salamander
+  domain: aimlworkbench.com
 
 persistence:
   db:
     enabled: true
     name: "redis-db"
-    storageClass: "gp3-csi"
+    storageClass: "ocs-storagecluster-cephfs"
     size: 2Gi
     accessModes:
       - ReadWriteOnce
@@ -104,14 +104,14 @@ persistence:
   data:
     enabled: true
     name: "redis-data"
-    storageClass: "gp3-csi"
+    storageClass: "ocs-storagecluster-cephfs"
     size: 2Gi
     accessModes:
       - ReadWriteOnce
     volumeMode: Filesystem
 
 secrets:
-  redisPassword: "password"
+  redisPassword: "jifpeanut"
 
 env:
   # Define non-sensitive environment variables here if any

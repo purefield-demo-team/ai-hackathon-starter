@@ -17,6 +17,6 @@ spec:
       name: keycloak-db-secret
       key: password
   hostname:
-    hostname: strapi-raft-infra.apps.salamander.aimlworkbench.com
+    hostname: keycloak-raft-infra.apps.salamander.aimlworkbench.com
   http:
     tlsSecret: keycloak-certs-letsencrypt
