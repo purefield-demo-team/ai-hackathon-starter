@@ -197,7 +197,7 @@ public class ChatService {
 
         // Create the completion request
         VllmCompletionRequest completionRequest = new VllmCompletionRequest();
-        completionRequest.setModel("\"Meta-Llama-31-8B\"");  // Or include extra quotes if needed
+        completionRequest.setModel("\"meta-llama-31-8b\"");  // Or include extra quotes if needed
         completionRequest.setMessages(messages);
         completionRequest.setMaxTokens(2000);
         completionRequest.setTemperature(0.0);
