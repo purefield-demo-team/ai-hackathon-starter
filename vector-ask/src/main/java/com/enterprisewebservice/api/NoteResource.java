@@ -3,6 +3,7 @@ package com.enterprisewebservice.api;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.Consumes;
@@ -85,7 +86,7 @@ public class NoteResource {
         return Response.ok("Test value").build();
     }
 
-    @POST
+    @PUT
     @Path("/create-assessment")
     public Response createAssessment(StrapiEventPayload payload) {
         try {
@@ -157,6 +158,7 @@ public class NoteResource {
     @Path("/create-embedding")
     public Response getNoteAndIndex(StrapiEventPayload payload) {
         try {
+           System.out.println("Payload: " + payload.toString());
            if (payload == null || !payload.getModel().equals("note")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Payload is not a note").build();
             }
