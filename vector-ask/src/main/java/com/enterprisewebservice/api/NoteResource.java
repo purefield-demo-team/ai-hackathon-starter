@@ -86,7 +86,7 @@ public class NoteResource {
         return Response.ok("Test value").build();
     }
 
-    @PUT
+    @POST
     @Path("/create-assessment")
     public Response createAssessment(StrapiEventPayload payload) {
         try {
