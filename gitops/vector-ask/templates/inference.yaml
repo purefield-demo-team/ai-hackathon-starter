@@ -1,48 +1,40 @@
-apiVersion: v1
-items:
-- apiVersion: serving.kserve.io/v1beta1
-  kind: InferenceService
-  metadata:
-    annotations:
-      openshift.io/display-name: Meta-Llama-31-8B-latest
-      serving.knative.openshift.io/enablePassthrough: "true"
-      sidecar.istio.io/inject: "true"
-      sidecar.istio.io/rewriteAppHTTPProbers: "true"
-    finalizers:
-    - inferenceservice.finalizers
-    generation: 1
-    labels:
-      opendatahub.io/dashboard: "true"
-    name: meta-llama-31-8b-latest
-    namespace: fihr-rag-serving
-  spec:
-    predictor:
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  annotations:
+    openshift.io/display-name: Meta-Llama-31-8B-Instruct
+    serving.knative.openshift.io/enablePassthrough: 'true'
+    sidecar.istio.io/inject: 'true'
+    sidecar.istio.io/rewriteAppHTTPProbers: 'true'
+  name: meta-llama-31-8b-instruct
+  namespace: fihr-rag-serving
+  labels:
+    opendatahub.io/dashboard: 'true'
+spec:
+  predictor:
+    maxReplicas: 1
+    minReplicas: 1
+    model:
       args:
-        - "--dtype=float16"
-        - "--tensor-parallel-size=2"
-      maxReplicas: 1
-      minReplicas: 1
-      model:
-        modelFormat:
-          name: vLLM
-        name: ""
-        resources:
-          limits:
-            cpu: "10"
-            memory: 40Gi
-            nvidia.com/gpu: "1"
-          requests:
-            cpu: "6"
-            memory: 30Gi
-            nvidia.com/gpu: "1"
-        runtime: meta-llama-31-8b-latest
-        storage:
-          key: aws-connection-aws-s3-models
-          path: models/Meta-Llama-31-8B
-      tolerations:
+        - '--dtype=float16'
+        - '--tensor-parallel-size=2'
+      modelFormat:
+        name: vLLM
+      name: ''
+      resources:
+        limits:
+          cpu: '10'
+          memory: 20Gi
+          nvidia.com/gpu: '2'
+        requests:
+          cpu: '6'
+          memory: 16Gi
+          nvidia.com/gpu: '2'
+      runtime: meta-llama-31-8b-instruct
+      storage:
+        key: aws-connection-aws-s3-models
+        path: models/Llama-3.1-8B-Instruct
+    tolerations:
       - effect: NoSchedule
         key: nvidia.com/gpu
         operator: Exists
-kind: List
-metadata:
-  resourceVersion: ""

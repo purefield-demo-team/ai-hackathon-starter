@@ -7,8 +7,8 @@ metadata:
     opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
     opendatahub.io/template-display-name: vLLM ServingRuntime for KServe
     opendatahub.io/template-name: vllm-runtime
-    openshift.io/display-name: meta-llama-31-8b
-  name: meta-llama-31-8b
+    openshift.io/display-name: meta-llama-31-8b-instruct
+  name: meta-llama-31-8b-instruct
   namespace: fihr-rag-serving
   labels:
     opendatahub.io/dashboard: 'true'
