@@ -788,6 +788,43 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
   };
 }
 
+export interface ApiAgentRouterAgentRouter extends Schema.CollectionType {
+  collectionName: 'agent_routers';
+  info: {
+    singularName: 'agent-router';
+    pluralName: 'agent-routers';
+    displayName: 'AgentRouter';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    name: Attribute.String;
+    description: Attribute.Text;
+    startNode: Attribute.Relation<
+      'api::agent-router.agent-router',
+      'oneToOne',
+      'api::llm-agent-node.llm-agent-node'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::agent-router.agent-router',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::agent-router.agent-router',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiGoalGoal extends Schema.CollectionType {
   collectionName: 'goals';
   info: {
@@ -916,6 +953,82 @@ export interface ApiGptAssessmentGptAssessment extends Schema.CollectionType {
   };
 }
 
+export interface ApiLlmAgentLlmAgent extends Schema.CollectionType {
+  collectionName: 'llm_agents';
+  info: {
+    singularName: 'llm-agent';
+    pluralName: 'llm-agents';
+    displayName: 'LlmAgent';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    systemContent: Attribute.Text;
+    systemContentMoreInfo: Attribute.Text;
+    systemContentType: Attribute.Text;
+    systemContentRole: Attribute.Text;
+    userContentRole: Attribute.Text;
+    name: Attribute.String;
+    description: Attribute.Text;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::llm-agent.llm-agent',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::llm-agent.llm-agent',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiLlmAgentNodeLlmAgentNode extends Schema.CollectionType {
+  collectionName: 'llm_agent_nodes';
+  info: {
+    singularName: 'llm-agent-node';
+    pluralName: 'llm-agent-nodes';
+    displayName: 'LlmAgentNode';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    outputAgent: Attribute.Relation<
+      'api::llm-agent-node.llm-agent-node',
+      'oneToOne',
+      'api::llm-agent.llm-agent'
+    >;
+    inputAgents: Attribute.Relation<
+      'api::llm-agent-node.llm-agent-node',
+      'oneToMany',
+      'api::llm-agent.llm-agent'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::llm-agent-node.llm-agent-node',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::llm-agent-node.llm-agent-node',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiNoteNote extends Schema.CollectionType {
   collectionName: 'notes';
   info: {
@@ -981,6 +1094,7 @@ export interface ApiTaskTask extends Schema.CollectionType {
     singularName: 'task';
     pluralName: 'tasks';
     displayName: 'Task';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -998,6 +1112,11 @@ export interface ApiTaskTask extends Schema.CollectionType {
       'api::user-profile.user-profile'
     >;
     tags: Attribute.Relation<'api::task.task', 'oneToMany', 'api::tag.tag'>;
+    agentRouter: Attribute.Relation<
+      'api::task.task',
+      'oneToOne',
+      'api::agent-router.agent-router'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1108,9 +1227,12 @@ declare module '@strapi/types' {
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
+      'api::agent-router.agent-router': ApiAgentRouterAgentRouter;
       'api::goal.goal': ApiGoalGoal;
       'api::goal-task.goal-task': ApiGoalTaskGoalTask;
       'api::gpt-assessment.gpt-assessment': ApiGptAssessmentGptAssessment;
+      'api::llm-agent.llm-agent': ApiLlmAgentLlmAgent;
+      'api::llm-agent-node.llm-agent-node': ApiLlmAgentNodeLlmAgentNode;
       'api::note.note': ApiNoteNote;
       'api::tag.tag': ApiTagTag;
       'api::task.task': ApiTaskTask;

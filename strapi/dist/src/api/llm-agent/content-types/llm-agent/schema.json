@@ -1,0 +1,37 @@
+{
+    "kind": "collectionType",
+    "collectionName": "llm_agents",
+    "info": {
+        "singularName": "llm-agent",
+        "pluralName": "llm-agents",
+        "displayName": "LlmAgent",
+        "description": ""
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "systemContent": {
+            "type": "text"
+        },
+        "systemContentMoreInfo": {
+            "type": "text"
+        },
+        "systemContentType": {
+            "type": "text"
+        },
+        "systemContentRole": {
+            "type": "text"
+        },
+        "userContentRole": {
+            "type": "text"
+        },
+        "name": {
+            "type": "string"
+        },
+        "description": {
+            "type": "text"
+        }
+    }
+}

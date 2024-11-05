@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "agent_routers",
+  "info": {
+    "singularName": "agent-router",
+    "pluralName": "agent-routers",
+    "displayName": "AgentRouter",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "startNode": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::llm-agent-node.llm-agent-node"
+    }
+  }
+}

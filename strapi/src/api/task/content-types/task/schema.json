@@ -4,7 +4,8 @@
   "info": {
     "singularName": "task",
     "pluralName": "tasks",
-    "displayName": "Task"
+    "displayName": "Task",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -43,6 +44,11 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::tag.tag"
+    },
+    "agentRouter": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::agent-router.agent-router"
     }
   }
 }
