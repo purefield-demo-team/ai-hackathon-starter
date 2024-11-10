@@ -8,6 +8,7 @@ import AuthenticatedComponent from './components/AuthenticatedComponent';
 import CreateGoal from './components/CreateGoal';
 import CreateNote from './components/CreateNote';
 import CreateTask from './components/CreateTask';
+import CreateLlmAgent from './components/CreateLlmAgent';
 import UpdateNote from './components/UpdateNote';
 import { UserProfileProvider } from './contexts/UserProfileContext';
 import UsernameDisplay from './components/UsernameDisplay';
@@ -70,6 +71,7 @@ function App() {
                     <Route path="/account" element={<AuthenticatedComponent><Account /></AuthenticatedComponent>} />
                     <Route path="/assessment-detail/:id" element={<AuthenticatedComponent><AssessmentDetail /></AuthenticatedComponent>} />
                     <Route path="/assessment/:id" element={<AuthenticatedComponent><GoalSpecificTaskGoalAssessment /></AuthenticatedComponent>} />
+                    <Route path="/create-llm-agent" element={<AuthenticatedComponent><CreateLlmAgent /></AuthenticatedComponent>} />
                     {/* Add other routes as necessary */}
                   </Routes>
                 </ThemeProvider>
