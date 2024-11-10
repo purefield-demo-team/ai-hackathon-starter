@@ -2,6 +2,7 @@ import api from '../api';
 import { LlmAgent } from '../models/LlmAgent';
 import { StrapiServiceResponse } from '../types/StrapiServiceResponse';
 import { ErrorResponse } from '../types/ErrorResponse';
+import { Tag } from '../models/Tag';
 
 const llmAgentService = {
   getAll: async (): Promise<StrapiServiceResponse<LlmAgent[]>> => {
