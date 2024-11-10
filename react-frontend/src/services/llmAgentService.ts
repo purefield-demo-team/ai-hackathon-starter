@@ -50,6 +50,22 @@ const llmAgentService = {
     }
   },
 
+  // In llmAgentService.ts
+    getByTags: async (tags: Tag[]): Promise<StrapiServiceResponse<LlmAgent[]>> => {
+        try {
+        if (!tags || tags.length === 0) {
+            return { data: [], error: null };
+        }
+
+        const tagFilters = tags.map((tag) => `filters[tags][id][$in]=${tag.id}`).join('&');
+
+        const response = await api.get(`/llm-agents?${tagFilters}`);
+        return { data: response.data.data, error: null };
+        } catch (error) {
+        return { data: null, error: error as ErrorResponse };
+        }
+    },
+
   create: async (agent: LlmAgent): Promise<StrapiServiceResponse<LlmAgent>> => {
     try {
       const response = await api.post('/llm-agents', { data: agent });
