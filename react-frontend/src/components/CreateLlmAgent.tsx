@@ -8,6 +8,7 @@ import CreatedLlmAgentsList from './CreatedLlmAgentsList';
 import LlmAgentForm from './LlmAgentForm';
 import { Grid, Typography, Button } from '@mui/material';
 import '../App.css';
+import LlmAgentsFilter from './LlmAgentsFilter';
 
 const CreateLlmAgent: React.FC = () => {
   const navigate = useNavigate();
@@ -22,6 +23,12 @@ const CreateLlmAgent: React.FC = () => {
     userContentRole: '',
     state: '',
   });
+
+  const [refreshFilter, setRefreshFilter] = useState(false);
+  
+  useEffect(() => {
+    setRefreshFilter(false); // Reset the refreshFilter state variable
+  }, [refreshFilter]);
 
   const handleFormChange = (field: keyof LlmAgent, value: any) => {
     setAgent((prevAgent) => ({
@@ -66,6 +73,9 @@ const CreateLlmAgent: React.FC = () => {
 
   return (
     <Grid container>
+      <Grid item xs={12} sm={4} md={4} lg={2} className="sidebar">
+        <LlmAgentsFilter keycloakSubject={userProfile?.keycloaksubject} refresh={refreshFilter} />
+      </Grid>
       <Grid item xs={12} className="main-content">
         <Typography variant="h4" gutterBottom>
           Create LlmAgent
