@@ -4,6 +4,7 @@ import llmAgentService from '../services/llmAgentService';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import { LlmAgent } from '../models/LlmAgent';
 import { UserProfile } from '../models/UserProfile';
+import CreatedLlmAgentsList from './CreatedLlmAgentsList';
 import LlmAgentForm from './LlmAgentForm';
 import { Grid, Typography, Button } from '@mui/material';
 import '../App.css';
