@@ -48,6 +48,7 @@ const NavigationBar: React.FC = () => {
       <Button color="inherit" component={RouterLink} to="/notes">Notes</Button>
       <Button color="inherit" component={RouterLink} to="/task-goal-assessment">Assess</Button>
       <Button color="inherit" component={RouterLink} to="/create-llm-agent">Agents</Button>
+      <Button color="inherit" component={RouterLink} to="/create-agent-router">Agent Routers</Button>
       <UsernameDisplay />
     </>
   );
