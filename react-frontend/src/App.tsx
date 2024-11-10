@@ -11,6 +11,7 @@ import CreateTask from './components/CreateTask';
 import CreateLlmAgent from './components/CreateLlmAgent';
 import UpdateLlmAgent from './components/UpdateLlmAgent';
 import CreateAgentRouter from './components/CreateAgentRouter';
+import AgentNodeEditor from './components/AgentNodeEditor';
 import UpdateNote from './components/UpdateNote';
 import { UserProfileProvider } from './contexts/UserProfileContext';
 import UsernameDisplay from './components/UsernameDisplay';

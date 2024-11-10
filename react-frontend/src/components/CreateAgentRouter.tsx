@@ -2,30 +2,27 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import llmAgentService from '../services/llmAgentService';
-import agentRouterService from '../services/agentRouterService';
 import { LlmAgent } from '../models/LlmAgent';
 import { AgentRouter } from '../models/AgentRouter';
 import { LlmAgentNode } from '../models/LlmAgentNode';
-import {
-  TextField,
-  Button,
-  Grid,
-  Typography,
-  Autocomplete,
-  CircularProgress,
-} from '@mui/material';
-import { useUserProfile } from '../contexts/UserProfileContext';
+import llmAgentService from '../services/llmAgentService';
+import agentRouterService from '../services/agentRouterService';
+import { TextField, Button, Grid, Typography, CircularProgress } from '@mui/material';
+import AgentNodeEditor from './AgentNodeEditor';
 
 const CreateAgentRouter: React.FC = () => {
-  const { userProfile } = useUserProfile();
   const navigate = useNavigate();
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [outputAgent, setOutputAgent] = useState<LlmAgent | null>(null);
-  const [inputAgents, setInputAgents] = useState<LlmAgent[]>([]);
   const [allAgents, setAllAgents] = useState<LlmAgent[]>([]);
   const [loadingAgents, setLoadingAgents] = useState(true);
+
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+
+  // Initialize startNode with a default node
+  const [startNode, setStartNode] = useState<LlmAgentNode>({
+    outputAgent: {} as LlmAgent, // Empty agent to start with
+    inputAgents: [],
+  });
 
   useEffect(() => {
     const fetchAgents = async () => {
@@ -42,15 +39,11 @@ const CreateAgentRouter: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!outputAgent) {
-      alert('Please select an output agent.');
+
+    if (!startNode.outputAgent || !startNode.outputAgent.id) {
+      alert('Please select a starting agent.');
       return;
     }
-
-    const startNode: LlmAgentNode = {
-      outputAgent,
-      inputAgents,
-    };
 
     const agentRouter: AgentRouter = {
       name,
@@ -60,7 +53,6 @@ const CreateAgentRouter: React.FC = () => {
 
     const response = await agentRouterService.create(agentRouter);
     if (response.data) {
-      // Navigate to the update page or wherever appropriate
       navigate(`/update-agent-router/${response.data.id}`);
     } else {
       console.error('Error creating AgentRouter:', response.error);
@@ -93,22 +85,12 @@ const CreateAgentRouter: React.FC = () => {
         />
       </Grid>
       <Grid item xs={12}>
-        <Autocomplete
-          options={allAgents}
-          getOptionLabel={(option) => option.name}
-          value={outputAgent}
-          onChange={(event, newValue) => setOutputAgent(newValue)}
-          renderInput={(params) => <TextField {...params} label="Output Agent" />}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <Autocomplete
-          multiple
-          options={allAgents}
-          getOptionLabel={(option) => option.name}
-          value={inputAgents}
-          onChange={(event, newValue) => setInputAgents(newValue)}
-          renderInput={(params) => <TextField {...params} label="Input Agents" />}
+        <Typography variant="h6">Configure Routing Nodes</Typography>
+        <AgentNodeEditor
+          node={startNode}
+          setNode={setStartNode}
+          allAgents={allAgents}
+          nodeLabel="Start Node"
         />
       </Grid>
       <Grid item xs={12}>
