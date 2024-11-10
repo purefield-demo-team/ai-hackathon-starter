@@ -7,5 +7,4 @@ export interface LlmAgent {
     name: string;
     systemContentRole: string;
     userContentRole: string;
-    state: string;
 }

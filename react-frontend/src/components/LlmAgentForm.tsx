@@ -23,7 +23,6 @@ const LlmAgentForm: React.FC<LlmAgentFormProps> = ({
     systemContentType,
     systemContentRole,
     userContentRole,
-    state,
   } = agent;
 
   return (
@@ -55,6 +54,7 @@ const LlmAgentForm: React.FC<LlmAgentFormProps> = ({
               multiline
               rows={4}
               value={systemContent || ''}
+              placeholder="You answer questions about Tasks, Goals, and Notes. Use the below information to answer the subsequent question. If the answer cannot be found in the notes, write 'I could not find an answer.'"
               onChange={(event) => onChange('systemContent', event.target.value)}
             />
           </Grid>
@@ -65,27 +65,25 @@ const LlmAgentForm: React.FC<LlmAgentFormProps> = ({
               multiline
               rows={4}
               value={systemContentMoreInfo || ''}
+              placeholder="More Info: The Question above should be answered by giving me extra information about each of the items discussed. Don't just paste the question content back, do some research with the articles I gave you as well as your knowledge and give me a comprehensive response."
               onChange={(event) => onChange('systemContentMoreInfo', event.target.value)}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <FormControl fullWidth>
-              <InputLabel>System Content Type</InputLabel>
-              <Select
+            <TextField
+                fullWidth
+                label="System Content Type"
                 value={systemContentType || ''}
+                placeholder="Notes"
                 onChange={(event) => onChange('systemContentType', event.target.value)}
-              >
-                {/* Replace with your actual options */}
-                <MenuItem value="type1">Type1</MenuItem>
-                <MenuItem value="type2">Type2</MenuItem>
-              </Select>
-            </FormControl>
+              />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="System Content Role"
               value={systemContentRole || ''}
+              placeholder="System"
               onChange={(event) => onChange('systemContentRole', event.target.value)}
             />
           </Grid>
@@ -94,15 +92,8 @@ const LlmAgentForm: React.FC<LlmAgentFormProps> = ({
               fullWidth
               label="User Content Role"
               value={userContentRole || ''}
+              placeholder="User"
               onChange={(event) => onChange('userContentRole', event.target.value)}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="State"
-              value={state || ''}
-              onChange={(event) => onChange('state', event.target.value)}
             />
           </Grid>
           <Grid item xs={12}>

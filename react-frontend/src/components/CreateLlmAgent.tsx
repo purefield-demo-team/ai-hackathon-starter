@@ -21,7 +21,6 @@ const CreateLlmAgent: React.FC = () => {
     name: '',
     systemContentRole: '',
     userContentRole: '',
-    state: '',
   });
 
   const [refreshFilter, setRefreshFilter] = useState(false);
@@ -59,8 +58,7 @@ const CreateLlmAgent: React.FC = () => {
         description: '',
         name: '',
         systemContentRole: '',
-        userContentRole: '',
-        state: '',
+        userContentRole: ''
       });
 
       // Navigate to the agent details page or update the list
