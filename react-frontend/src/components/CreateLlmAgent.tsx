@@ -25,7 +25,7 @@ const CreateLlmAgent: React.FC = () => {
   });
 
   const [refreshFilter, setRefreshFilter] = useState(false);
-  
+
   useEffect(() => {
     setRefreshFilter(false); // Reset the refreshFilter state variable
   }, [refreshFilter]);
@@ -76,7 +76,7 @@ const CreateLlmAgent: React.FC = () => {
       <Grid item xs={12} sm={4} md={4} lg={2} className="sidebar">
         <LlmAgentsFilter keycloakSubject={userProfile?.keycloaksubject} refresh={refreshFilter} />
       </Grid>
-      <Grid item xs={12} className="main-content">
+      <Grid item xs={12} sm={8} md={8} lg={10} className="main-content">
         <Typography variant="h4" gutterBottom>
           Create LlmAgent
         </Typography>
