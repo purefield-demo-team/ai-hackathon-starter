@@ -1,0 +1,8 @@
+/* Add this to your CSS file (e.g., App.css or a new CSS file) */
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    margin-top: 50px; /* Adjust this value to move the loader further down */
+  }

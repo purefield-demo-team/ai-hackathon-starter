@@ -13,7 +13,7 @@ import { TagInput } from './TagInput';
 import { Tag } from '../models/Tag';
 import { TaskNote } from '../models/TaskNote';
 import TasksFilter from './TasksFilter';
-import { Container, Typography, Button, Box, Grid, CircularProgress } from '@mui/material';
+import { Container, Typography, Button, Box, Grid, CircularProgress, Modal } from '@mui/material';
 import { StrapiServiceResponse } from '../types/StrapiServiceResponse';
 import taskNoteService from '../services/taskNoteService';
 import NoteSelector from './NoteSelector';
@@ -24,7 +24,9 @@ import { GPTAssessment } from '../models/GPTAssessment';
 import { useTasks } from '../contexts/TaskContext';
 import { IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import "./circularProgress.css";
 import '../App.css';
+
 
 interface LocationState {
   previousRoute?: string;
@@ -51,13 +53,28 @@ const UpdateTask: React.FC = () => {
   
   const { userProfile, setUserProfile } = useUserProfile();
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAssessment, setSelectedAssessment] = useState<GPTAssessment | null>(null);
+
+  const openModal = (assessment: GPTAssessment) => {
+    setSelectedAssessment(assessment);
+    setIsModalOpen(true);
+  };
+  
+  const closeModal = () => {
+    setSelectedAssessment(null);
+    setIsModalOpen(false);
+  };
+
   const handleNoteSelection = useCallback(async (selectedNotes: Note[]) => {
     const selectedNoteIds = selectedNotes.map(note => note.id);
     const preselectedNoteIds = taskNotes.map(taskNote => taskNote.note.id);
   
     const addedNotes = selectedNotes.filter(note => !preselectedNoteIds.includes(note.id));
     const removedNotes = taskNotes.filter(taskNote => !selectedNoteIds.includes(taskNote.note.id));
-  
+
+
+
     // Handle added notes
     if(task !== null) {
       for (const addedNote of addedNotes) {
@@ -194,6 +211,30 @@ const UpdateTask: React.FC = () => {
     }
   }, [goals, goalTasks]);
   
+  const pollAssessmentStatus = async (assessmentId: number) => {
+    const pollInterval = 5000; // Poll every 5 seconds
+    const maxAttempts = 12; // Maximum number of attempts (1 minute)
+  
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        const response = await gptAssessmentService.get(assessmentId.toString());
+        if (response.data && response.data.assessment) {
+          setLatestAssessment(response.data);
+          setIsCreatingAssessment(false);
+          return;
+        }
+      } catch (error) {
+        console.error('Error polling assessment status:', error);
+      }
+  
+      // Wait for the next poll interval
+      await new Promise((resolve) => setTimeout(resolve, pollInterval));
+    }
+  
+    // If the assessment is still not populated after max attempts, stop the spinner
+    setIsCreatingAssessment(false);
+    console.error('Assessment was not populated within the expected time.');
+  };
 
   const handleUpdate = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -218,21 +259,17 @@ const UpdateTask: React.FC = () => {
   
     try {
       const response = await gptAssessmentService.create(newAssessment);
-      if (response.data) {
-        // Update the latest assessment
-        setLatestAssessment(response.data);
+      if (response.data && response.data.id !== undefined) {
+        // Poll the assessment status until it is populated
+        await pollAssessmentStatus(response.data.id);
       } else {
         console.error('Failed to create assessment:', response.error);
+        setIsCreatingAssessment(false);
       }
     } catch (error) {
       console.error('Error creating assessment:', error);
+      setIsCreatingAssessment(false);
     }
-  
-    // Stop loading animation
-    setIsCreatingAssessment(false);
-  
-    // Optionally, refresh filters or perform other actions
-    setRefreshFilter(true);
   };
 
   const handleFormChange = (field: keyof Task, value: any) => {
@@ -372,11 +409,19 @@ const UpdateTask: React.FC = () => {
         {userProfile && isDataLoaded ? (
           <>
             {isCreatingAssessment ? (
-              <CircularProgress />
+              <div className="loader-container">
+                <CircularProgress />
+              </div>
             ) : latestAssessment ? (
               <div id="latest-assessment">
                 <Typography variant="h6">Latest Assessment</Typography>
-                <Typography variant="body1">{latestAssessment.assessment}</Typography>
+                <Typography
+                  variant="body1"
+                  onClick={() => openModal(latestAssessment)}
+                  style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                >
+                  {latestAssessment.assessment}
+                </Typography>
                 {/* Display additional assessment details if needed */}
               </div>
             ) : (
@@ -384,11 +429,26 @@ const UpdateTask: React.FC = () => {
             )}
           </>
         ) : (
-          <CircularProgress />
+          <div className="loader-container">
+            <CircularProgress />
+          </div>
         )}
       </Grid>
-      
+      <Modal
+        open={isModalOpen}
+        onClose={closeModal}
+      >
+        <Box sx={{ padding: 2, backgroundColor: 'white', margin: 'auto', maxWidth: '80vw', maxHeight: '80vh', overflow: 'auto' }}>
+          <Typography variant="h6">Assessment Details</Typography>
+          <Typography variant="body1">{selectedAssessment?.assessment}</Typography>
+          {/* Display additional assessment details if needed */}
+          <Button onClick={closeModal} variant="contained" color="primary" sx={{ marginTop: 2 }}>
+            Close
+          </Button>
+        </Box>
+      </Modal>
     </Grid>
+    
   );
 
 };
