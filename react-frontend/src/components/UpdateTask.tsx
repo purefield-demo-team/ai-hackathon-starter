@@ -126,24 +126,27 @@ const UpdateTask: React.FC = () => {
   }, [tags]);
 
   useEffect(() => {
-    const fetchLatestAssessment = async () => {
-      if (!task || task.id === undefined || task.id === null) {
-        // Handle the case where task or task.id is undefined/null
-        return;
-      }
+    const fetchAssessments = async () => {
+      if (!task || !userProfile?.keycloaksubject) return;
   
-      try {
-        const response = await gptAssessmentService.get(task.id.toString());
-        if (response.data) {
-          setLatestAssessment(response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching latest assessment:', error);
+  
+      const taskFilter = task.id ? `&filters[tasks][id][$in]=${task.id}` : '';
+  
+      // Fetch assessments using the same logic as in AssessmentList.tsx
+      const response = await gptAssessmentService.getAll(
+        userProfile.keycloaksubject + taskFilter
+      );
+  
+      if (response.data && response.data.length > 0) {
+        // Set the latestAssessment to the first item in the array
+        setLatestAssessment(response.data[0]);
+      } else {
+        setLatestAssessment(null);
       }
     };
   
-    fetchLatestAssessment();
-  }, [task]);
+    fetchAssessments();
+  }, [task, userProfile]);
 
   useEffect(() => {
     const fetchTaskNotes = async () => {
@@ -374,7 +377,7 @@ const UpdateTask: React.FC = () => {
               <div id="latest-assessment">
                 <Typography variant="h6">Latest Assessment</Typography>
                 <Typography variant="body1">{latestAssessment.assessment}</Typography>
-                {/* Add more fields as needed */}
+                {/* Display additional assessment details if needed */}
               </div>
             ) : (
               <Typography variant="body1">No assessment available.</Typography>
