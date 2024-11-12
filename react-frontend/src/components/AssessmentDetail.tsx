@@ -59,7 +59,10 @@ const AssessmentDetail: React.FC = () => {
     }).format(date);
   };
 
-  function formatAssessmentText(text: string) {
+  function formatAssessmentText(text: string | undefined) {
+    if (!text) {
+      return null;
+    }
     const recommendationsPattern = /Recommendations:/;
     const taskPattern = /Task \d+/g;
     const goalPattern = /Goal \d+/g;

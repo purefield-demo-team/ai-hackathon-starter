@@ -202,14 +202,10 @@ const UpdateTask: React.FC = () => {
     // Update the task
     await taskService.update(id, task);
   
-    // Generate assessment content (replace with your actual logic)
-    const assessmentContent = `Assessment for task: ${task.title}`;
-  
-    // Create a new assessment
+    // Create a new assessment without 'assessment' field
     const newAssessment: GPTAssessment = {
       tasks: [task],
       userProfile: userProfile!,
-      assessment: assessmentContent,
       customQuestion: '', // Provide if applicable
       name: 'Assessment for Task ' + task.title,
       createDate: new Date().toISOString(),

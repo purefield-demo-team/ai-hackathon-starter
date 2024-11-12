@@ -6,7 +6,7 @@ import { Note } from './Note';
 
 export interface GPTAssessment {
     id?: number;
-    assessment: string;
+    assessment?: string;
     customQuestion: string;
     createdAt?: string;
     updatedAt?: string;
