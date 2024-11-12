@@ -36,7 +36,7 @@ const NoteListItem: React.FC<NoteListItemProps> = ({ note, onDeleteNote }) => {
     <ListItem
         disablePadding
         className={isCurrentNote ? "notes-item highlighted" : "notes-item"}
-        style={isCurrentNote ? {backgroundColor: "#e7b39ae7"} : {}}
+        style={isCurrentNote ? {backgroundColor: "#FF6666"} : {}}
         >
       <ListItemButton component={Link} to={notePath}>
         <ListItemText primary={note.name} />

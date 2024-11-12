@@ -37,10 +37,10 @@ const onKeycloakReady = () => {
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#FF6F61', // Vibrant, gender-neutral coral color
+      main: '#EE0000', // Vibrant, gender-neutral coral color
     },
     secondary: {
-      main: '#0ABAB5', // Tiffany blue color
+      main: '#000000', // Tiffany blue color
     },
   },
   typography: {

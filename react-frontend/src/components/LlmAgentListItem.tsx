@@ -27,7 +27,7 @@ const LlmAgentListItem: React.FC<LlmAgentListItemProps> = ({ agent, onDeleteAgen
     <ListItem
       disablePadding
       className={isCurrentAgent ? 'agents-item highlighted' : 'agents-item'}
-      style={isCurrentAgent ? { backgroundColor: '#e7b39ae7' } : {}}
+      style={isCurrentAgent ? { backgroundColor: '#FF6666' } : {}}
     >
       <ListItemButton component={Link} to={agentPath}>
         <ListItemText primary={agent.name} />

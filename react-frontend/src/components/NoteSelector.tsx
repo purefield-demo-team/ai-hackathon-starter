@@ -66,7 +66,6 @@ const NoteSelector: React.FC<NoteSelectorProps> = ({ notes, preSelectedNotes, on
             ))
           }
       />
-      {selectedNotes.length > 0 && <p>Last added note: {selectedNotes[selectedNotes.length - 1].name}</p>} {/* Display last selected note */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>{selectedNote?.name} 
           <IconButton onClick={() => handleEditNoteClick(selectedNote?.id ?? 0)} size="small" style={{ marginLeft: 'auto' }}>  {/* Handle edit button click */}

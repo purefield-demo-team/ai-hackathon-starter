@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import taskService from '../services/taskService';
 import { Task, TaskStatus } from '../models/Task';
@@ -47,9 +47,15 @@ const UpdateTask: React.FC = () => {
   const { selectedTasks, setSelectedTasks } = useTasks();
   const [isPrepopulated, setIsPrepopulated] = useState(true);
   const [preSelectedNotes, setPreSelectedNotes] = useState<Note[]>([]);
+  const [initialAssessmentIds, setInitialAssessmentIds] = useState<number[]>([]);
 
   const [isCreatingAssessment, setIsCreatingAssessment] = useState(false);
   const [latestAssessment, setLatestAssessment] = useState<GPTAssessment | null>(null);
+  const [displayedAssessment, setDisplayedAssessment] = useState<string>('');
+  const typingTimeoutRef = useRef<number | null>(null);
+  const previousAssessmentIdRef = useRef<number | null | undefined>(null);
+  const previousAssessmentContentRef = useRef<string | null>(null);
+
   
   const { userProfile, setUserProfile } = useUserProfile();
 
@@ -118,6 +124,55 @@ const UpdateTask: React.FC = () => {
   
     fetchTask();
   }, [id]);
+
+  const type = (text: string, index: number) => {
+    const totalDuration = 5000; // Set total duration to 50 milliseconds
+    const interval = 16; // Frame interval
+    const totalChars = text.length;
+  
+    const charsPerInterval = Math.ceil((totalChars * interval) / totalDuration);
+  
+    if (index < totalChars) {
+      const nextIndex = Math.min(index + charsPerInterval, totalChars);
+      setDisplayedAssessment(text.substring(0, nextIndex));
+      typingTimeoutRef.current = window.setTimeout(() => type(text, nextIndex), interval);
+    } else {
+      setDisplayedAssessment(text);
+      typingTimeoutRef.current = null;
+    }
+  };
+  
+
+  useEffect(() => {
+    if (latestAssessment && latestAssessment.assessment) {
+      const latestContent = latestAssessment.assessment;
+      const previousContent = previousAssessmentContentRef.current;
+  
+      if (previousContent === null) {
+        // Initial load, display assessment immediately
+        setDisplayedAssessment(latestContent);
+      } else if (latestContent !== previousContent) {
+        // New assessment detected, trigger typing effect
+        setDisplayedAssessment(''); // Reset displayed assessment
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+        }
+        type(latestContent, 0); // Start typing emulation
+      }
+      // Update the ref with the latest content
+      previousAssessmentContentRef.current = latestContent;
+    }
+  }, [latestAssessment]);
+  
+  
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
+   
   
   useEffect(() => {
     const fetchNotes = async () => {
@@ -146,10 +201,8 @@ const UpdateTask: React.FC = () => {
     const fetchAssessments = async () => {
       if (!task || !userProfile?.keycloaksubject) return;
   
-  
       const taskFilter = task.id ? `&filters[tasks][id][$in]=${task.id}` : '';
   
-      // Fetch assessments using the same logic as in AssessmentList.tsx
       const response = await gptAssessmentService.getAll(
         userProfile.keycloaksubject + taskFilter
       );
@@ -157,13 +210,23 @@ const UpdateTask: React.FC = () => {
       if (response.data && response.data.length > 0) {
         // Set the latestAssessment to the first item in the array
         setLatestAssessment(response.data[0]);
+        // Store the IDs of the assessments
+        setInitialAssessmentIds(
+          response.data
+            .map(a => a.id)
+            .filter((id): id is number => id !== undefined)
+        );
+        
       } else {
         setLatestAssessment(null);
+        // No initial assessments
+        setInitialAssessmentIds([]);
       }
     };
   
     fetchAssessments();
   }, [task, userProfile]);
+  
 
   useEffect(() => {
     const fetchTaskNotes = async () => {
@@ -211,17 +274,42 @@ const UpdateTask: React.FC = () => {
     }
   }, [goals, goalTasks]);
   
-  const pollAssessmentStatus = async (assessmentId: number) => {
+  const pollAssessmentStatus = async (existingAssessmentIds: number[]) => {
     const pollInterval = 5000; // Poll every 5 seconds
     const maxAttempts = 12; // Maximum number of attempts (1 minute)
   
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       try {
-        const response = await gptAssessmentService.get(assessmentId.toString());
-        if (response.data && response.data.assessment) {
-          setLatestAssessment(response.data);
-          setIsCreatingAssessment(false);
-          return;
+        // Fetch assessments associated with the task
+        const taskFilter = task && task.id ? `&filters[tasks][id][$in]=${task.id}` : '';
+        const response = await gptAssessmentService.getAll(
+          userProfile?.keycloaksubject + taskFilter
+        );
+  
+        if (response.data && response.data.length > 0) {
+          // Filter out assessments with undefined IDs
+          const assessmentsWithIds = response.data.filter(
+            a => a.id !== undefined
+          ) as GPTAssessment[]; // Type assertion
+  
+          // Find assessments that are not in existingAssessmentIds
+          const newAssessments = response.data.filter(
+            a => a.id !== undefined && !existingAssessmentIds.includes(a.id)
+          );
+  
+          if (newAssessments.length > 0) {
+            const latest = newAssessments[0]; // Assuming the first is the latest
+  
+            if (latest.assessment) {
+              // The assessment field is populated
+              setLatestAssessment(latest);
+              setIsCreatingAssessment(false);
+              return;
+            } else {
+              // Assessment exists but assessment field not populated yet
+              // Continue polling
+            }
+          }
         }
       } catch (error) {
         console.error('Error polling assessment status:', error);
@@ -234,43 +322,51 @@ const UpdateTask: React.FC = () => {
     // If the assessment is still not populated after max attempts, stop the spinner
     setIsCreatingAssessment(false);
     console.error('Assessment was not populated within the expected time.');
-  };
+  };  
 
   const handleUpdate = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!task) return;
+    if (!task || !userProfile) return;
   
     // Start loading animation
     setIsCreatingAssessment(true);
   
-    // Update the task
-    await taskService.update(id, task);
+    // Fetch the current assessments and store their IDs
+    let currentAssessmentIds: number[] = [];
+    try {
+      const taskFilter = task.id ? `&filters[tasks][id][$in]=${task.id}` : '';
+      const response = await gptAssessmentService.getAll(
+        userProfile.keycloaksubject + taskFilter
+      );
+      if (response.data && response.data.length > 0) {
+        currentAssessmentIds = response.data
+          .filter(a => a.id !== undefined)
+          .map(a => a.id as number);
+      }
+      
+    } catch (error) {
+      console.error('Error fetching current assessments:', error);
+    }
   
-    // Create a new assessment without 'assessment' field
-    const newAssessment: GPTAssessment = {
-      tasks: [task],
-      userProfile: userProfile!,
-      customQuestion: '', // Provide if applicable
-      name: 'Assessment for Task ' + task.title,
-      createDate: new Date().toISOString(),
-      tags: task.tags || [],
-      notes: [], // Add notes if needed
-    };
+    // Update the task
+    try {
+      await taskService.update(id, task);
+    } catch (error) {
+      console.error('Error updating task:', error);
+      setIsCreatingAssessment(false);
+      return;
+    }
   
     try {
-      const response = await gptAssessmentService.create(newAssessment);
-      if (response.data && response.data.id !== undefined) {
-        // Poll the assessment status until it is populated
-        await pollAssessmentStatus(response.data.id);
-      } else {
-        console.error('Failed to create assessment:', response.error);
-        setIsCreatingAssessment(false);
-      }
+      // Poll the assessment status until it is populated
+      await pollAssessmentStatus(currentAssessmentIds);
     } catch (error) {
-      console.error('Error creating assessment:', error);
+      console.error('Error polling assessment:', error);
       setIsCreatingAssessment(false);
     }
   };
+   
+  
 
   const handleFormChange = (field: keyof Task, value: any) => {
     if (!task) return;
@@ -353,14 +449,14 @@ const UpdateTask: React.FC = () => {
   function isTaskNote(data: any): data is TaskNote {
     return data && data.id !== undefined && typeof data.id === 'number';
   }
-  
+
 
   return (
     <Grid container>
       <Grid item xs={12} sm={4} md={4} lg={2} className="sidebar">
         <TasksFilter keycloakSubject={userProfile?.keycloaksubject} refresh={refreshFilter} />
       </Grid>
-      <Grid item xs={12} sm={4} md={4} lg={8} className="main-content">
+      <Grid item xs={12} sm={8} md={8} lg={10} className="main-content">
         
         <Typography variant="h4" gutterBottom>Update Task</Typography>
         {isDataLoaded ? <TaskForm
@@ -392,9 +488,38 @@ const UpdateTask: React.FC = () => {
           
           )}
 
+          {isCreatingAssessment ? (
+            <div className="loader-container">
+              <CircularProgress />
+            </div>
+          ) : latestAssessment ? (
+            <Box
+              sx={{
+                backgroundColor: '#34473f',
+                borderRadius: '8px',
+                padding: '16px',
+                marginTop: '16px',
+              }}
+            >
+              <Typography variant="h6" style={{ color: 'white' }}>
+                Latest Assessment
+              </Typography>
+              <Typography
+                variant="body1"
+                onClick={() => openModal(latestAssessment)}
+                style={{ cursor: 'pointer', textDecoration: 'underline', color: 'white' }}
+              >
+                {displayedAssessment}
+              </Typography>
+            </Box>
+          ) : (
+            <Typography variant="body1">No assessment available.</Typography>
+          )}
+
+
           <Grid container justifyContent="space-between" alignItems="center" mt={2}>
             <Grid item>
-              <Button variant="contained" color="secondary" type="submit">Update Task</Button>
+              <Button variant="contained" color="secondary" type="submit">Submit</Button>
             </Grid>
             <Grid item>
               <Button variant="contained" color="secondary" onClick={handleGoBack}>Previous</Button>
@@ -404,35 +529,6 @@ const UpdateTask: React.FC = () => {
          : <CircularProgress />}
         
        
-      </Grid>
-      <Grid item xs={12} sm={4} md={4} lg={2} className="right-sidebar">
-        {userProfile && isDataLoaded ? (
-          <>
-            {isCreatingAssessment ? (
-              <div className="loader-container">
-                <CircularProgress />
-              </div>
-            ) : latestAssessment ? (
-              <div id="latest-assessment">
-                <Typography variant="h6">Latest Assessment</Typography>
-                <Typography
-                  variant="body1"
-                  onClick={() => openModal(latestAssessment)}
-                  style={{ cursor: 'pointer', textDecoration: 'underline' }}
-                >
-                  {latestAssessment.assessment}
-                </Typography>
-                {/* Display additional assessment details if needed */}
-              </div>
-            ) : (
-              <Typography variant="body1">No assessment available.</Typography>
-            )}
-          </>
-        ) : (
-          <div className="loader-container">
-            <CircularProgress />
-          </div>
-        )}
       </Grid>
       <Modal
         open={isModalOpen}

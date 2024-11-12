@@ -65,7 +65,7 @@ const TaskListItem: React.FC<TaskListItemProps> = ({ task, onDeleteTask }) => {
     <ListItem
         disablePadding
         className={isCurrentTask ? "tasks-item highlighted" : "tasks-item"}
-        style={isCurrentTask ? {backgroundColor: "#e7b39ae7"} : {}}
+        style={isCurrentTask ? {backgroundColor: "#FF6666"} : {}}
     >
       <ListItemButton component={Link} to={taskPath}>
         <Tooltip title={task.status} placement="top">

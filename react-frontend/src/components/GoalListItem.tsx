@@ -29,7 +29,7 @@ const GoalListItem: React.FC<GoalListItemProps> = ({ goal, onDeleteGoal }) => {
   
   return (
     <React.Fragment>
-      <ListItem disablePadding style={isCurrentGoal ? {backgroundColor: "#e7b39ae7"} : {}}>
+      <ListItem disablePadding style={isCurrentGoal ? {backgroundColor: "#FF6666"} : {}}>
         <ListItemButton component={Link} to={goalPath}>
           <ListItemText primary={goal.title} />
           <IconButton edge="end" aria-label="delete" onClick={handleDelete}>

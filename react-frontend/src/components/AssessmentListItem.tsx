@@ -30,7 +30,7 @@ const AssessmentListItem: React.FC<AssessmentListItemProps & { openModal?: (asse
         component={openModal ? 'div' : Link}
         to={openModal ? undefined : assessmentPath}
         onClick={handleClick}
-        style={isCurrentAssessment ? {backgroundColor: "#e7b39ae7"} : {}}
+        style={isCurrentAssessment ? {backgroundColor: "#FF6666"} : {}}
     >
       <ListItemText primary={`Assessment ${index + 1} - ${formatDate(assessment.createdAt)}`} />
     </ListItem>

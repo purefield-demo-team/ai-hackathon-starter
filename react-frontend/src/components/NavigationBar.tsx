@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, IconButton, useMediaQuery, Hidden, Box, useTheme } from '@mui/material';
+import { AppBar, Toolbar, Typography, IconButton, useMediaQuery, Box, useTheme, Menu, MenuItem } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import { Link as RouterLink } from 'react-router-dom';
 import UsernameDisplay from './UsernameDisplay';
@@ -12,9 +12,9 @@ const NavigationBar: React.FC = () => {
   const { userProfile, setUserProfile } = useUserProfile();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
- 
 
   const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
     if (
@@ -24,6 +24,14 @@ const NavigationBar: React.FC = () => {
       return;
     }
     setDrawerOpen(open);
+  };
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
 
   let showSubscribeLink: boolean = true;
@@ -39,38 +47,37 @@ const NavigationBar: React.FC = () => {
   const menuItems = (
     <>
       {showSubscribeLink && (
-        <Button color="inherit" component={RouterLink} to="/subscription">
+        <MenuItem component={RouterLink} to="/subscription" onClick={handleMenuClose}>
           Subscribe
-        </Button>
+        </MenuItem>
       )}
-      <Button color="inherit" component={RouterLink} to="/create-goal">Goals</Button>
-      <Button color="inherit" component={RouterLink} to="/create-task">Tasks</Button>
-      <Button color="inherit" component={RouterLink} to="/notes">Notes</Button>
-      <Button color="inherit" component={RouterLink} to="/task-goal-assessment">Assess</Button>
-      <Button color="inherit" component={RouterLink} to="/create-llm-agent">Agents</Button>
-      <Button color="inherit" component={RouterLink} to="/create-agent-router">Agent Routers</Button>
-      <UsernameDisplay />
+      <MenuItem component={RouterLink} to="/create-goal" onClick={handleMenuClose}>Goals</MenuItem>
+      <MenuItem component={RouterLink} to="/create-task" onClick={handleMenuClose}>Tasks</MenuItem>
+      <MenuItem component={RouterLink} to="/notes" onClick={handleMenuClose}>Notes</MenuItem>
+      <MenuItem component={RouterLink} to="/task-goal-assessment" onClick={handleMenuClose}>Assess</MenuItem>
+      <MenuItem component={RouterLink} to="/create-llm-agent" onClick={handleMenuClose}>Agents</MenuItem>
+      <MenuItem component={RouterLink} to="/create-agent-router" onClick={handleMenuClose}>Agent Routers</MenuItem>
     </>
   );
 
   return (
     <AppBar position="static" color="primary">
       <Toolbar>
-      <IconButton
-        edge="start"
-        color="inherit"
-        aria-label="home"
-        component={RouterLink}
-        to="/"
-        sx={{ padding: 0 }} // Remove padding around the IconButton
-      >
-        {/* Replace HomeIcon with your logo */}
-        <img
-          src="/white-logo.svg" // Replace with the correct path to your logo.svg file
-          alt="Logo"
-          style={{ height: '36px' }} // Adjust the height as needed
-        />
-      </IconButton>
+        <IconButton
+          edge="start"
+          color="inherit"
+          aria-label="home"
+          component={RouterLink}
+          to="/"
+          sx={{ padding: 0 }} // Remove padding around the IconButton
+        >
+          {/* Replace HomeIcon with your logo */}
+          <img
+            src="/white-logo.svg" // Replace with the correct path to your logo.svg file
+            alt="Logo"
+            style={{ height: '36px' }} // Adjust the height as needed
+          />
+        </IconButton>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           
         </Typography>
@@ -86,8 +93,22 @@ const NavigationBar: React.FC = () => {
             </Drawer>
           </>
         ) : (
-          menuItems
+          <>
+            <IconButton edge="end" color="inherit" aria-label="menu" onClick={handleMenuClick}>
+              <MenuIcon />
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+            >
+              {menuItems}
+            </Menu>
+          </>
         )}
+        <Box sx={{ ml: 2 }}>
+          <UsernameDisplay />
+        </Box>
       </Toolbar>
     </AppBar>
   );
