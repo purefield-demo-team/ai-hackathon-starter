@@ -5,12 +5,12 @@ import { Task } from './Task';
 import { Note } from './Note';
 
 export interface GPTAssessment {
-    id: number;
+    id?: number;
     assessment: string;
     customQuestion: string;
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
+    createdAt?: string;
+    updatedAt?: string;
+    publishedAt?: string;
     name: string;
     createDate: string;
     userProfile?: UserProfile;

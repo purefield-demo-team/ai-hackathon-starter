@@ -19,7 +19,8 @@ import taskNoteService from '../services/taskNoteService';
 import NoteSelector from './NoteSelector';
 import noteService from '../services/noteService';
 import {Note} from '../models/Note';
-import AssessmentList from './AssessmentList';
+import gptAssessmentService from '../services/gptAssessmentService';
+import { GPTAssessment } from '../models/GPTAssessment';
 import { useTasks } from '../contexts/TaskContext';
 import { IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -44,6 +45,9 @@ const UpdateTask: React.FC = () => {
   const { selectedTasks, setSelectedTasks } = useTasks();
   const [isPrepopulated, setIsPrepopulated] = useState(true);
   const [preSelectedNotes, setPreSelectedNotes] = useState<Note[]>([]);
+
+  const [isCreatingAssessment, setIsCreatingAssessment] = useState(false);
+  const [latestAssessment, setLatestAssessment] = useState<GPTAssessment | null>(null);
   
   const { userProfile, setUserProfile } = useUserProfile();
 
@@ -122,6 +126,26 @@ const UpdateTask: React.FC = () => {
   }, [tags]);
 
   useEffect(() => {
+    const fetchLatestAssessment = async () => {
+      if (!task || task.id === undefined || task.id === null) {
+        // Handle the case where task or task.id is undefined/null
+        return;
+      }
+  
+      try {
+        const response = await gptAssessmentService.get(task.id.toString());
+        if (response.data) {
+          setLatestAssessment(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching latest assessment:', error);
+      }
+    };
+  
+    fetchLatestAssessment();
+  }, [task]);
+
+  useEffect(() => {
     const fetchTaskNotes = async () => {
       setPreselectedNotesLoading(true);
       const response = await taskNoteService.getByTaskId(id);
@@ -171,10 +195,44 @@ const UpdateTask: React.FC = () => {
   const handleUpdate = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!task) return;
-
+  
+    // Start loading animation
+    setIsCreatingAssessment(true);
+  
+    // Update the task
     await taskService.update(id, task);
-
-    // Handle successful update, e.g., show a success message or redirect
+  
+    // Generate assessment content (replace with your actual logic)
+    const assessmentContent = `Assessment for task: ${task.title}`;
+  
+    // Create a new assessment
+    const newAssessment: GPTAssessment = {
+      tasks: [task],
+      userProfile: userProfile!,
+      assessment: assessmentContent,
+      customQuestion: '', // Provide if applicable
+      name: 'Assessment for Task ' + task.title,
+      createDate: new Date().toISOString(),
+      tags: task.tags || [],
+      notes: [], // Add notes if needed
+    };
+  
+    try {
+      const response = await gptAssessmentService.create(newAssessment);
+      if (response.data) {
+        // Update the latest assessment
+        setLatestAssessment(response.data);
+      } else {
+        console.error('Failed to create assessment:', response.error);
+      }
+    } catch (error) {
+      console.error('Error creating assessment:', error);
+    }
+  
+    // Stop loading animation
+    setIsCreatingAssessment(false);
+  
+    // Optionally, refresh filters or perform other actions
     setRefreshFilter(true);
   };
 
@@ -312,7 +370,23 @@ const UpdateTask: React.FC = () => {
        
       </Grid>
       <Grid item xs={12} sm={4} md={4} lg={2} className="right-sidebar">
-        {userProfile && isDataLoaded ? <AssessmentList taskId={task.id}/> : <CircularProgress />}
+        {userProfile && isDataLoaded ? (
+          <>
+            {isCreatingAssessment ? (
+              <CircularProgress />
+            ) : latestAssessment ? (
+              <div id="latest-assessment">
+                <Typography variant="h6">Latest Assessment</Typography>
+                <Typography variant="body1">{latestAssessment.assessment}</Typography>
+                {/* Add more fields as needed */}
+              </div>
+            ) : (
+              <Typography variant="body1">No assessment available.</Typography>
+            )}
+          </>
+        ) : (
+          <CircularProgress />
+        )}
       </Grid>
       
     </Grid>

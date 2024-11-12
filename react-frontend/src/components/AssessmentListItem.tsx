@@ -7,7 +7,7 @@ import ListItemText from '@mui/material/ListItemText';
 interface AssessmentListItemProps {
   assessment: GPTAssessment;
   index: number;
-  formatDate: (dateString: string) => string;
+  formatDate: (dateString: string | undefined) => string;
 }
 
 const AssessmentListItem: React.FC<AssessmentListItemProps & { openModal?: (assessment: GPTAssessment) => void }> = ({ assessment, index, formatDate, openModal  }) => {

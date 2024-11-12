@@ -68,7 +68,10 @@ const AssessmentList: React.FC<AssessmentListProps> = ({ goalId, taskId }) => {
     fetchAssessments(userProfile?.keycloaksubject, goalId?.toString());
   }, [userProfile?.keycloaksubject, goalId, taskId, isVisible]);
   
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) {
+      return 'Unknown Date';
+    }
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeStyle: 'short' }).format(date);
   };

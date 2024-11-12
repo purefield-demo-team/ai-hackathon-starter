@@ -8,7 +8,10 @@ interface AssessmentDetailModalProps {
 
 const AssessmentDetailModal: React.FC<AssessmentDetailModalProps> = ({ assessment }) => {
   // Use the same formatDate function from AssessmentList
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | undefined) => {
+    if(!dateString || dateString === undefined) {
+      return 'Unknown Date';
+    }
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeStyle: 'short' }).format(date);
   };

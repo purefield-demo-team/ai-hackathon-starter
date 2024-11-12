@@ -12,12 +12,17 @@ const AssessmentDetail: React.FC = () => {
   const { id } = useParams();
   const [assessment, setAssessment] = useState<GPTAssessment | null>(null);
   const navigate = useNavigate();
-  const { userProfile, setUserProfile } = useUserProfile();
+  const { userProfile } = useUserProfile();
 
   useEffect(() => {
     async function fetchAssessment() {
       const response = await gptAssessmentService.get(id);
-      setAssessment(response.data);
+      if (response.data) {
+        setAssessment(response.data);
+      } else {
+        console.error('Failed to fetch assessment:', response.error);
+        // Handle errors as appropriate
+      }
     }
     fetchAssessment();
   }, [id]);
@@ -27,19 +32,31 @@ const AssessmentDetail: React.FC = () => {
   };
 
   const handleTagsChange = async (newTags: Tag[]) => {
-    if (assessment) {
-      const updatedAssessment = { tags: newTags };
-      const response = await gptAssessmentService.update(assessment.id.toString(), updatedAssessment);
-      if (response.data) {
-        setAssessment(response.data);
-      }
+    if (!assessment || assessment.id === undefined) {
+      return;
+    }
+    const updatedAssessment = { tags: newTags };
+    const response = await gptAssessmentService.update(
+      assessment.id.toString(),
+      updatedAssessment
+    );
+    if (response.data) {
+      setAssessment(response.data);
+    } else {
+      console.error('Failed to update assessment:', response.error);
+      // Handle errors as appropriate
     }
   };
-  
 
-  const formatDate = (dateString: string) => {
+  const formatAssessmentDate = (dateString: string | undefined) => {
+    if (!dateString) {
+      return 'Unknown Date';
+    }
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeStyle: 'short' }).format(date);
+    return new Intl.DateTimeFormat('en-US', {
+      dateStyle: 'long',
+      timeStyle: 'short',
+    }).format(date);
   };
 
   function formatAssessmentText(text: string) {
@@ -92,7 +109,7 @@ const AssessmentDetail: React.FC = () => {
               userProfile={userProfile}
             />
             <Typography variant="h4" component="h2" gutterBottom sx={{ paddingTop: '20px' }}>
-              {`Assessment Content on ${formatDate(assessment.createdAt)}`}
+              {`Assessment Content on ${formatAssessmentDate(assessment.createdAt)}`}
             </Typography>
             <Typography variant="h6" component="h3" gutterBottom>
               Custom Question
