@@ -14,6 +14,7 @@ import { Tag } from '../models/Tag';
 import { TaskNote } from '../models/TaskNote';
 import TasksFilter from './TasksFilter';
 import { Container, Typography, Button, Box, Grid, CircularProgress, Modal } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { StrapiServiceResponse } from '../types/StrapiServiceResponse';
 import taskNoteService from '../services/taskNoteService';
 import NoteSelector from './NoteSelector';
@@ -55,6 +56,8 @@ const UpdateTask: React.FC = () => {
   const typingTimeoutRef = useRef<number | null>(null);
   const previousAssessmentIdRef = useRef<number | null | undefined>(null);
   const previousAssessmentContentRef = useRef<string | null>(null);
+
+  const [isAssessmentVisible, setIsAssessmentVisible] = useState(true);
 
   
   const { userProfile, setUserProfile } = useUserProfile();
@@ -145,6 +148,7 @@ const UpdateTask: React.FC = () => {
 
   useEffect(() => {
     if (latestAssessment && latestAssessment.assessment) {
+      setIsAssessmentVisible(true);
       const latestContent = latestAssessment.assessment;
       const previousContent = previousAssessmentContentRef.current;
   
@@ -172,6 +176,15 @@ const UpdateTask: React.FC = () => {
       }
     };
   }, []);
+
+  const handleClearAssessment = () => {
+    setIsAssessmentVisible(false);
+    setDisplayedAssessment('');
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = null;
+    }
+  };  
    
   
   useEffect(() => {
@@ -457,7 +470,7 @@ const UpdateTask: React.FC = () => {
         <TasksFilter keycloakSubject={userProfile?.keycloaksubject} refresh={refreshFilter} />
       </Grid>
       <Grid item xs={12} sm={8} md={8} lg={10} className="main-content">
-        
+        <TagInput task={task} onTagsChange={handleTagsChange} userProfile={userProfile} />
         <Typography variant="h4" gutterBottom>Update Task</Typography>
         {isDataLoaded ? <TaskForm
           task={task}
@@ -468,7 +481,7 @@ const UpdateTask: React.FC = () => {
           onGoalsChange={handleGoalsChange}
           showGoalsDropdown={true}
         >
-          <TagInput task={task} onTagsChange={handleTagsChange} userProfile={userProfile} />
+         
           {(!preSelectedNotesLoading) && (
             <Grid container direction="row" alignItems="center">
               <Grid item xs>
@@ -492,15 +505,29 @@ const UpdateTask: React.FC = () => {
             <div className="loader-container">
               <CircularProgress />
             </div>
-          ) : latestAssessment ? (
+          ) : latestAssessment && isAssessmentVisible ? (
             <Box
               sx={{
                 backgroundColor: '#34473f',
                 borderRadius: '8px',
                 padding: '16px',
                 marginTop: '16px',
+                position: 'relative', // Enable absolute positioning inside the box
               }}
             >
+              {/* Close IconButton */}
+              <IconButton
+                aria-label="close"
+                onClick={handleClearAssessment}
+                sx={{
+                  position: 'absolute',
+                  right: 8,
+                  top: 8,
+                  color: 'white',
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
               <Typography variant="h6" style={{ color: 'white' }}>
                 Latest Assessment
               </Typography>
@@ -515,6 +542,7 @@ const UpdateTask: React.FC = () => {
           ) : (
             <Typography variant="body1">No assessment available.</Typography>
           )}
+
 
 
           <Grid container justifyContent="space-between" alignItems="center" mt={2}>

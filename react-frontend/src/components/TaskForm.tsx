@@ -3,7 +3,8 @@ import { Goal } from '../models/Goal';
 import { GoalTask } from '../models/GoalTask';
 import { Task, TaskStatus } from '../models/Task';
 import MUIQuillEditor from './MUIQuillEditor';
-import { Button, TextField, FormControl, InputLabel, Select, MenuItem, Box, Grid, CircularProgress, SelectChangeEvent, Divider } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Button, TextField, FormControl, Typography, InputLabel, Select, MenuItem, Box, Grid, CircularProgress, SelectChangeEvent, Divider, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 
 type TaskFormProps = {
   task: Partial<Task>;
@@ -38,6 +39,18 @@ const TaskForm: React.FC<TaskFormProps> = ({
   });
   
   const [allSelected, setAllSelected] = useState<boolean>(!selectedGoals.length);
+  const [expanded, setExpanded] = useState<boolean>(false);
+
+  const handleAccordionChange = (event: React.SyntheticEvent, isExpanded: boolean) => {
+    setExpanded(isExpanded);
+  };
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    setExpanded(false); // Close the accordion on submit
+    onSubmit(event);    // Call the onSubmit prop passed from UpdateTask.tsx
+  };
+
   // useEffect(() => {
   //   if (goals && goalTasks) {
   //     const initialSelectedGoals = goals.filter((goal) =>
@@ -99,8 +112,10 @@ const TaskForm: React.FC<TaskFormProps> = ({
     return input;
   };
 
+  
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={handleSubmit}>
+
       <Box component="div" className="form-container">
        
       <Grid container spacing={2}>
@@ -150,51 +165,65 @@ const TaskForm: React.FC<TaskFormProps> = ({
               />
             
           </Grid>
-          <Grid item xs={12} sm={12}>
-            <div>&nbsp;</div>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Due Date"
-              type="datetime-local"
-              value={dueDate ? formatDateForInput(dueDate) : ""}
-              onChange={(event) => onChange("dueDate", event.target.value)}
-              InputLabelProps={{ shrink: true }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Start Date"
-              type="datetime-local"
-              value={startDate ? formatDateForInput(startDate) : ""}
-              onChange={(event) => onChange("startDate", event.target.value)}
-              InputLabelProps={{ shrink: true }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Close Date"
-              type="datetime-local"
-              value={closeDate ? formatDateForInput(closeDate) : ""}
-              onChange={(event) => onChange("closeDate", event.target.value)}
-              InputLabelProps={{ shrink: true }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth>
-              <InputLabel>Status</InputLabel>
-              <Select
-                value={status}
-                onChange={(event) => onChange('status', event.target.value as TaskStatus)}
+          <Grid item xs={12}>
+            <Accordion expanded={expanded} onChange={handleAccordionChange}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="additional-fields-content"
+                id="additional-fields-header"
               >
-                <MenuItem value="not started">Not Started</MenuItem>
-                <MenuItem value="in progress">In Progress</MenuItem>
-                <MenuItem value="completed">Completed</MenuItem>
-              </Select>
-            </FormControl>
+                <Typography>Additional Fields</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Grid container spacing={2}>
+                  {/* Date Fields */}
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Due Date"
+                      type="datetime-local"
+                      value={dueDate ? formatDateForInput(dueDate) : ""}
+                      onChange={(event) => onChange("dueDate", event.target.value)}
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Start Date"
+                      type="datetime-local"
+                      value={startDate ? formatDateForInput(startDate) : ""}
+                      onChange={(event) => onChange("startDate", event.target.value)}
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Close Date"
+                      type="datetime-local"
+                      value={closeDate ? formatDateForInput(closeDate) : ""}
+                      onChange={(event) => onChange("closeDate", event.target.value)}
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  </Grid>
+                  {/* Status Field */}
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <InputLabel>Status</InputLabel>
+                      <Select
+                        value={status}
+                        onChange={(event) => onChange('status', event.target.value as TaskStatus)}
+                      >
+                        <MenuItem value="not started">Not Started</MenuItem>
+                        <MenuItem value="in progress">In Progress</MenuItem>
+                        <MenuItem value="completed">Completed</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                </Grid>
+              </AccordionDetails>
+            </Accordion>
           </Grid>
           <Grid item xs={12}>
             {children}
