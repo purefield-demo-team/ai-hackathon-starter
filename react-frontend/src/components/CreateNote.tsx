@@ -1,6 +1,7 @@
 // src/components/CreateNote.tsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useFetchData } from '../hooks/useFetchData';
 import noteService from '../services/noteService';
 import { useUserProfile } from '../contexts/UserProfileContext';
@@ -20,7 +21,14 @@ import TaskNoteService from '../services/taskNoteService';
 import { TaskNote } from '../models/TaskNote';
 import { StrapiServiceResponse } from '../types/StrapiServiceResponse';
 
+interface LocationState {
+  previousRoute?: string;
+}
+
+
 const CreateNote: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [name, setName] = useState('');
   const [tags, setTags] = useState<Tag[]>([]);
   const [richText, setRichText] = useState('');
@@ -180,6 +188,15 @@ const CreateNote: React.FC = () => {
   //   }
   // };
 
+  const handleGoBack = () => {
+    const previousRoute = (location.state as LocationState)?.previousRoute;
+    if (previousRoute) {
+      navigate(previousRoute);
+    } else {
+      navigate(-1); // Fallback to navigate back in history if previousRoute is not available
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     //setAutoSave(true); // Start auto-saving when user submits the form for the first time
@@ -212,6 +229,14 @@ const CreateNote: React.FC = () => {
           </NoteForm>
           <div>&nbsp;</div>
           <NoteTagInput note={note} keycloakSubject={userProfile?.keycloaksubject} onTagsChange={handleTagsChange} />
+          <Grid container justifyContent="space-between" alignItems="center" mt={2}>
+            <Grid item>
+              <Button variant="contained" color="secondary" type="submit">Submit</Button>
+            </Grid>
+            <Grid item>
+              <Button variant="contained" color="secondary" onClick={handleGoBack}>Previous</Button>
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
       

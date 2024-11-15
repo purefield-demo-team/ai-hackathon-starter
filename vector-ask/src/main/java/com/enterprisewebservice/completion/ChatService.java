@@ -182,7 +182,7 @@ public class ChatService {
 
         systemContentBuilder.append("\n\nNotes:\n\"\"\"\n").append(articles).append("\n\"\"\"");
 
-        systemContentBuilder.append("\n\nMore Info: The Question above should be answered by giving me extra information about each of the items discussed. Don't just paste the question content back, do some research with the articles I gave you as well as your knowledge and give me a comprehensive response.");
+        systemContentBuilder.append("\n\nMore Info: The Question above should be answered by giving me extra information about each of the items discussed. Don't just paste the question content back, do some research with the articles I gave you as well as your knowledge and give me a comprehensive response in Markdown Formatting.");
 
         String systemContent = systemContentBuilder.toString();
 

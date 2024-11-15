@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import noteService from '../services/noteService';
 import { Note } from '../models/Note';
 import { useUserProfile } from '../contexts/UserProfileContext';
@@ -17,7 +17,12 @@ import { StrapiServiceResponse } from '../types/StrapiServiceResponse';
 import taskNoteService from '../services/taskNoteService';
 import { TaskNote } from '../models/TaskNote';
 
+interface LocationState {
+  previousRoute?: string;
+}
+
 const UpdateNote: React.FC = () => {
+  const location = useLocation();
   const { id } = useParams();
   const [tags, setTags] = useState<Tag[]>([]);
   const navigate = useNavigate();
@@ -149,7 +154,12 @@ const UpdateNote: React.FC = () => {
   };
   
   const handleGoBack = () => {
-    navigate('/create-note');
+    const previousRoute = (location.state as LocationState)?.previousRoute;
+    if (previousRoute) {
+      navigate(previousRoute);
+    } else {
+      navigate(-1); // Fallback to navigate back in history if previousRoute is not available
+    }
   };
 
   if (!note) {
