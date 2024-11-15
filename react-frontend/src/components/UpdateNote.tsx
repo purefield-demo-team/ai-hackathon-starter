@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import noteService from '../services/noteService';
 import { Note } from '../models/Note';
@@ -10,7 +10,7 @@ import NotesFilter from './NotesFilter';
 import { useTasks } from '../contexts/TaskContext';
 import TaskSelector from '../components/TaskSelector';
 import { Task } from '../models/Task';
-import { Container, Typography, Button, Box, Grid } from '@mui/material';
+import { Container, Typography, Button, Box, Grid, CircularProgress } from '@mui/material';
 import '../App.css';
 import taskService from '../services/taskService';
 import { StrapiServiceResponse } from '../types/StrapiServiceResponse';
@@ -33,6 +33,10 @@ const UpdateNote: React.FC = () => {
   const [preSelectedTasks, setPreSelectedTasks] = useState<Task[]>([]);
   const [allTasks, setAllTasks] = useState<Task[]>([]);
   const [taskNotes, setTaskNotes] = useState<TaskNote[]>([]);
+
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [saveMessage, setSaveMessage] = useState('');
 
   useEffect(() => {
     const fetchNote = async () => {
@@ -92,16 +96,39 @@ const UpdateNote: React.FC = () => {
     if (!note) return;
 
     await noteService.update(id, note);
-
+    setIsSaving(false);
+    setSaveMessage('All changes saved');
+    setTimeout(() => setSaveMessage(''), 3000); 
     // Handle successful update, e.g., show a success message or redirect
   };
 
+
   useEffect(() => {
-    // Auto-save when note state changes
-    if(autoSave) {
-      handleUpdate();
+    if (!autoSave) return;
+    // Clear the previous timeout if it exists
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
     }
-  }, [note, autoSave, handleUpdate]);
+
+    debounceTimeoutRef.current = setTimeout(() => {
+      const saveNote = async () => {
+        setIsSaving(true);
+        
+        handleUpdate();
+      
+      };
+      saveNote();
+      // Clear the timeout reference after saving
+      debounceTimeoutRef.current = null;
+    }, 1000); // Debounce delay in milliseconds (adjust as needed)
+
+     // Cleanup function to clear timeout on unmount
+     return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, [note, tags]);
 
   useEffect(() => {
     // Fetch all tasks on component mount
@@ -180,6 +207,23 @@ const UpdateNote: React.FC = () => {
               onTagsChange={handleTagsChange}
             />
           ) : null}
+          {/* Display saving indicator or saved message */}
+          {(isSaving || saveMessage) && (
+            <Box display="flex" alignItems="center" mb={2}>
+              {isSaving ? (
+                <>
+                  <CircularProgress size={20} />
+                  <Typography variant="body2" ml={1}>
+                    Saving...
+                  </Typography>
+                </>
+              ) : (
+                <Typography variant="body2" color="green">
+                  {saveMessage}
+                </Typography>
+              )}
+            </Box>
+          )}
           <NoteForm
             note={ note }
             onSubmit={handleUpdate}

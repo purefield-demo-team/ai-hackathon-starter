@@ -11,7 +11,7 @@ import { Tag } from '../models/Tag';
 import NotesFilter from './NotesFilter';
 import { NoteTagInput } from './NoteTagInput';
 import TaskSelector from './TaskSelector';
-import { Container, Typography, Grid, Button, Box } from '@mui/material';
+import { Container, Typography, Grid, Button, Box, CircularProgress } from '@mui/material';
 import NoteForm from './NoteForm';
 import {Task} from '../models/Task';
 import { useTasks } from '../contexts/TaskContext';
@@ -30,6 +30,7 @@ const CreateNote: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [name, setName] = useState('');
+  const [saveMessage, setSaveMessage] = useState('');
   const [tags, setTags] = useState<Tag[]>([]);
   const [richText, setRichText] = useState('');
   const [id, setId] = useState<number | undefined>(undefined);
@@ -42,6 +43,9 @@ const CreateNote: React.FC = () => {
   const [recordedAt, setRecordedAt] = useState<string | undefined>(localISOTime.substring(0,16));
   const { keycloak } = useKeycloak();
   const { userProfile, setUserProfile } = useUserProfile();
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const [isSaving, setIsSaving] = useState<boolean>(false);
   
 
   const note: Note = {
@@ -129,29 +133,54 @@ const CreateNote: React.FC = () => {
 
    // This effect runs when name or richText change, triggering auto-save
    useEffect(() => {
-    const saveNote = async () => {
-      if (!autoSave) return;
-      let response;
-      if (!id) {
-        response = await noteService.create(note);
-        if (response.data && response.data.id) {
-         
-          setId(response.data.id);
+    if (!autoSave) return;
+    // Clear the previous timeout if it exists
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    debounceTimeoutRef.current = setTimeout(() => {
+      const saveNote = async () => {
+        setIsSaving(true);
+        let response;
+        if (!id) {
+          response = await noteService.create(note);
+          if (response.data && response.data.id) {
           
-          if (!name) {
-            setName(`Untitled-${response.data.id}`); // set the name if it's not set
+            setId(response.data.id);
+            setIsSaving(false);
+            if (!name) {
+              setName(`Untitled-${response.data.id}`); // set the name if it's not set
+            }
           }
+        } else {
+          response = await noteService.update(id.toString(), note);
+          setIsSaving(false);
         }
-      } else {
-        response = await noteService.update(id.toString(), note);
-      }
-      if (!response.data) {
-        // Handle error
-        console.error("Error saving note");
+        if (!response.data) {
+          // Handle error
+          console.error("Error saving note");
+          setIsSaving(false);
+        }
+        else{
+          setSaveMessage('All changes saved');
+          setTimeout(() => setSaveMessage(''), 3000); 
+        }
+        setIsSaving(false);
+      };
+      saveNote();
+      // Clear the timeout reference after saving
+      debounceTimeoutRef.current = null;
+    }, 1000); // Debounce delay in milliseconds (adjust as needed)
+
+     // Cleanup function to clear timeout on unmount
+     return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
       }
     };
-    saveNote();
   }, [name, richText, tags, recordedAt]);
+  
 
   const handleFormChange = (field: keyof Note, value: any) => {
     switch (field) {
@@ -211,6 +240,23 @@ const CreateNote: React.FC = () => {
         <Grid item xs={12} sm={8} md={8} lg={10} className="main-content">
           <Typography variant="h4" gutterBottom>Create Note</Typography>
           
+          {/* Display saving indicator or saved message */}
+          {(isSaving || saveMessage) && (
+            <Box display="flex" alignItems="center" mb={2}>
+              {isSaving ? (
+                <>
+                  <CircularProgress size={20} />
+                  <Typography variant="body2" ml={1}>
+                    Saving...
+                  </Typography>
+                </>
+              ) : (
+                <Typography variant="body2" color="green">
+                  {saveMessage}
+                </Typography>
+              )}
+            </Box>
+          )}
 
           <NoteForm
             note={{ name, richText, recordedAt }}
@@ -231,7 +277,7 @@ const CreateNote: React.FC = () => {
           <NoteTagInput note={note} keycloakSubject={userProfile?.keycloaksubject} onTagsChange={handleTagsChange} />
           <Grid container justifyContent="space-between" alignItems="center" mt={2}>
             <Grid item>
-              <Button variant="contained" color="secondary" type="submit">Submit</Button>
+             
             </Grid>
             <Grid item>
               <Button variant="contained" color="secondary" onClick={handleGoBack}>Previous</Button>

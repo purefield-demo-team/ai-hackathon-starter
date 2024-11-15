@@ -47,8 +47,8 @@ const NavigationBar: React.FC = () => {
   const menuItems = (
     <>
       <MenuItem component={RouterLink} to="/" onClick={handleMenuClose}>Dashboard</MenuItem>
-      <MenuItem component={RouterLink} to="/create-goal" onClick={handleMenuClose}>Goals</MenuItem>
       <MenuItem component={RouterLink} to="/create-task" onClick={handleMenuClose}>Tasks</MenuItem>
+      <MenuItem component={RouterLink} to="/create-goal" onClick={handleMenuClose}>Goals</MenuItem>
       <MenuItem component={RouterLink} to="/notes" onClick={handleMenuClose}>Notes</MenuItem>
       <MenuItem disabled component={RouterLink} to="/create-llm-agent" onClick={handleMenuClose}>Agents</MenuItem>
       <MenuItem disabled component={RouterLink} to="/create-agent-router" onClick={handleMenuClose}>Agent Routers</MenuItem>
