@@ -42,7 +42,7 @@ const tagService = {
         };
         return result;
       }
-      const response = await api.get(`/tags?filters[userProfile][keycloaksubject][$eq]=${keycloakSubject}&filters[name][$eq]=${name}`);
+      const response = await api.get(`/tags?filters[userProfile][keycloaksubject][$eq]=${keycloakSubject}&filters[name][$containsi]=${name}`);
       //const response = await api.get(`/tasks`);
       const result: StrapiServiceResponse<Tag[]> = { data: response.data.data, error: null };
       return result;

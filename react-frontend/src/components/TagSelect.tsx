@@ -24,7 +24,7 @@ export const TagSelect: React.FC<TagSelectProps> = ({ tags, selectedTags, onSele
         onChange={handleChange}
         value={selectedTags} // Add this line
         renderInput={(params) => (
-          <TextField {...params} label="Filter by tags" placeholder="Select tags to filter goals" />
+          <TextField {...params} label="Filter by tags" placeholder="Select tags to filter" />
         )}
       />
     </Box>

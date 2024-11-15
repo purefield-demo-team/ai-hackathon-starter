@@ -11,8 +11,8 @@ const goalTaskService = {
   getByGoalId: async (id: number | undefined, showCompleted: boolean): Promise<StrapiServiceResponse<GoalTask[]>> => {
     try {
       const currentDate = new Date().toISOString();
-      const completedFilter = showCompleted ? '' : `&filters[status][$ne]=completed`;
-      const sortOrder = `&sort[0]=task.status%3Aasc&sort[1]=task.dueDate%3C${encodeURIComponent(currentDate)}%3Adesc&sort[2]=task.dueDate%3Aasc`;
+      const completedFilter = showCompleted ? '' : `&filters[task][status][$ne]=completed`;
+      const sortOrder = `&sort[0]=task.status%3Aasc&sort[1]=task.dueDate%3Adesc&sort[2]=task.dueDate%3Aasc`;
       if (!id) {
         const result: StrapiServiceResponse<GoalTask[]> = {
           data: null,

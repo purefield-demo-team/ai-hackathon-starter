@@ -23,7 +23,9 @@ import {Note} from '../models/Note';
 import gptAssessmentService from '../services/gptAssessmentService';
 import { GPTAssessment } from '../models/GPTAssessment';
 import { useTasks } from '../contexts/TaskContext';
+import ReactMarkdown from 'react-markdown';
 import { IconButton } from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import AddIcon from '@mui/icons-material/Add';
 import "./circularProgress.css";
 import '../App.css';
@@ -512,7 +514,7 @@ const UpdateTask: React.FC = () => {
                 borderRadius: '8px',
                 padding: '16px',
                 marginTop: '16px',
-                position: 'relative', // Enable absolute positioning inside the box
+                position: 'relative',
               }}
             >
               {/* Close IconButton */}
@@ -528,6 +530,22 @@ const UpdateTask: React.FC = () => {
               >
                 <CloseIcon />
               </IconButton>
+
+              {/* Refresh IconButton */}
+              <IconButton
+                aria-label="refresh"
+                onClick={handleUpdate}
+                sx={{
+                  position: 'absolute',
+                  right: 48,
+                  top: 8,
+                  color: 'white',
+                }}
+              >
+                <RefreshIcon />
+              </IconButton>
+
+              {/* Rest of your content */}
               <Typography variant="h6" style={{ color: 'white' }}>
                 Latest Assessment
               </Typography>
@@ -536,9 +554,10 @@ const UpdateTask: React.FC = () => {
                 onClick={() => openModal(latestAssessment)}
                 style={{ cursor: 'pointer', textDecoration: 'underline', color: 'white' }}
               >
-                {displayedAssessment}
+                <ReactMarkdown>{displayedAssessment}</ReactMarkdown>
               </Typography>
             </Box>
+
           ) : (
             <Typography variant="body1">No assessment available.</Typography>
           )}
@@ -564,7 +583,7 @@ const UpdateTask: React.FC = () => {
       >
         <Box sx={{ padding: 2, backgroundColor: 'white', margin: 'auto', maxWidth: '80vw', maxHeight: '80vh', overflow: 'auto' }}>
           <Typography variant="h6">Assessment Details</Typography>
-          <Typography variant="body1">{selectedAssessment?.assessment}</Typography>
+          <Typography variant="body1"><ReactMarkdown>{selectedAssessment?.assessment}</ReactMarkdown></Typography>
           {/* Display additional assessment details if needed */}
           <Button onClick={closeModal} variant="contained" color="primary" sx={{ marginTop: 2 }}>
             Close

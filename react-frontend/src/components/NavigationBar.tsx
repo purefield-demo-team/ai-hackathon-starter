@@ -46,17 +46,12 @@ const NavigationBar: React.FC = () => {
 
   const menuItems = (
     <>
-      {showSubscribeLink && (
-        <MenuItem component={RouterLink} to="/subscription" onClick={handleMenuClose}>
-          Subscribe
-        </MenuItem>
-      )}
+      <MenuItem component={RouterLink} to="/" onClick={handleMenuClose}>Dashboard</MenuItem>
       <MenuItem component={RouterLink} to="/create-goal" onClick={handleMenuClose}>Goals</MenuItem>
       <MenuItem component={RouterLink} to="/create-task" onClick={handleMenuClose}>Tasks</MenuItem>
       <MenuItem component={RouterLink} to="/notes" onClick={handleMenuClose}>Notes</MenuItem>
-      <MenuItem component={RouterLink} to="/task-goal-assessment" onClick={handleMenuClose}>Assess</MenuItem>
-      <MenuItem component={RouterLink} to="/create-llm-agent" onClick={handleMenuClose}>Agents</MenuItem>
-      <MenuItem component={RouterLink} to="/create-agent-router" onClick={handleMenuClose}>Agent Routers</MenuItem>
+      <MenuItem disabled component={RouterLink} to="/create-llm-agent" onClick={handleMenuClose}>Agents</MenuItem>
+      <MenuItem disabled component={RouterLink} to="/create-agent-router" onClick={handleMenuClose}>Agent Routers</MenuItem>
     </>
   );
 

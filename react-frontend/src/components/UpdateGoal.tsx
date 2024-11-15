@@ -321,7 +321,7 @@ const UpdateGoal: React.FC = () => {
         <Box mt={4}>
           <Grid container justifyContent="center">
             <Grid item xs={12} md={8}>
-              <TasksFilter keycloakSubject={userProfile?.keycloaksubject} goal={goal} addTaskButton={addTaskButton} refresh={refreshFilter} />
+              <TasksFilter keycloakSubject={userProfile?.keycloaksubject} goal={goal} refresh={refreshFilter} />
             </Grid>
           </Grid>
         </Box>

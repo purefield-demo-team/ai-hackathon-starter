@@ -4,8 +4,12 @@ import { Task } from '../models/Task';
 import { Tag } from '../models/Tag';
 import tagService from '../services/tagService';
 import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
-import { AutocompleteInputChangeReason } from '@mui/material';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import {
+  AutocompleteInputChangeReason,
+  AutocompleteChangeReason,
+  AutocompleteChangeDetails,
+} from '@mui/material';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 import { UserProfile } from '../models/UserProfile';
@@ -17,81 +21,139 @@ interface TagInputProps {
   userProfile: UserProfile | null | undefined;
 }
 
-export const TagInput: React.FC<TagInputProps> = ({ goal, task, onTagsChange, userProfile }) => {
+type OptionType = Tag; // Your Tag type
+
+const filter = createFilterOptions<OptionType>();
+
+export const TagInput: React.FC<TagInputProps> = ({
+  goal,
+  task,
+  onTagsChange,
+  userProfile,
+}) => {
   const [inputValue, setInputValue] = useState('');
-  const [tags, setTags] = useState<Tag[]>(goal ? goal.tags : task ? task.tags : []);
+  const [tags, setTags] = useState<(OptionType | string)[]>(
+    goal ? goal.tags : task ? task.tags : []
+  );
+  const [options, setOptions] = useState<OptionType[]>([]); // Options for autocomplete
 
   useEffect(() => {
-    onTagsChange(tags);
+    // Filter out strings (new tags not yet created) when passing to onTagsChange
+    const onlyTags = tags.filter((tag): tag is Tag => typeof tag !== 'string');
+    onTagsChange(onlyTags);
   }, [tags]);
 
-  const handleInputChange = async (event: React.SyntheticEvent<Element, Event>, value: string, reason: AutocompleteInputChangeReason) => {
-    setInputValue(value);
+  // Fetch tags matching the input value
+  useEffect(() => {
+    let active = true;
 
-    if (value.endsWith(',')) {
-      const tagName = value.slice(0, -1).trim();
-      if (tagName) {
-        const existingTag = tags.find(tag => tag.name.toLowerCase() === tagName.toLowerCase());
-
-        if (!existingTag) {
-          const response = await tagService.findByName(userProfile?.keycloaksubject, tagName);
-
-          if (response.data && response.data.length > 0) {
-            const updatedTags = [...tags, response.data[0]];
-            if (JSON.stringify(tags) !== JSON.stringify(updatedTags)) {
-              setTags(updatedTags);
-            }
-          } else {
-            const newTag: Tag = {
-              name: tagName,
-              userProfile: userProfile || undefined, // Use the passed userProfile
-            };
-            const createdTagResponse = await tagService.create(newTag);
-
-            if (createdTagResponse.data) {
-              const updatedTags = [...tags, createdTagResponse.data];
-              if (JSON.stringify(tags) !== JSON.stringify(updatedTags)) {
-                setTags(updatedTags);
-              }
-            }
-          }
-        }
-      }
-
-      setInputValue('');
+    if (inputValue === '') {
+      setOptions([]);
+      return undefined;
     }
+
+    (async () => {
+      const response = await tagService.findByName(userProfile?.keycloaksubject, inputValue);
+      if (active && response.data) {
+        setOptions(response.data);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [inputValue]);
+
+  const handleInputChange = (
+    event: React.SyntheticEvent<Element, Event>,
+    value: string,
+    reason: AutocompleteInputChangeReason
+  ) => {
+    setInputValue(value);
+  };
+
+  const handleChange = async (
+    event: React.SyntheticEvent<Element, Event>,
+    value: (OptionType | string)[],
+    reason: AutocompleteChangeReason,
+    details?: AutocompleteChangeDetails<OptionType | string>
+  ) => {
+    const newTags: (OptionType | string)[] = [];
+    for (const item of value) {
+      if (typeof item === 'string') {
+        // This is a new tag (string value), create it
+        const newTag: Tag = {
+          name: item,
+          userProfile: userProfile || undefined,
+        };
+        const createdTagResponse = await tagService.create(newTag);
+        if (createdTagResponse.data) {
+          newTags.push(createdTagResponse.data);
+        }
+      } else {
+        // Existing tag
+        newTags.push(item);
+      }
+    }
+    setTags(newTags);
   };
 
   return (
     <Box paddingBottom={2}>
-      <Autocomplete
+      <Autocomplete<OptionType, true, undefined, true>
         multiple
         freeSolo
-        options={[]}
+        options={options}
         value={tags}
         inputValue={inputValue}
-        onChange={(event, value: (string | Tag)[]) => {
-          console.log("executing onChange for tags");
-          // Filter out non-Tag objects
-          const filteredTags = value.filter((v): v is Tag => v instanceof Object);
-        
-          // Check if the filtered tags are actually different from the current tags
-          const currentTagNames = tags.map(tag => tag.name).sort().join(',');
-          const newTagNames = filteredTags.map(tag => tag.name).sort().join(',');
-        
-          if (currentTagNames !== newTagNames) {
-            // Only update state if there's a difference
-            setTags(filteredTags);
-          }
-        }}
+        onChange={handleChange}
         onInputChange={handleInputChange}
-        renderTags={(value: Tag[], getTagProps) =>
-          value.map((tag, index) => (
-            <Chip label={tag.name} {...getTagProps({ index })} />
+        filterOptions={(options, params) => {
+          const filtered = filter(options, params);
+
+          // Suggest the creation of a new tag
+          const { inputValue } = params;
+          const isExisting = options.some(
+            (option) => option.name.toLowerCase() === inputValue.toLowerCase()
+          );
+
+          if (inputValue !== '' && !isExisting) {
+            filtered.push({
+              name: inputValue,
+            } as OptionType);
+          }
+
+          return filtered;
+        }}
+        getOptionLabel={(option) => {
+          // For new tags (strings), display the string
+          if (typeof option === 'string') {
+            return option;
+          }
+          // For existing tags, display the tag name
+          return option.name;
+        }}
+        renderOption={(props, option) => (
+          <li {...props}>
+            {typeof option === 'string' ? `Add "${option}"` : option.name}
+          </li>
+        )}
+        isOptionEqualToValue={(option, value) => {
+          if (typeof option === 'string' || typeof value === 'string') {
+            return false;
+          }
+          return option.id === value.id;
+        }}
+        renderTags={(value: (OptionType | string)[], getTagProps) =>
+          value.map((option, index) => (
+            <Chip
+              label={typeof option === 'string' ? option : option.name}
+              {...getTagProps({ index })}
+            />
           ))
         }
         renderInput={(params) => (
-          <TextField {...params} label="Tags" placeholder="Enter tags separated by commas" />
+          <TextField {...params} label="Tags" placeholder="Enter tags" />
         )}
       />
     </Box>
