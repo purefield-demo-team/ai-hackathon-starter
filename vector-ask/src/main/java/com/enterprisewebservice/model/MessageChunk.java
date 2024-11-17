@@ -1,5 +1,7 @@
 package com.enterprisewebservice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 public class MessageChunk {
     private Long id;
     private String text;
@@ -8,6 +10,7 @@ public class MessageChunk {
     
     private Integer noteIndex;
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public MessageChunk() {
     }
 
