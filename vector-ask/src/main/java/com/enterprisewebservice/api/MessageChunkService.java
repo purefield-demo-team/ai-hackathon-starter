@@ -62,6 +62,11 @@ public class MessageChunkService {
     public MessageChunk initializeMessageChunk(Document doc)
     {
         String noteIdString = doc.getString("title"); 
+        System.out.println("noteIdString: " + noteIdString);
+        String index = doc.getString("index");
+        System.out.println("index: " + index);
+        String subject = doc.getString("subject");
+        String description = doc.getString("description");
         MessageChunk messageChunk = new MessageChunk();
             if(noteIdString != null && noteIdString.matches("-?\\d+"))
             {
@@ -72,9 +77,9 @@ public class MessageChunkService {
                      // Assuming the object has a method for getting the data
                     Note note = result.getData();
                     messageChunk.setNote(note);
-                    messageChunk.setKeycloakSubject(doc.getString("subject"));
-                    messageChunk.setText(doc.getString("description"));
-                    String index = doc.getString("index");
+                    messageChunk.setKeycloakSubject(subject);
+                    messageChunk.setText(description);
+                    
                     if(index != null && index.matches("-?\\d+"))
                     {
                         messageChunk.setNoteIndex(Integer.parseInt(index));
