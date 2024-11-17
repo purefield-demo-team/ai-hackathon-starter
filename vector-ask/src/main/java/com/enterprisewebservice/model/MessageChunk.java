@@ -2,6 +2,7 @@ package com.enterprisewebservice.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MessageChunk {
     private Long id;
     private String text;
