@@ -93,7 +93,7 @@ public class MessageChunkService {
 
                
         }
-        create(messageChunk)
+        create(messageChunk);
         return messageChunk;
     }
 }
