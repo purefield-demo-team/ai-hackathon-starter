@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "message_chunks",
+  "info": {
+    "singularName": "message-chunk",
+    "pluralName": "message-chunks",
+    "displayName": "MessageChunk"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "text": {
+      "type": "text"
+    },
+    "note": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::note.note"
+    },
+    "noteIndex": {
+      "type": "integer"
+    },
+    "keycloaksubject": {
+      "type": "string"
+    }
+  }
+}

@@ -45,6 +45,11 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::note.note"
+    },
+    "messageChunks": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::message-chunk.message-chunk"
     }
   }
 }

@@ -935,6 +935,11 @@ export interface ApiGptAssessmentGptAssessment extends Schema.CollectionType {
       'oneToMany',
       'api::note.note'
     >;
+    messageChunks: Attribute.Relation<
+      'api::gpt-assessment.gpt-assessment',
+      'oneToMany',
+      'api::message-chunk.message-chunk'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1022,6 +1027,43 @@ export interface ApiLlmAgentNodeLlmAgentNode extends Schema.CollectionType {
       Attribute.Private;
     updatedBy: Attribute.Relation<
       'api::llm-agent-node.llm-agent-node',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiMessageChunkMessageChunk extends Schema.CollectionType {
+  collectionName: 'message_chunks';
+  info: {
+    singularName: 'message-chunk';
+    pluralName: 'message-chunks';
+    displayName: 'MessageChunk';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    text: Attribute.Text;
+    note: Attribute.Relation<
+      'api::message-chunk.message-chunk',
+      'oneToOne',
+      'api::note.note'
+    >;
+    noteIndex: Attribute.Integer;
+    keycloaksubject: Attribute.String;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::message-chunk.message-chunk',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::message-chunk.message-chunk',
       'oneToOne',
       'admin::user'
     > &
@@ -1233,6 +1275,7 @@ declare module '@strapi/types' {
       'api::gpt-assessment.gpt-assessment': ApiGptAssessmentGptAssessment;
       'api::llm-agent.llm-agent': ApiLlmAgentLlmAgent;
       'api::llm-agent-node.llm-agent-node': ApiLlmAgentNodeLlmAgentNode;
+      'api::message-chunk.message-chunk': ApiMessageChunkMessageChunk;
       'api::note.note': ApiNoteNote;
       'api::tag.tag': ApiTagTag;
       'api::task.task': ApiTaskTask;
