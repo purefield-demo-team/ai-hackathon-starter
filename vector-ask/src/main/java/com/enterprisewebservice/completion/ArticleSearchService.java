@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import com.enterprisewebservice.RedisSearchIndexer;
+import com.enterprisewebservice.api.MessageChunkService;
 import com.enterprisewebservice.embeddings.EmbeddingData;
 import com.enterprisewebservice.embeddings.EmbeddingResponse;
 import com.enterprisewebservice.embeddings.EmbeddingService;
@@ -34,13 +35,16 @@ public class ArticleSearchService {
     @Inject
     RedisSearchIndexer redisSearchIndexer;
 
+    @Inject
+    MessageChunkService messageChunkService;
+
     public String searchArticles(String keycloakSubject, EmbeddingResponse queryEmbedding, int topN) throws Exception {
     
         // Search in Redis and get the embeddings
         List<Document> results = redisSearchIndexer.vectorSimilarityQuery(keycloakSubject, queryEmbedding);
         StringBuffer message = new StringBuffer();
 
-        List<MessageChunk> messageChunks = redisSearchIndexer.getMessage(results);
+        List<MessageChunk> messageChunks = redisSearchIndexer.getMessageChunks(results, messageChunkService);
         if(messageChunks.size() == 0) {
             return "No articles found";
         }

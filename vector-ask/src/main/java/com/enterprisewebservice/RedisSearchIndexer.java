@@ -35,9 +35,6 @@ import redis.clients.jedis.search.schemafields.VectorField;
 
 public class RedisSearchIndexer {
 
-    @Inject
-    MessageChunkService messageChunkService;
-
     private JedisPooled jedis;
     private JedisPool jedisPool;
     private static final String VECTOR_DIM = "1536";
@@ -288,7 +285,7 @@ public class RedisSearchIndexer {
                      .collect(Collectors.toList());
     }
 
-    public List<MessageChunk> getMessage(List<Document> documents) {
+    public List<MessageChunk> getMessageChunks(List<Document> documents, MessageChunkService messageChunkService) {
         // Convert the search results to a list of EmbeddingData
         List<MessageChunk> messageChunks = new ArrayList<>();
         
