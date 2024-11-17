@@ -50,4 +50,5 @@ public class VllmCompletionRequest {
     public void setTemperature(double temperature) {
         this.temperature = temperature;
     }
+
 }

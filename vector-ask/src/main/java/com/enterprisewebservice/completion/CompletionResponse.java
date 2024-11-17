@@ -11,6 +11,7 @@ public class CompletionResponse {
     
 
     private List<Choice> choices;
+    private ArticleSearchResults articleSearchResults;
 
     // getters and setters
 
@@ -28,6 +29,14 @@ public class CompletionResponse {
 
     public void setChoices(List<Choice> choices) {
         this.choices = choices;
+    }
+
+    public ArticleSearchResults getArticleSearchResults() {
+        return articleSearchResults;
+    }
+
+    public void setArticleSearchResults(ArticleSearchResults articleSearchResults) {
+        this.articleSearchResults = articleSearchResults;
     }
 }
 

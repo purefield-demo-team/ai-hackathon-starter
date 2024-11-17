@@ -60,7 +60,7 @@ public class ChatService {
         EmbeddingResponse embeddingResponse = embeddingService.generateEmbeddings(List.of(query));
 
         // Search for related articles
-       String articles = null;
+       ArticleSearchResults articles = null;
         try {
             articles = articleSearchService.searchArticles(keycloakSubject, embeddingResponse, topN);
         } catch (Exception e) {
@@ -72,7 +72,7 @@ public class ChatService {
         StringBuilder message = new StringBuilder();
         message.append("You answer questions about Tasks, Goals and Notes. Use the below information to answer the subsequent question. If the answer cannot be found in the notes, write \"I could not find an answer.\"");
         
-        message.append("\n\nNotes:\n\"\"\"\n").append(articles).append("\n\"\"\"");
+        message.append("\n\nNotes:\n\"\"\"\n").append(articles.getMessageSummary()).append("\n\"\"\"");
         
         message.append("\n\nQuestion: ").append(query);
 
@@ -86,7 +86,7 @@ public class ChatService {
         ));
 
         CompletionResponse completionResponse = completionClient.createCompletion(completionRequest);
-
+        completionResponse.setArticleSearchResults(articles);
         // Extract and return the completion
         return completionResponse;
     }
@@ -165,22 +165,18 @@ public class ChatService {
         EmbeddingResponse embeddingResponse = embeddingService.generateEmbeddings(List.of(query));
 
         // Search for related articles
-        String articles = null;
+        ArticleSearchResults articles = null;
         try {
             articles = articleSearchService.searchArticles(keycloakSubject, embeddingResponse, topN);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        if (articles == null || articles.isEmpty()) {
-            articles = "No relevant articles found.";
-        }
-
         // Construct the system message content
         StringBuilder systemContentBuilder = new StringBuilder();
         systemContentBuilder.append("You answer questions about Tasks, Goals and Notes. Use the below information to answer the subsequent question. If the answer cannot be found in the notes, write \"I could not find an answer.\"");
 
-        systemContentBuilder.append("\n\nNotes:\n\"\"\"\n").append(articles).append("\n\"\"\"");
+        systemContentBuilder.append("\n\nNotes:\n\"\"\"\n").append(articles.getMessageSummary()).append("\n\"\"\"");
 
         systemContentBuilder.append("\n\nMore Info: The Question above should be answered by giving me extra information about each of the items discussed. Don't just paste the question content back, do some research with the articles I gave you as well as your knowledge and give me a comprehensive response in Markdown Formatting.");
 
@@ -217,7 +213,7 @@ public class ChatService {
         CompletionResponse completionResponse = null;
         try {
             completionResponse = vllmCompletionClient.createCompletion(jsonPayload);
-            
+            completionResponse.setArticleSearchResults(articles);
         } catch (WebApplicationException e) {
             Response response = e.getResponse();
             String errorBody = response.readEntity(String.class);

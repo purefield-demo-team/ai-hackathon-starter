@@ -103,6 +103,7 @@ public class GPTAssessmentService {
         gptAssessment.setTasks(Collections.singletonList(task));
         gptAssessment.setUserProfile(task.getUserProfile());
         gptAssessment.setCompletionId(assessment.getId());
+        gptAssessment.setMessageChunks(assessment.getArticleSearchResults().getMessageChunks());
         create(gptAssessment);
     }
     

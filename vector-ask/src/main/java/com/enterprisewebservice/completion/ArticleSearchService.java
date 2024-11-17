@@ -38,16 +38,18 @@ public class ArticleSearchService {
     @Inject
     MessageChunkService messageChunkService;
 
-    public String searchArticles(String keycloakSubject, EmbeddingResponse queryEmbedding, int topN) throws Exception {
-    
+    public ArticleSearchResults searchArticles(String keycloakSubject, EmbeddingResponse queryEmbedding, int topN) throws Exception {
+        ArticleSearchResults articleSearchResults = new ArticleSearchResults();
         // Search in Redis and get the embeddings
         List<Document> results = redisSearchIndexer.vectorSimilarityQuery(keycloakSubject, queryEmbedding);
         StringBuffer message = new StringBuffer();
 
         List<MessageChunk> messageChunks = redisSearchIndexer.getMessageChunks(results, messageChunkService);
         if(messageChunks.size() == 0) {
-            return "No articles found";
+            articleSearchResults.setMessageSummary("No articles found");
+            return articleSearchResults;
         }
+        articleSearchResults.setMessageChunks(messageChunks);
         int i = 0;
         while(i < messageChunks.size() && message.length() < 7500) {
             // Get the index, object, and embedding from the document
@@ -69,9 +71,9 @@ public class ArticleSearchService {
             }
             i++;
         }
-         
+        articleSearchResults.setMessageSummary(message.toString());
         // Get the articles from the results
-        return message.toString();
+        return articleSearchResults;
 
     }
 
