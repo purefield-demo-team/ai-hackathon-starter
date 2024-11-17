@@ -4,15 +4,22 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.enterprisewebservice.api.MessageChunkService;
+import com.enterprisewebservice.api.NoteService;
 import com.enterprisewebservice.embeddings.EmbeddingData;
 import com.enterprisewebservice.embeddings.EmbeddingResponse;
+import com.enterprisewebservice.model.MessageChunk;
+import com.enterprisewebservice.model.Note;
+import com.enterprisewebservice.model.StrapiServiceResponse;
 
+import jakarta.inject.Inject;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPooled;
 import redis.clients.jedis.exceptions.JedisDataException;
@@ -27,6 +34,10 @@ import redis.clients.jedis.search.schemafields.VectorField;
 
 
 public class RedisSearchIndexer {
+
+    @Inject
+    MessageChunkService messageChunkService;
+
     private JedisPooled jedis;
     private JedisPool jedisPool;
     private static final String VECTOR_DIM = "1536";
@@ -277,32 +288,24 @@ public class RedisSearchIndexer {
                      .collect(Collectors.toList());
     }
 
-    public String getMessage(List<Document> documents) {
+    public List<MessageChunk> getMessage(List<Document> documents) {
         // Convert the search results to a list of EmbeddingData
-        StringBuffer message = new StringBuffer();
+        List<MessageChunk> messageChunks = new ArrayList<>();
         
         int i = 0;
         System.out.println("Number of documents: " + documents.size());
         // While there are still documents and the message doesn't exceed the limit
-        while (i < documents.size() && message.length() < 7500) {
+        while (i < documents.size()) {
             Document doc = documents.get(i);
             
-            // Get the index, object, and embedding from the document
-            String title = "article " + i + ": " + doc.getString("title");
-            String description = "description: " + doc.getString("description");
-            String part = title + "\n" + description + "\n";
-            System.out.println(part);
-            // Check if adding the next part would exceed the limit
-            if (message.length() + part.length() <= 7500) {
-                // If it wouldn't, append the part
-                message.append(part);
-            }
+            MessageChunk messageChunk = messageChunkService.initializeMessageChunk(doc);
 
+            messageChunks.add(messageChunk);
             // Increment the index
             i++;
         }
         
-        return message.toString();
+        return messageChunks;
     }
 
 

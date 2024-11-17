@@ -2,16 +2,17 @@ package com.enterprisewebservice.model;
 
 public class MessageChunk {
     private Long id;
-    private String message;
+    private String text;
     private String keycloakSubject;
-    private Long noteid;
+    private Note note;
+    
     private Integer noteIndex;
 
     public MessageChunk() {
     }
 
-    public MessageChunk(String message, String keycloakSubject) {
-        this.message = message;
+    public MessageChunk(String text, String keycloakSubject) {
+        this.text = text;
         this.keycloakSubject = keycloakSubject;
     }
 
@@ -23,13 +24,22 @@ public class MessageChunk {
         this.id = id;
     }
 
-    public String getMessage() {
-        return message;
+    public String getText() {
+        return text;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setText(String text) {
+        this.text = text;
     }
+
+    public Note getNote() {
+        return note;
+    }
+
+    public void setNote(Note note) {
+        this.note = note;
+    }
+
 
     public String getKeycloakSubject() {
         return keycloakSubject;
@@ -39,16 +49,8 @@ public class MessageChunk {
         this.keycloakSubject = keycloakSubject;
     }
 
-    public Long getNoteid() {
-        return noteid;
-    }
-
     public Integer getNoteIndex() {
         return noteIndex;
-    }
-
-    public void setNoteid(Long noteid) {
-        this.noteid = noteid;
     }
 
     public void setNoteIndex(Integer noteIndex) {

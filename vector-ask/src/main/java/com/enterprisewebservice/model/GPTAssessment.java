@@ -16,8 +16,15 @@ public class GPTAssessment {
     private Date updatedAt;
     private Date createDate;
     private String completionId;
+    private List<MessageChunk> messageChunks;
     
     
+    public List<MessageChunk> getMessageChunks() {
+        return messageChunks;
+    }
+    public void setMessageChunks(List<MessageChunk> messageChunks) {
+        this.messageChunks = messageChunks;
+    }
     public Date getCreateDate() {
         return createDate;
     }
