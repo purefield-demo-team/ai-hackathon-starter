@@ -49,6 +49,7 @@ public class MessageChunkService {
         try {
             System.out.println("creating chunk: " + messageChunk);
             String response = apiClient.post("/message-chunks", messageChunk);
+            System.out.println("message chunk creation response: " + response);
             MessageChunk resultData = objectMapper.readValue(response, MessageChunk.class);
             System.out.println("created message chunk: " + resultData.getId());
             return new StrapiServiceResponse<>(resultData, null);
@@ -92,6 +93,7 @@ public class MessageChunkService {
 
                
         }
-        return create(messageChunk).getData();
+        create(messageChunk)
+        return messageChunk;
     }
 }
