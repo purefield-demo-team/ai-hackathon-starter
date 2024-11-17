@@ -263,7 +263,7 @@ public class RedisSearchIndexer {
                                         //.addParam("subject", keycloakSubject.replaceAll("-", ""))
                                         .addParam("vector", queryVector)
                                         .setSortBy("__" + vectorKey + "_score", true)
-                                        .returnFields("title", "description", "__" + vectorKey + "_score", "subjectsearch")
+                                        .returnFields("title", "description", "index",  "__" + vectorKey + "_score", "subjectsearch")
                                         .dialect(2);
             //Query searchQuery = new Query(hybridFields);
             searchQuery.setWithScores();

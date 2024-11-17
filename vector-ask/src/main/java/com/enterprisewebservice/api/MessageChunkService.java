@@ -65,7 +65,7 @@ public class MessageChunkService {
         System.out.println("noteIdString: " + noteIdString);
         String index = doc.getString("index");
         System.out.println("index: " + index);
-        String subject = doc.getString("subject");
+        String subject = doc.getString("subjectsearch");
         String description = doc.getString("description");
         MessageChunk messageChunk = new MessageChunk();
             if(noteIdString != null && noteIdString.matches("-?\\d+"))
