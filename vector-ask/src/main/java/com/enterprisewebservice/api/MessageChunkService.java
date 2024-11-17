@@ -12,6 +12,7 @@ import com.enterprisewebservice.model.MessageChunk;
 import com.enterprisewebservice.model.Note;
 import com.enterprisewebservice.model.StrapiServiceResponse;
 import com.enterprisewebservice.model.Task;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -50,9 +51,10 @@ public class MessageChunkService {
             System.out.println("creating chunk: " + messageChunk);
             String response = apiClient.post("/message-chunks", messageChunk);
             System.out.println("message chunk creation response: " + response);
-            MessageChunk resultData = objectMapper.readValue(response, MessageChunk.class);
-            System.out.println("created message chunk: " + resultData.getId());
-            return new StrapiServiceResponse<>(resultData, null);
+            StrapiServiceResponse<MessageChunk> resultData = objectMapper.readValue(response, new TypeReference<StrapiServiceResponse<MessageChunk>>() {});
+            
+            System.out.println("created message chunk: " + resultData.getData().getId());
+            return resultData;
         } catch (Exception e) {
             ErrorResponse error = new ErrorResponse(500, "Internal Server Error", e.getMessage());
             System.out.println("error creating message chunk: " + error.getData().toString());
@@ -93,7 +95,7 @@ public class MessageChunkService {
 
                
         }
-        create(messageChunk);
-        return messageChunk;
+        StrapiServiceResponse<MessageChunk> resultData = create(messageChunk);
+        return resultData.getData();
     }
 }
