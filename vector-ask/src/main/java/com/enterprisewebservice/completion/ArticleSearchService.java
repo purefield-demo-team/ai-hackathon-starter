@@ -51,9 +51,16 @@ public class ArticleSearchService {
         int i = 0;
         while(i < messageChunks.size() && message.length() < 7500) {
             // Get the index, object, and embedding from the document
-            String title = "article " + i + ": " + messageChunks.get(i).getNote().getName();
+            String part = "";
+            if(messageChunks.get(i).getNote() != null)
+            {
+                String title = "article " + i + ": " + messageChunks.get(i).getNote().getName();
+                
+                part = title;
+            }
+            
             String description = "description: " + messageChunks.get(i).getText();
-            String part = title + "\n" + description + "\n";
+            part = part + "\n" + description + "\n";
             System.out.println(part);
             // Check if adding the next part would exceed the limit
             if (message.length() + part.length() <= 7500) {
