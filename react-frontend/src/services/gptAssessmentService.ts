@@ -8,7 +8,7 @@ import { ErrorResponse } from '../types/ErrorResponse';
 import { Tag } from '../models/Tag';
 
 const gptAssessmentService = {
-  getAll: async (keycloakSubjectAndGoalFilter: string | undefined): Promise<StrapiServiceResponse<GPTAssessment[]>> => {
+  getAll: async (keycloakSubjectAndGoalFilter: string | undefined, limit: number): Promise<StrapiServiceResponse<GPTAssessment[]>> => {
     try {
       if (!keycloakSubjectAndGoalFilter) {
         const result: StrapiServiceResponse<GPTAssessment[]> = {
@@ -21,7 +21,8 @@ const gptAssessmentService = {
         };
         return result;
       }
-      const response = await api.get(`/gpt-assessments?filters[userProfile][keycloaksubject][$eq]=${keycloakSubjectAndGoalFilter}&pagination[page]=1&pagination[pageSize]=15&sort[0]=createdAt%3Adesc`);
+      const paginationLimit: string = limit ? '&pagination[limit]=' + limit : '&pagination[limit]=15';
+      const response = await api.get(`/gpt-assessments?populate[0]=tasks&populate[1]=messageChunks&filters[userProfile][keycloaksubject][$eq]=${keycloakSubjectAndGoalFilter}&pagination[start]=0${paginationLimit}&sort[0]=createdAt%3Adesc`);
       const result: StrapiServiceResponse<GPTAssessment[]> = { data: response.data.data, error: null };
       return result;
     } catch (error) {

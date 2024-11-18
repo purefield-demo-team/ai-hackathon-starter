@@ -58,7 +58,7 @@ const AssessmentList: React.FC<AssessmentListProps> = ({ goalId, taskId }) => {
   const fetchAssessments = async (subject: string | undefined, goalId: string | undefined) => {
     const goalFilter = goalId ? `&filters[goal][id][$eq]=${goalId}` : '&filters[goal][id][$null]=true';
     const taskFilter = taskId ? `&filters[tasks][id][$in]=${taskId}` : null;
-    const response = await gptAssessmentService.getAll(subject + goalFilter + (taskFilter ? taskFilter : ''));
+    const response = await gptAssessmentService.getAll(subject + goalFilter + (taskFilter ? taskFilter : ''), 1);
     if (response.data) {
       setAssessments(response.data);
     }

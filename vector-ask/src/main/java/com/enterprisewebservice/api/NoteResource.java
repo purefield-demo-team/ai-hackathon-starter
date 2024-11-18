@@ -236,7 +236,7 @@ public class NoteResource {
     }
 
 
-    @POST
+    @DELETE
     @Path("/delete-embedding")
     public Response deleteNoteIndex(StrapiEventPayload payload) {
         try {

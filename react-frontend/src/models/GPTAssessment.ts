@@ -3,6 +3,7 @@ import { Goal } from './Goal';
 import { Tag } from './Tag';
 import { Task } from './Task';
 import { Note } from './Note';
+import { MessageChunk } from './MessageChunk';
 
 export interface GPTAssessment {
     id?: number;
@@ -18,5 +19,6 @@ export interface GPTAssessment {
     tags: Tag[];
     tasks: Task[];
     notes: Note[];
+    messageChunks: MessageChunk[];
 }
   

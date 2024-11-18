@@ -26,6 +26,7 @@ import { useTasks } from '../contexts/TaskContext';
 import ReactMarkdown from 'react-markdown';
 import { IconButton } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import ReferenceSelector from './ReferenceSelector';
 import AddIcon from '@mui/icons-material/Add';
 import "./circularProgress.css";
 import '../App.css';
@@ -152,6 +153,7 @@ const UpdateTask: React.FC = () => {
     if (latestAssessment && latestAssessment.assessment) {
       setIsAssessmentVisible(true);
       const latestContent = latestAssessment.assessment;
+
       const previousContent = previousAssessmentContentRef.current;
   
       if (previousContent === null) {
@@ -187,7 +189,17 @@ const UpdateTask: React.FC = () => {
       typingTimeoutRef.current = null;
     }
   };  
-   
+  
+  const addReferences = () => {
+    const references = latestAssessment?.messageChunks;
+    if (!references) return;
+  
+    const referencesText = references.map((ref, index) => {
+      return `${index + 1}.`;
+    });
+  
+    return referencesText.join('\n');
+  };
   
   useEffect(() => {
     const fetchNotes = async () => {
@@ -219,7 +231,7 @@ const UpdateTask: React.FC = () => {
       const taskFilter = task.id ? `&filters[tasks][id][$in]=${task.id}` : '';
   
       const response = await gptAssessmentService.getAll(
-        userProfile.keycloaksubject + taskFilter
+        userProfile.keycloaksubject + taskFilter,1
       );
   
       if (response.data && response.data.length > 0) {
@@ -298,7 +310,7 @@ const UpdateTask: React.FC = () => {
         // Fetch assessments associated with the task
         const taskFilter = task && task.id ? `&filters[tasks][id][$in]=${task.id}` : '';
         const response = await gptAssessmentService.getAll(
-          userProfile?.keycloaksubject + taskFilter
+          userProfile?.keycloaksubject + taskFilter, 1
         );
   
         if (response.data && response.data.length > 0) {
@@ -351,7 +363,7 @@ const UpdateTask: React.FC = () => {
     try {
       const taskFilter = task.id ? `&filters[tasks][id][$in]=${task.id}` : '';
       const response = await gptAssessmentService.getAll(
-        userProfile.keycloaksubject + taskFilter
+        userProfile.keycloaksubject + taskFilter,1
       );
       if (response.data && response.data.length > 0) {
         currentAssessmentIds = response.data
@@ -556,6 +568,11 @@ const UpdateTask: React.FC = () => {
               >
                 <ReactMarkdown>{displayedAssessment}</ReactMarkdown>
               </Typography>
+
+              {/* References */}
+              {latestAssessment.messageChunks && latestAssessment.messageChunks.length > 0 && (
+                <ReferenceSelector messageChunks={latestAssessment.messageChunks} />
+              )}
             </Box>
 
           ) : (
