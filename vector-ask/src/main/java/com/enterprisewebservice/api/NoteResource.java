@@ -241,6 +241,7 @@ public class NoteResource {
     public Response deleteNoteIndex(StrapiEventPayload payload) {
         try {
            if (payload == null || !payload.getModel().equals("note")) {
+            System.out.println("Payload: " + payload.toString());
                 return Response.status(Response.Status.BAD_REQUEST).entity("Payload is not a note").build();
             }
             System.out.println("Payload: " + payload.toString());
