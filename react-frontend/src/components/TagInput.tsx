@@ -32,15 +32,13 @@ export const TagInput: React.FC<TagInputProps> = ({
   userProfile,
 }) => {
   const [inputValue, setInputValue] = useState('');
-  const [tags, setTags] = useState<(OptionType | string)[]>(
+  const [tags, setTags] = useState<OptionType[]>(
     goal ? goal.tags : task ? task.tags : []
   );
   const [options, setOptions] = useState<OptionType[]>([]); // Options for autocomplete
 
   useEffect(() => {
-    // Filter out strings (new tags not yet created) when passing to onTagsChange
-    const onlyTags = tags.filter((tag): tag is Tag => typeof tag !== 'string');
-    onTagsChange(onlyTags);
+    onTagsChange(tags);
   }, [tags]);
 
   // Fetch tags matching the input value
@@ -72,18 +70,33 @@ export const TagInput: React.FC<TagInputProps> = ({
     setInputValue(value);
   };
 
-  const handleChange = async (
+  const handleChange: (
     event: React.SyntheticEvent<Element, Event>,
     value: (OptionType | string)[],
     reason: AutocompleteChangeReason,
     details?: AutocompleteChangeDetails<OptionType | string>
+  ) => Promise<void> = async (
+    event,
+    value,
+    reason,
+    details
   ) => {
-    const newTags: (OptionType | string)[] = [];
+    const newTags: OptionType[] = [];
     for (const item of value) {
       if (typeof item === 'string') {
         // This is a new tag (string value), create it
         const newTag: Tag = {
           name: item,
+          userProfile: userProfile || undefined,
+        };
+        const createdTagResponse = await tagService.create(newTag);
+        if (createdTagResponse.data) {
+          newTags.push(createdTagResponse.data);
+        }
+      } else if (!item.id) {
+        // New tag object without id
+        const newTag: Tag = {
+          name: item.name,
           userProfile: userProfile || undefined,
         };
         const createdTagResponse = await tagService.create(newTag);
