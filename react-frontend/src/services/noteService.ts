@@ -151,7 +151,7 @@ const noteService = {
         return result;
       }
 
-      await api.delete(`https://vector-ask.aimlworkbench.com/notes/delete-embedding`, { data: {model:'note', entry: {id: id}} });
+      await api.delete(`https://vector-ask.aimlworkbench.com/notes/delete-embedding`, { "data": {"model":"note", "entry": {"id": id}} });
   
       const result: StrapiServiceResponse<boolean> = { data: true, error: null };
       return result;
