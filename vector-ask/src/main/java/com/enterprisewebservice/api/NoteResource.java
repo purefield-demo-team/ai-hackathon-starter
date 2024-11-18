@@ -236,11 +236,12 @@ public class NoteResource {
     }
 
 
-    @DELETE
+    @POST
     @Path("/delete-embedding")
     public Response deleteNoteIndex(StrapiEventPayload payload) {
         try {
-           if (payload == null || !payload.getModel().equals("note")) {
+            System.out.println("Payload in delete embedding: " + payload.toString());
+           if (payload == null || !payload.getModel().equals("note") && payload.getEvent().equals("entry.delete")) {
             System.out.println("Payload: " + payload.toString());
                 return Response.status(Response.Status.BAD_REQUEST).entity("Payload is not a note").build();
             }
@@ -248,11 +249,11 @@ public class NoteResource {
             Note note = (Note) (payload.getEntry());
             Long id = note.getId();
             
-            StrapiServiceResponse<Note> result = noteService.getNote(id);
+            //StrapiServiceResponse<Note> result = noteService.getNote(id);
 
             // Assuming the object has a method for getting the data
 
-            String keycloakSubject = result.getData().getUserProfile().getKeycloaksubject();
+            //String keycloakSubject = result.getData().getUserProfile().getKeycloaksubject();
 
             // Assuming the object has a method for getting the data
            
