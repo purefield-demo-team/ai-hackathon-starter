@@ -176,6 +176,11 @@ public class NoteResource {
             // Create the index
             redisSearchIndexer.createIndex();
             List<String> chunks = ChunkingService.chunkObject(note.getName() + " " + note.getRichText());
+            if(chunks != null) {
+                note.setChunks(chunks.size());
+            }
+            noteService.update(note);
+           
             System.out.println("Before Embedding response");
             //EmbeddingResponse embeddingResponse = awsBedrockService.invokeTitanEmbedding(chunks);
             
@@ -258,7 +263,7 @@ public class NoteResource {
             // Assuming the object has a method for getting the data
            
             // Index the embeddings
-            redisSearchIndexer.deleteEmbedding(id.toString());
+            redisSearchIndexer.deleteEmbedding(id.toString(), note);
 
             return Response.ok(id).build(); // returns the note object
 

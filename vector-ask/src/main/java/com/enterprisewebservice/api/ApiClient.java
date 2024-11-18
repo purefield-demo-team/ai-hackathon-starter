@@ -77,6 +77,30 @@ public class ApiClient {
         return response.body();
     }
 
+    public String put(String path, Object object) throws Exception {
+        
+        JsonNode jsonNode = objectMapper.valueToTree(object);
+        Map<String, JsonNode> dataObject = new HashMap<>();
+        dataObject.put("data", jsonNode);
+       
+        String jsonString = objectMapper.writeValueAsString(dataObject);
+        System.out.println("jsonString: " + jsonString);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(strapiHost + "/api" + path))
+                .header("Authorization", lookupBearerToken())
+                .header("Content-Type", MediaType.APPLICATION_JSON)
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonString))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != 200) {
+            System.out.println("HTTP error code : " + response.toString());
+            throw new Exception("HTTP error code : " + response.statusCode());
+        }
+        return response.body();
+    }
+
     public String delete(String path) throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(strapiHost + "/api" + path))

@@ -195,8 +195,8 @@ public class RedisSearchIndexer {
     }
 
 
-    public void deleteEmbedding(String customKey) {
-        for (int i = 0; i < 5; i++) {
+    public void deleteEmbedding(String customKey, Note note) {
+        for (int i = 0; i < (note.getChunks() != null ? note.getChunks() : 5); i++) {
             String key = customKey + "-" + i;
             System.out.println("Deleting key: " + key);
             jedis.del(key.getBytes());

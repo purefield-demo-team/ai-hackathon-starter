@@ -14,6 +14,7 @@ public class Note {
     private Date recordedAt;
     private UserProfile userProfile;
     private List<Tag> tags;
+    private Integer chunks;
 
     public Long getId() {
         return id;
@@ -50,5 +51,12 @@ public class Note {
     }
     public void setTags(List<Tag> tags) {
         this.tags = tags;
+    }
+
+    public Integer getChunks() {
+        return chunks;
+    }
+    public void setChunks(Integer chunks) {
+        this.chunks = chunks;
     }
 }

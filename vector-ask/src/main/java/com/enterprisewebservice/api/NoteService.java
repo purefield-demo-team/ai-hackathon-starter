@@ -1,6 +1,7 @@
 package com.enterprisewebservice.api;
 
 import com.enterprisewebservice.model.ErrorResponse;
+import com.enterprisewebservice.model.GPTAssessment;
 import com.enterprisewebservice.model.Note;
 import com.enterprisewebservice.model.StrapiServiceResponse;
 import com.enterprisewebservice.model.Tag;
@@ -68,6 +69,20 @@ public class NoteService {
         }
         return objectMapper.readValue(response, objectMapper.getTypeFactory().constructParametricType(StrapiServiceResponse.class, objectMapper.getTypeFactory().constructCollectionType(List.class, Note.class)));
 
+    }
+
+    public StrapiServiceResponse<Note> update(Note note) {
+        try {
+            System.out.println("updating note: " + note);
+            String response = apiClient.put("/notes", note);
+            Note resultData = objectMapper.readValue(response, Note.class);
+            System.out.println("created gpt assessment: " + resultData.getId());
+            return new StrapiServiceResponse<>(resultData, null);
+        } catch (Exception e) {
+            ErrorResponse error = new ErrorResponse(500, "Internal Server Error", e.getMessage());
+            System.out.println("error creating gpt assessment: " + error.getData().toString());
+            return new StrapiServiceResponse<>(null, error);
+        }
     }
 
     // Note: For methods requiring POST, PUT and DELETE, you will have to implement similar methods in ApiClient and use them here.
