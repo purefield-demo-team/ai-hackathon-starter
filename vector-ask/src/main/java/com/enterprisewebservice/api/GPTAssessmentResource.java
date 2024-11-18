@@ -108,7 +108,7 @@ public class GPTAssessmentResource {
             // Assuming the object has a method for getting the data
            
             // Index the embeddings
-            redisSearchIndexer.deleteEmbedding(id.toString());
+            redisSearchIndexer.deleteEmbedding(id.toString(), result.getData());
 
             return Response.ok(id).build(); // returns the note object
 
