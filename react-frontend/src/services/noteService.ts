@@ -136,6 +136,30 @@ const noteService = {
       return result;
     }
   },
+  deleteEmbedding: async (id: number | undefined): Promise<StrapiServiceResponse<boolean>> => {
+    try {
+
+      if (!id) {
+        const result: StrapiServiceResponse<boolean> = {
+          data: null,
+          error: {
+            status: 400,
+            statusText: 'Bad Request',
+            data: { message: 'Note ID is undefined' },
+          },
+        };
+        return result;
+      }
+
+      await api.delete(`https://vector-ask.aimlworkbench.com/notes/delete-embedding`, { data: {model:'note', entry: {id: id}} });
+  
+      const result: StrapiServiceResponse<boolean> = { data: true, error: null };
+      return result;
+    } catch (error) {
+      const result: StrapiServiceResponse<boolean> = { data: false, error: error as ErrorResponse };
+      return result;
+    }
+  },
   uploadImage: async (imageFile: Blob, metadata: Record<string, any> = {}): Promise<StrapiServiceResponse<any>> => {
     try {
       const formData = new FormData();

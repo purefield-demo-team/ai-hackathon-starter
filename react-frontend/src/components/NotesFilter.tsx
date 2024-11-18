@@ -69,9 +69,17 @@ const NotesFilter: React.FC<NotesFilterProps> = ({ keycloakSubject }) => {
       const result = await noteService.delete(id);
       if (!result.error) {
         setNotes((prevNotes) => prevNotes?.filter((note) => note.id !== id) ?? null);
-        return true;
       } else {
         alert(`Error deleting note: ${result.error.statusText}`);
+        return false;
+      }
+
+      //Now delete the embedding Note
+      const embeddingDeleteResult = await noteService.deleteEmbedding(id);
+      if (!embeddingDeleteResult.error) {
+        return true;
+      } else {
+        alert(`Error deleting embedding: ${embeddingDeleteResult.error.statusText}`);
         return false;
       }
     }
