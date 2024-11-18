@@ -11,7 +11,7 @@ interface ReferenceSelectorProps {
 const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({ messageChunks }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedMessageChunk, setSelectedMessageChunk] = useState<MessageChunk | null>(null);
-
+  const unescapedSelectedMessageChunk = selectedMessageChunk?.text?.replace(/\\"/g, '"');
   const handleReferenceClick = (chunk: MessageChunk) => {
     setSelectedMessageChunk(chunk);
     setOpenDialog(true);
@@ -42,7 +42,7 @@ const ReferenceSelector: React.FC<ReferenceSelectorProps> = ({ messageChunks }) 
         <DialogTitle>{selectedMessageChunk?.note?.name || 'Reference'}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            <div dangerouslySetInnerHTML={{ __html: selectedMessageChunk?.text || '' }} />
+            <div dangerouslySetInnerHTML={{ __html: unescapedSelectedMessageChunk || '' }} />
           </DialogContentText>
         </DialogContent>
         <DialogActions>
