@@ -4,7 +4,8 @@
   "info": {
     "singularName": "note",
     "pluralName": "notes",
-    "displayName": "Note"
+    "displayName": "Note",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -29,6 +30,9 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::tag.tag"
+    },
+    "chunks": {
+      "type": "integer"
     }
   }
 }

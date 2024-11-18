@@ -1077,6 +1077,7 @@ export interface ApiNoteNote extends Schema.CollectionType {
     singularName: 'note';
     pluralName: 'notes';
     displayName: 'Note';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -1091,6 +1092,7 @@ export interface ApiNoteNote extends Schema.CollectionType {
       'api::user-profile.user-profile'
     >;
     tags: Attribute.Relation<'api::note.note', 'oneToMany', 'api::tag.tag'>;
+    chunks: Attribute.Integer;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
