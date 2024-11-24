@@ -199,7 +199,8 @@ public class RedisSearchIndexer {
             // Convert query vector to hex string
             String queryVectorHex = bytesToHex(queryVector);
     
-            String searchQueryText = hybridFields + "=>[KNN 30 @" + vectorKey + " 0x" + queryVectorHex + " AS " + vectorScoreField + "]";
+            // Add spaces around the '=>' operator
+            String searchQueryText = hybridFields + " => [KNN 30 @" + vectorKey + " 0x" + queryVectorHex + " AS " + vectorScoreField + "]";
     
             System.out.println("Constructed Query: " + searchQueryText);
     
@@ -220,10 +221,7 @@ public class RedisSearchIndexer {
         }
     
         return documents;
-    }
-    
-    
-          
+    }    
 
     public List<String> toListString(List<Float> vector) {
         return vector.stream()
