@@ -157,11 +157,19 @@ public class RedisSearchIndexer {
         int intBits =  Float.floatToIntBits(f);
         return new byte[]{(byte) (intBits), (byte) (intBits >> 8), (byte) (intBits >> 16), (byte) (intBits >> 24)};
     }
-    
 
+    public static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+    
     public List<Document> vectorSimilarityQuery(QuestionParameters parameters, EmbeddingResponse queryEmbedding) {
         List<Document> documents = null;
         String vectorKey = "embedding";
+        String vectorScoreField = "vector_score";
     
         List<EmbeddingData> queryEmbeddingData = queryEmbedding.getData();
     
@@ -187,13 +195,16 @@ public class RedisSearchIndexer {
             }
     
             String hybridFields = "(@subjectsearch:" + keycloakSubjectSearch + ")" + (taskIdsQuery.isEmpty() ? "" : " " + taskIdsQuery);
-            String searchQueryText = hybridFields + "=>[KNN 30 @" + vectorKey + " $vector]";
+            
+            // Convert query vector to hex string
+            String queryVectorHex = bytesToHex(queryVector);
+    
+            String searchQueryText = hybridFields + "=>[KNN 30 @" + vectorKey + " 0x" + queryVectorHex + " AS " + vectorScoreField + "]";
     
             // Create a new search query
             Query searchQuery = new Query(searchQueryText)
-                .addParam("vector", queryVector)
-                .setSortBy("__" + vectorKey + "_score", true)
-                .returnFields("title", "description", "index", "__" + vectorKey + "_score", "subjectsearch")
+                .setSortBy(vectorScoreField, true)
+                .returnFields("title", "description", "index", vectorScoreField, "subjectsearch")
                 .dialect(2);
     
             // Execute the search query
@@ -202,7 +213,8 @@ public class RedisSearchIndexer {
         }
     
         return documents;
-    }       
+    }
+          
 
     public List<String> toListString(List<Float> vector) {
         return vector.stream()
