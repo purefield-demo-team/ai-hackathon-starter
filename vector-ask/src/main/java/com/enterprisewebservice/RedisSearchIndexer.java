@@ -170,7 +170,7 @@ public class RedisSearchIndexer {
     public List<Document> vectorSimilarityQuery(QuestionParameters parameters, EmbeddingResponse queryEmbedding) {
         List<Document> documents = null;
         String vectorKey = "embedding";
-        String vectorScoreField = "__score"; // Default score field
+        String vectorScoreField = "vector_score"; // You can use "__score" if preferred
     
         List<EmbeddingData> queryEmbeddingData = queryEmbedding.getData();
     
@@ -180,7 +180,7 @@ public class RedisSearchIndexer {
                 queryVector = floatArrayToBytesLittleEndianOrder(eData.getEmbedding().toArray(new Float[0]));
             } catch (IOException e) {
                 e.printStackTrace();
-                continue;
+                continue; // Skip this iteration if there's an error
             }
     
             String keycloakSubject = parameters.getSubject();
@@ -197,23 +197,20 @@ public class RedisSearchIndexer {
             }
     
             // Combine filters
-            String hybridFields = "(@subjectsearch:" + keycloakSubjectSearch + ")" + (taskIdsQuery.isEmpty() ? "" : " " + taskIdsQuery);
+            String hybridFields = "(@subjectsearch:" + keycloakSubjectSearch + ")" 
+                + (taskIdsQuery.isEmpty() ? "" : " " + taskIdsQuery);
     
-            // Enclose $vector in single quotes
-            String searchQueryText = "* => [KNN 30 @embedding '$vector'] " + hybridFields;
+            // Remove single quotes around $vector
+            String searchQueryText = "* => [KNN 30 @" + vectorKey + " $vector] " + hybridFields;
     
             System.out.println("Constructed Query: " + searchQueryText);
     
-            // Prepare parameters
-            Map<String, Object> params = new HashMap<>();
-            params.put("vector", queryVector);
-    
             // Create and execute the search query
             Query searchQuery = new Query(searchQueryText)
-                .setParams(params)
-                .setSortBy("__score", true)
-                .returnFields("title", "description", "index", "__score", "subjectsearch")
-                .dialect(3);
+                .addParam("vector", queryVector)
+                .setSortBy(vectorScoreField, true)
+                .returnFields("title", "description", "index", vectorScoreField, "subjectsearch")
+                .dialect(2); // Ensure the dialect is set to 2 or higher
     
             try {
                 SearchResult searchResult = jedis.ftSearch(INDEX_NAME, searchQuery);
@@ -221,12 +218,13 @@ public class RedisSearchIndexer {
             } catch (Exception e) {
                 System.err.println("An error occurred during search execution:");
                 e.printStackTrace();
-                return Collections.emptyList(); // Prevent NullPointerException
+                return Collections.emptyList(); // Return an empty list to prevent NullPointerException
             }
         }
     
         return documents;
-    }            
+    }
+                
    
 
     public List<String> toListString(List<Float> vector) {
