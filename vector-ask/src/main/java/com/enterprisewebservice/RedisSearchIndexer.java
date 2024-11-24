@@ -170,7 +170,7 @@ public class RedisSearchIndexer {
     public List<Document> vectorSimilarityQuery(QuestionParameters parameters, EmbeddingResponse queryEmbedding) {
         List<Document> documents = null;
         String vectorKey = "embedding";
-        String vectorScoreField = "vector_score";
+        String vectorScoreField = "__" + vectorKey + "_score";
     
         List<EmbeddingData> queryEmbeddingData = queryEmbedding.getData();
     
@@ -201,7 +201,7 @@ public class RedisSearchIndexer {
     
             // Use parameter for the vector
             String vectorParamName = "vector";
-            String searchQueryText = "* => [KNN 30 @" + vectorKey + " $" + vectorParamName + " AS " + vectorScoreField + "] " + hybridFields;
+            String searchQueryText = "* => [KNN 30 @" + vectorKey + " $" + vectorParamName + "] " + hybridFields;
     
             System.out.println("Constructed Query: " + searchQueryText);
     
@@ -224,7 +224,7 @@ public class RedisSearchIndexer {
         }
     
         return documents;
-    }    
+    }        
    
 
     public List<String> toListString(List<Float> vector) {
