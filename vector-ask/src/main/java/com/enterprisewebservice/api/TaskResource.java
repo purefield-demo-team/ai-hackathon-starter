@@ -23,6 +23,7 @@ import com.enterprisewebservice.embeddings.EmbeddingResponse;
 import com.enterprisewebservice.embeddings.ChunkingService;
 import com.enterprisewebservice.completion.ChatService;
 import com.enterprisewebservice.completion.CompletionResponse;
+import com.enterprisewebservice.completion.QuestionParameters;
 import com.enterprisewebservice.RedisSearchIndexer;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -51,16 +52,23 @@ public class TaskResource {
                 + (result.getData() != null && result.getData().getTitle() != null ? result.getData().getTitle() : "") 
                 + " and description: " 
                 + (result.getData() != null && result.getData().getDescription() != null ? result.getData().getDescription() : "");
-            
+            Long taskId = id.longValue();
+            List<Long> taskIds = new ArrayList<>();
+            taskIds.add(taskId);
+            QuestionParameters parameters = new QuestionParameters();
+            parameters.setSubject(keycloakSubject);
+            parameters.setTaskIds(taskIds);
             CompletionResponse answer = null;
             if(llmModel.equals("llama3"))
             {
-                answer = chatService.askVllm(keycloakSubject, query, 3);
+                answer = chatService.askVllm(parameters, query, 3);
             }
             else
             {
-                answer = chatService.ask(keycloakSubject, query, 3);
+                answer = chatService.ask(parameters, query, 3);
             }
+
+            
 
             return Response.ok(answer.getChoices().get(0).getMessage().getContent()).build();
 

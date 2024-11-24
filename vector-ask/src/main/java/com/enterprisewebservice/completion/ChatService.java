@@ -54,7 +54,7 @@ public class ChatService {
     VllmCompletionClient vllmCompletionClient;
 
 
-    public CompletionResponse ask(String keycloakSubject, String query, int topN) throws IOException {
+    public CompletionResponse ask(QuestionParameters parameters, String query, int topN) throws IOException {
         // Create embeddings for the query
         System.out.println("Generating embeddings for query: " + query);
         EmbeddingResponse embeddingResponse = embeddingService.generateEmbeddings(List.of(query));
@@ -62,7 +62,7 @@ public class ChatService {
         // Search for related articles
        ArticleSearchResults articles = null;
         try {
-            articles = articleSearchService.searchArticles(keycloakSubject, embeddingResponse, topN);
+            articles = articleSearchService.searchArticles(parameters, embeddingResponse, topN);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -91,75 +91,7 @@ public class ChatService {
         return completionResponse;
     }
 
-    // public CompletionResponse askVllm(String keycloakSubject, String query, int topN) throws IOException {
-    //     // Generate embeddings for the query
-    //     System.out.println("Generating embeddings for query: " + query);
-    //     EmbeddingResponse embeddingResponse = embeddingService.generateEmbeddings(List.of(query));
-
-    //     // Search for related articles
-    //     String articles = null;
-    //     try {
-    //         articles = articleSearchService.searchArticles(keycloakSubject, embeddingResponse, topN);
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-
-    //     if (articles == null || articles.isEmpty()) {
-    //         articles = "No relevant articles found.";
-    //     }
-
-    //     // Construct the system message content
-    //     StringBuilder systemContentBuilder = new StringBuilder();
-    //     systemContentBuilder.append("You answer questions about Tasks, Goals and Notes. Use the below information to answer the subsequent question. If the answer cannot be found in the notes, write \"I could not find an answer.\"");
-
-    //     systemContentBuilder.append("\n\nNotes:\n\"\"\"\n").append(articles).append("\n\"\"\"");
-
-    //     systemContentBuilder.append("\n\nMore Info: The Question above should be answered by giving me extra information about each of the items discussed. Don't just paste the question content back, do some research with the articles I gave you as well as your knowledge and give me a comprehensive response.");
-
-    //     String systemContent = systemContentBuilder.toString();
-
-    //     // Construct the user message content
-    //     String userContent = query;
-
-    //     // Create the messages list
-    //     List<Message> messages = Arrays.asList(
-    //         new Message("system", systemContent),
-    //         new Message("user", userContent)
-    //     );
-
-    //     // Create the completion request
-    //     VllmCompletionRequest completionRequest = new VllmCompletionRequest();
-    //     completionRequest.setModel("Meta-Llama-31-8B");
-    //     completionRequest.setMessages(messages);
-    //     completionRequest.setMaxTokens(2000);
-    //     completionRequest.setTemperature(0.0);
-
-    //     // Serialize and log the request payload
-    //     ObjectMapper objectMapper = new ObjectMapper();
-    //     String jsonPayload = null;
-    //     try {
-    //         jsonPayload = objectMapper.writeValueAsString(completionRequest);
-    //         System.out.println("Request Payload: " + jsonPayload);
-    //     } catch (JsonProcessingException e) {
-    //         e.printStackTrace();
-    //     }
-
-    //     // Call the completion endpoint
-    //     CompletionResponse completionResponse = vllmCompletionClient.createCompletion(jsonPayload);
-
-    //     // Handle the response
-    //     if (completionResponse != null && completionResponse.getChoices() != null && !completionResponse.getChoices().isEmpty()) {
-    //         String assistantResponse = completionResponse.getChoices().get(0).getMessage().getContent();
-    //         System.out.println("Assistant's response: " + assistantResponse);
-    //     } else {
-    //         System.err.println("No response from the assistant or unexpected response format.");
-    //     }
-
-    //     // Return the response
-    //     return completionResponse;
-    // }
-
-    public CompletionResponse askVllm(String keycloakSubject, String query, int topN) throws IOException {
+    public CompletionResponse askVllm(QuestionParameters parameters, String query, int topN) throws IOException {
         // Generate embeddings for the query
         System.out.println("Generating embeddings for query: " + query);
         EmbeddingResponse embeddingResponse = embeddingService.generateEmbeddings(List.of(query));
@@ -167,7 +99,7 @@ public class ChatService {
         // Search for related articles
         ArticleSearchResults articles = null;
         try {
-            articles = articleSearchService.searchArticles(keycloakSubject, embeddingResponse, topN);
+            articles = articleSearchService.searchArticles(parameters, embeddingResponse, topN);
         } catch (Exception e) {
             e.printStackTrace();
         }

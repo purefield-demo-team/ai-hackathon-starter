@@ -38,10 +38,10 @@ public class ArticleSearchService {
     @Inject
     MessageChunkService messageChunkService;
 
-    public ArticleSearchResults searchArticles(String keycloakSubject, EmbeddingResponse queryEmbedding, int topN) throws Exception {
+    public ArticleSearchResults searchArticles(QuestionParameters parameters, EmbeddingResponse queryEmbedding, int topN) throws Exception {
         ArticleSearchResults articleSearchResults = new ArticleSearchResults();
         // Search in Redis and get the embeddings
-        List<Document> results = redisSearchIndexer.vectorSimilarityQuery(keycloakSubject, queryEmbedding);
+        List<Document> results = redisSearchIndexer.vectorSimilarityQuery(parameters, queryEmbedding);
         StringBuffer message = new StringBuffer();
 
         List<MessageChunk> messageChunks = redisSearchIndexer.getMessageChunks(results, messageChunkService);

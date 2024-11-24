@@ -2,6 +2,7 @@ package com.enterprisewebservice.api;
 
 import com.enterprisewebservice.completion.ChatService;
 import com.enterprisewebservice.completion.CompletionResponse;
+import com.enterprisewebservice.completion.QuestionParameters;
 import com.enterprisewebservice.model.ErrorResponse;
 import com.enterprisewebservice.model.Task;
 import com.enterprisewebservice.model.StrapiServiceResponse;
@@ -14,6 +15,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.enterprisewebservice.completion.vllm.*;
@@ -90,13 +92,19 @@ public class TaskService {
             + (result.getData() != null && result.getData().getDescription() != null ? result.getData().getDescription() : "");
 
         CompletionResponse answer = null;
-         if(llmModel.equals("llama3"))
+        Long taskId = id.longValue();
+        List<Long> taskIds = new ArrayList<>();
+        taskIds.add(taskId);
+        QuestionParameters parameters = new QuestionParameters();
+        parameters.setSubject(keycloakSubject);
+        parameters.setTaskIds(taskIds);
+        if(llmModel.equals("llama3"))
         {
-            answer = chatService.askVllm(keycloakSubject, query, 3);
+            answer = chatService.askVllm(parameters, query, 3);
         }
         else
         {
-            answer = chatService.ask(keycloakSubject, query, 3);
+            answer = chatService.ask(parameters, query, 3);
         }
         return answer;
     }

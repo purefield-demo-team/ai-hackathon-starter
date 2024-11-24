@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 import com.enterprisewebservice.api.MessageChunkService;
 import com.enterprisewebservice.api.NoteService;
+import com.enterprisewebservice.completion.QuestionParameters;
 import com.enterprisewebservice.embeddings.EmbeddingData;
 import com.enterprisewebservice.embeddings.EmbeddingResponse;
 import com.enterprisewebservice.model.MessageChunk;
@@ -49,20 +51,25 @@ public class RedisSearchIndexer {
         this.jedisPool = jedisPool;
     }
 
-   public void createIndex( ) {
+    public void createIndex() {
 
         // Define the default algorithm
         VectorField.VectorAlgorithm defaultAlgorithm = VectorField.VectorAlgorithm.FLAT;
-
+    
         // Set defaultAttributes for the embedding_vector field
         Map<String, Object> defaultAttributes = new HashMap<>();
         defaultAttributes.put("TYPE", "FLOAT32");
         defaultAttributes.put("DIM", VECTOR_DIM);
         defaultAttributes.put("DISTANCE_METRIC", DISTANCE_METRIC);
         defaultAttributes.put("INITIAL_CAP", VECTOR_NUMBER);
-        Schema sc = new Schema().addFlatVectorField("embedding", defaultAttributes);
-        sc.addTextField("subjectsearch",1.0);
+    
+        // Create the schema
+        Schema sc = new Schema()
+        .addFlatVectorField("embedding", defaultAttributes)
+        .addTextField("subjectsearch", 1.0)
+        .addTagField("task_ids", ","); // Specify comma as the separator
 
+    
         // Define the prefixes
         IndexOptions indexOptions = IndexOptions.defaultOptions();
         IndexDefinition indexDefinition = new IndexDefinition();
@@ -70,7 +77,6 @@ public class RedisSearchIndexer {
         indexDefinition.setPrefixes("doc:"); // set your prefix here
         indexOptions.setDefinition(indexDefinition);
         
-
         try {
             var query = new Query("*");
             jedis.ftSearch(INDEX_NAME, query);
@@ -78,91 +84,11 @@ public class RedisSearchIndexer {
         } catch (JedisDataException ex) {
             // Create the index
             jedis.ftCreate(INDEX_NAME, indexOptions, sc);
-            // jedis.ftCreate(
-            //     INDEX_NAME + keycloakSubject,
-            //     FTCreateParams.createParams()
-            //         .on(IndexDataType.JSON)
-            //         .addPrefix(keycloakSubject),
-            //     TextField.of("$.index").as("index"),
-            //     TextField.of("$.object").as("object"),
-            //     VectorField.builder().fieldName("$.embedding").algorithm(defaultAlgorithm).attributes(defaultAttributes).build().as("embedding")
-            //);
             System.out.println("Index created successfully");
         }
     }
+    
 
-    // public void createIndex() {
-    //     // Define the default algorithm
-    //     //VectorField.VectorAlgorithm defaultAlgorithm = VectorField.VectorAlgorithm.FLAT;
-
-    //     // Set defaultAttributes for the embedding_vector field
-    //     Map<String, Object> defaultAttributes = new HashMap<>();
-    //     defaultAttributes.put("TYPE", "FLOAT32");
-    //     defaultAttributes.put("DIM", VECTOR_DIM);
-    //     defaultAttributes.put("DISTANCE_METRIC", DISTANCE_METRIC);
-    //     defaultAttributes.put("INITIAL_CAP", VECTOR_NUMBER);
-
-    //     try {
-    //         jedis.sendCommand(new ProtocolCommand() {
-    //             @Override
-    //             public byte[] getRaw() {
-    //                 return SafeEncoder.encode("FT.CREATE");
-    //             }}, 
-    //             SafeEncoder.encode(INDEX_NAME),  // replace INDEX_NAME with your index name
-    //             SafeEncoder.encode("ON"), SafeEncoder.encode("JSON"), 
-    //             SafeEncoder.encode("PREFIX"), SafeEncoder.encode("1"), SafeEncoder.encode("doc:"),
-    //             SafeEncoder.encode("SCHEMA"), 
-    //             SafeEncoder.encode("$.index"), SafeEncoder.encode("TEXT"),
-    //             SafeEncoder.encode("$.object"), SafeEncoder.encode("TEXT"),
-    //             SafeEncoder.encode("$.subject"), SafeEncoder.encode("TEXT"),
-    //             SafeEncoder.encode("$.embedding"), SafeEncoder.encode("VECTOR"),
-    //             SafeEncoder.encode("TYPE"), SafeEncoder.encode("FLOAT32"),
-    //             SafeEncoder.encode("DIM"), SafeEncoder.encode(String.valueOf(VECTOR_DIM)), // replace VECTOR_DIM with your vector dimension
-    //             SafeEncoder.encode("DISTANCE_METRIC"), SafeEncoder.encode(DISTANCE_METRIC), // replace DISTANCE_METRIC with your distance metric
-    //             SafeEncoder.encode("INITIAL_CAP"), SafeEncoder.encode(String.valueOf(VECTOR_NUMBER))  // replace VECTOR_NUMBER with your vector initial capacity
-    //         );
-    //         System.out.println("Index created successfully");
-    //     } catch (JedisDataException ex) {
-    //         System.out.println("Index already exists");
-    //     }
-    // }
-
-
-
-    // public void indexEmbeddings(EmbeddingResponse embeddingResponse, String customKey, String title, String description, String keycloakSubject) {
-    //     ObjectMapper mapper = new ObjectMapper();
-    //     for (EmbeddingData embeddingData : embeddingResponse.getData()) {
-    //         String key = "doc:" + customKey + "-" + embeddingData.getIndex(); // Added "doc:" prefix
-
-    //         // Create a new JSON document
-    //         Map<String, Object> document = new HashMap<>();
-    //         document.put("index", embeddingData.getIndex());
-    //         document.put("title", title);
-    //         document.put("description", description);
-    //         document.put("subject", keycloakSubject);
-    //         document.put("embedding", embeddingData.getEmbedding()); // Assuming the embedding is a list of floats, not a byte array.
-
-    //         // Convert the map to a JSON string
-    //         String jsonDocument = null;
-    //         try {
-    //             jsonDocument = mapper.writeValueAsString(document);
-    //         } catch (JsonProcessingException e) {
-    //             // TODO Auto-generated catch block
-    //             e.printStackTrace();
-    //         }
-            
-    //         // Store the JSON document in Redis
-    //         jedis.sendCommand(new ProtocolCommand() {
-    //             @Override
-    //             public byte[] getRaw() {
-    //                 return SafeEncoder.encode("JSON.SET");
-    //             }},
-    //             SafeEncoder.encode(key),
-    //             SafeEncoder.encode("."),
-    //             SafeEncoder.encode(jsonDocument)
-    //         );
-    //     }
-    // }
 
     public void indexEmbeddings(EmbeddingResponse embeddingResponse, String customKey, List<String> texts, String keycloakSubject, List<Long> taskIds) {
         for (EmbeddingData embeddingData : embeddingResponse.getData()) {
@@ -171,36 +97,32 @@ public class RedisSearchIndexer {
             // Convert embeddings to byte arrays
             byte[] embedding = null;
             try {
-                System.out.println("embedding: " + embeddingData.getEmbedding().toString() + " " + embeddingData.getEmbedding().size());
                 embedding = floatArrayToBytesLittleEndianOrder(embeddingData.getEmbedding().toArray(new Float[0]));
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             
-
             // Create a new hash in Redis for the document
             Map<byte[], byte[]> hash = new HashMap<>();
-            hash.put("index".getBytes(), Integer.toString(embeddingData.getIndex()).getBytes());
-            //hash.put("title".getBytes(), title.getBytes());
-            //hash.put("description".getBytes(), description.getBytes());
-            hash.put("embedding".getBytes(), embedding);
-            //hash.put("subject".getBytes(), keycloakSubject.ge);
-            if(taskIds != null)
-            {
-                for(Long taskId : taskIds)
-                {
-                    jedis.hset(key, "task" + taskId.toString() + ":", taskId.toString());
-                }
+            hash.put("index".getBytes(StandardCharsets.UTF_8), Integer.toString(embeddingData.getIndex()).getBytes(StandardCharsets.UTF_8));
+            hash.put("embedding".getBytes(StandardCharsets.UTF_8), embedding);
+            hash.put("subject".getBytes(StandardCharsets.UTF_8), keycloakSubject.getBytes(StandardCharsets.UTF_8));
+            hash.put("subjectsearch".getBytes(StandardCharsets.UTF_8), keycloakSubject.replaceAll("-", "").getBytes(StandardCharsets.UTF_8));
+            hash.put("title".getBytes(StandardCharsets.UTF_8), customKey.getBytes(StandardCharsets.UTF_8));
+            hash.put("description".getBytes(StandardCharsets.UTF_8), texts.get(embeddingData.getIndex()).getBytes(StandardCharsets.UTF_8));
+
+           // Store task IDs as a comma-separated string without spaces
+            if (taskIds != null && !taskIds.isEmpty()) {
+                String taskIdsString = taskIds.stream()
+                    .map(Object::toString)
+                    .collect(Collectors.joining(","));
+                hash.put("task_ids".getBytes(StandardCharsets.UTF_8), taskIdsString.getBytes(StandardCharsets.UTF_8));
             }
-            
-            jedis.hset(key.getBytes(), hash);
-            jedis.hset(key, "subject", keycloakSubject);
-            jedis.hset(key, "subjectsearch", keycloakSubject.replaceAll("-", ""));
-            jedis.hset(key, "title", customKey);
-            jedis.hset(key, "description", texts.get(embeddingData.getIndex()));
+
+            jedis.hset(key.getBytes(StandardCharsets.UTF_8), hash);
         }
     }
+
 
 
     public void deleteEmbedding(String customKey, Note note) {
@@ -237,55 +159,50 @@ public class RedisSearchIndexer {
     }
     
 
-    public List<Document> vectorSimilarityQuery(String keycloakSubject, EmbeddingResponse queryEmbedding) {
+    public List<Document> vectorSimilarityQuery(QuestionParameters parameters, EmbeddingResponse queryEmbedding) {
         List<Document> documents = null;
-        // Use the "embedding" field in Redis as vectorKey
         String vectorKey = "embedding";
-
-        // Assuming that the EmbeddingResponse contains multiple EmbeddingData 
-        // each of which includes the embeddings of the query article.
+    
         List<EmbeddingData> queryEmbeddingData = queryEmbedding.getData();
-       
-        // Convert the query vector to a byte array for each embedding and execute the query.
-        Entry<SearchResult, Map<String, Object>> result = null;
+    
         for (EmbeddingData eData : queryEmbeddingData) {
-            
-            // Convert the query vector to a byte array
-            
             byte[] queryVector = null;
             try {
                 queryVector = floatArrayToBytesLittleEndianOrder(eData.getEmbedding().toArray(new Float[0]));
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-
+    
+            String keycloakSubject = parameters.getSubject();
             String keycloakSubjectSearch = keycloakSubject.replaceAll("-", "");
-            System.out.println("keycloaksubject in searchQuery: " + keycloakSubject);
-            String hybridFields = "(@subjectsearch:" + keycloakSubjectSearch +")";
-            //String hybridFields = "*";
-            String searchQueryText = hybridFields + "=>[KNN 30 @embedding $vector]";
-
+    
+            // Prepare task IDs for the query
+            List<Long> taskIds = parameters.getTaskIds();
+            String taskIdsQuery = "";
+            if (taskIds != null && !taskIds.isEmpty()) {
+                String taskIdsString = taskIds.stream()
+                    .map(Object::toString)
+                    .collect(Collectors.joining("|"));
+                taskIdsQuery = "(@task_ids:{" + taskIdsString + "})";
+            }
+    
+            String hybridFields = "(@subjectsearch:" + keycloakSubjectSearch + ")" + (taskIdsQuery.isEmpty() ? "" : " " + taskIdsQuery);
+            String searchQueryText = hybridFields + "=>[KNN 30 @" + vectorKey + " $vector]";
+    
             // Create a new search query
             Query searchQuery = new Query(searchQueryText)
-                                        //.addParam("subject", keycloakSubject.replaceAll("-", ""))
-                                        .addParam("vector", queryVector)
-                                        .setSortBy("__" + vectorKey + "_score", true)
-                                        .returnFields("title", "description", "index",  "__" + vectorKey + "_score", "subjectsearch")
-                                        .dialect(2);
-            //Query searchQuery = new Query(hybridFields);
-            searchQuery.setWithScores();
-            System.out.println("getting with scores?: " + searchQuery.getWithScores());
-            System.out.println("Search query: " + searchQueryText);
-            System.out.println("Searchsubject: " + keycloakSubjectSearch);
+                .addParam("vector", queryVector)
+                .setSortBy("__" + vectorKey + "_score", true)
+                .returnFields("title", "description", "index", "__" + vectorKey + "_score", "subjectsearch")
+                .dialect(2);
+    
             // Execute the search query
             SearchResult searchResult = jedis.ftSearch(INDEX_NAME, searchQuery);
-            searchResult.getDocuments().forEach(doc -> System.out.println(doc.getString("title") + " " + doc.get("__" + vectorKey + "_score")));
             documents = searchResult.getDocuments();
         }
-
+    
         return documents;
-    }
+    }       
 
     public List<String> toListString(List<Float> vector) {
         return vector.stream()
