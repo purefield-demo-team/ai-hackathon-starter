@@ -167,24 +167,25 @@ public class RedisSearchIndexer {
         return sb.toString();
     }
     
-   public List<Document> vectorSimilarityQuery(QuestionParameters parameters, EmbeddingResponse queryEmbedding) {
+    public List<Document> vectorSimilarityQuery(QuestionParameters parameters, EmbeddingResponse queryEmbedding) {
         List<Document> documents = null;
         String vectorKey = "embedding";
         String vectorScoreField = "vector_score";
-
+    
         List<EmbeddingData> queryEmbeddingData = queryEmbedding.getData();
-
+    
         for (EmbeddingData eData : queryEmbeddingData) {
             byte[] queryVector = null;
             try {
                 queryVector = floatArrayToBytesLittleEndianOrder(eData.getEmbedding().toArray(new Float[0]));
             } catch (IOException e) {
                 e.printStackTrace();
+                continue;
             }
-
+    
             String keycloakSubject = parameters.getSubject();
             String keycloakSubjectSearch = keycloakSubject.replaceAll("-", "");
-
+    
             // Prepare task IDs for the query
             List<Long> taskIds = parameters.getTaskIds();
             String taskIdsQuery = "";
@@ -194,24 +195,23 @@ public class RedisSearchIndexer {
                     .collect(Collectors.joining("|"));
                 taskIdsQuery = "(@task_ids:{" + taskIdsString + "})";
             }
-
+    
             // Combine filters
             String hybridFields = "(@subjectsearch:" + keycloakSubjectSearch + ")" + (taskIdsQuery.isEmpty() ? "" : " " + taskIdsQuery);
-
-            // Convert query vector to hex string
-            String queryVectorHex = bytesToHex(queryVector);
-
-            // Place vector similarity clause before filters
-            String searchQueryText = "* => [KNN 30 @" + vectorKey + " 0x" + queryVectorHex + " AS " + vectorScoreField + "] " + hybridFields;
-
+    
+            // Use parameter for the vector
+            String vectorParamName = "vector";
+            String searchQueryText = "* => [KNN 30 @" + vectorKey + " $" + vectorParamName + " AS " + vectorScoreField + "] " + hybridFields;
+    
             System.out.println("Constructed Query: " + searchQueryText);
-
-            // Create a new search query
+    
+            // Create a new search query with the vector as a parameter
             Query searchQuery = new Query(searchQueryText)
+                .addParam(vectorParamName, queryVector)
                 .setSortBy(vectorScoreField, true)
                 .returnFields("title", "description", "index", vectorScoreField, "subjectsearch")
                 .dialect(2);
-
+    
             // Execute the search query
             try {
                 SearchResult searchResult = jedis.ftSearch(INDEX_NAME, searchQuery);
@@ -222,9 +222,9 @@ public class RedisSearchIndexer {
                 return Collections.emptyList(); // Return an empty list if an error occurs
             }
         }
-
+    
         return documents;
-    }
+    }    
    
 
     public List<String> toListString(List<Float> vector) {
