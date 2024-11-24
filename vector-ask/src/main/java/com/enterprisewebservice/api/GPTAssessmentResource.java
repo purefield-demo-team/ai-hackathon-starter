@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.ArrayList;
 import com.enterprisewebservice.api.NoteService;
 import com.enterprisewebservice.model.StrapiServiceResponse;
+import com.enterprisewebservice.model.Task;
+import com.enterprisewebservice.model.TaskNote;
 import com.enterprisewebservice.embeddings.EmbeddingService;
 import com.enterprisewebservice.model.Note;
 import com.enterprisewebservice.model.StrapiEventPayload;
@@ -40,6 +42,9 @@ public class GPTAssessmentResource {
     
     @Inject
     EmbeddingService embeddingService;
+
+    @Inject
+    TaskNoteService taskNoteService;
 
     @Inject
     MeterRegistry registry;
@@ -76,9 +81,21 @@ public class GPTAssessmentResource {
             List<String> texts = ChunkingService.chunkObject(note.getName() + " " + note.getRichText());
             EmbeddingResponse embeddingResponse = embeddingService.generateEmbeddings(texts);
             
+            // Fetch the TaskNote objects by Note id
+            System.out.println("note id: " + note.getId());
+            StrapiServiceResponse<List<TaskNote>> taskNotes = taskNoteService.getByNoteId(note.getId().toString(), false);
+            List<Task> uniqueTasks = new ArrayList<>();
+            List<Long> taskIds = new ArrayList<>();
+            for (TaskNote taskNote : taskNotes.getData()) {
+                if (!uniqueTasks.contains(taskNote.getTask())) {
+                    uniqueTasks.add(taskNote.getTask());
+                    taskIds.add(taskNote.getTask().getId());
+                }
+            }
+            System.out.println("Unique tasks size: " + uniqueTasks.size());
 
             // Index the embeddings
-            redisSearchIndexer.indexEmbeddings(embeddingResponse, note.getId().toString(), texts, keycloakSubject);
+            redisSearchIndexer.indexEmbeddings(embeddingResponse, note.getId().toString(), texts, keycloakSubject, taskIds);
 
             return Response.ok(note).build(); // returns the note object
 
