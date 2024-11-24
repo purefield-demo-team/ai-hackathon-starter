@@ -195,11 +195,13 @@ public class RedisSearchIndexer {
             }
     
             String hybridFields = "(@subjectsearch:" + keycloakSubjectSearch + ")" + (taskIdsQuery.isEmpty() ? "" : " " + taskIdsQuery);
-            
+    
             // Convert query vector to hex string
             String queryVectorHex = bytesToHex(queryVector);
     
             String searchQueryText = hybridFields + "=>[KNN 30 @" + vectorKey + " 0x" + queryVectorHex + " AS " + vectorScoreField + "]";
+    
+            System.out.println("Constructed Query: " + searchQueryText);
     
             // Create a new search query
             Query searchQuery = new Query(searchQueryText)
@@ -208,12 +210,19 @@ public class RedisSearchIndexer {
                 .dialect(2);
     
             // Execute the search query
-            SearchResult searchResult = jedis.ftSearch(INDEX_NAME, searchQuery);
-            documents = searchResult.getDocuments();
+            try {
+                SearchResult searchResult = jedis.ftSearch(INDEX_NAME, searchQuery);
+                documents = searchResult.getDocuments();
+            } catch (Exception e) {
+                System.err.println("An error occurred during search execution:");
+                e.printStackTrace();
+            }
         }
     
         return documents;
     }
+    
+    
           
 
     public List<String> toListString(List<Float> vector) {
