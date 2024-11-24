@@ -18,6 +18,7 @@ import com.enterprisewebservice.embeddings.EmbeddingResponse;
 import com.enterprisewebservice.model.MessageChunk;
 import com.enterprisewebservice.model.Note;
 import com.enterprisewebservice.model.StrapiServiceResponse;
+import com.enterprisewebservice.model.Task;
 
 import jakarta.inject.Inject;
 import redis.clients.jedis.JedisPool;
@@ -163,7 +164,7 @@ public class RedisSearchIndexer {
     //     }
     // }
 
-    public void indexEmbeddings(EmbeddingResponse embeddingResponse, String customKey, List<String> texts, String keycloakSubject) {
+    public void indexEmbeddings(EmbeddingResponse embeddingResponse, String customKey, List<String> texts, String keycloakSubject, List<Long> taskIds) {
         for (EmbeddingData embeddingData : embeddingResponse.getData()) {
             String key = "doc:" + customKey + "-" + embeddingData.getIndex();
             
@@ -185,6 +186,13 @@ public class RedisSearchIndexer {
             //hash.put("description".getBytes(), description.getBytes());
             hash.put("embedding".getBytes(), embedding);
             //hash.put("subject".getBytes(), keycloakSubject.ge);
+            if(taskIds != null)
+            {
+                for(Long taskId : taskIds)
+                {
+                    jedis.hset(key, "task" + taskId.toString() + ":", taskId.toString());
+                }
+            }
             
             jedis.hset(key.getBytes(), hash);
             jedis.hset(key, "subject", keycloakSubject);

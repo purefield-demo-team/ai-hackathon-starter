@@ -186,50 +186,53 @@ public class NoteResource {
             
             EmbeddingResponse embeddingResponse = embeddingService.generateEmbeddings(chunks);
             System.out.println("Embedding response object: " + embeddingResponse.getObject());
-            // for(EmbeddingData data : embeddingResponse.getData()) {
-            //     System.out.println("Embedding data object: " + data.getObject());
-            // }
-            // Index the embeddings
-            redisSearchIndexer.indexEmbeddings(embeddingResponse, note.getId().toString(), chunks, keycloakSubject);
 
-             // Fetch the TaskNote objects by Note id
+            // Fetch the TaskNote objects by Note id
             System.out.println("note id: " + note.getId());
             StrapiServiceResponse<List<TaskNote>> taskNotes = taskNoteService.getByNoteId(note.getId().toString(), false);
             List<Task> uniqueTasks = new ArrayList<>();
+            List<Long> taskIds = new ArrayList<>();
             for (TaskNote taskNote : taskNotes.getData()) {
                 if (!uniqueTasks.contains(taskNote.getTask())) {
                     uniqueTasks.add(taskNote.getTask());
+                    taskIds.add(taskNote.getTask().getId());
                 }
             }
-
             System.out.println("Unique tasks size: " + uniqueTasks.size());
+
+            // Index the embeddings
+            redisSearchIndexer.indexEmbeddings(embeddingResponse, note.getId().toString(), chunks, keycloakSubject, taskIds);
+
+           
+            // associate the tasks with the note in the embedding
+
             // Ask a question for every unique Task
-            for (Task task : uniqueTasks) {
+            // for (Task task : uniqueTasks) {
 
-                lockMap.putIfAbsent(task.getId(), new ReentrantLock());
-                ReentrantLock lock = lockMap.get(task.getId());
+            //     lockMap.putIfAbsent(task.getId(), new ReentrantLock());
+            //     ReentrantLock lock = lockMap.get(task.getId());
 
-                lock.lock();
-                try {
-                    ScheduledFuture<?> previousTask = assessmentMap.remove(task.getId());
-                    if (previousTask != null) {
-                        previousTask.cancel(false);
-                    }
+            //     lock.lock();
+            //     try {
+            //         ScheduledFuture<?> previousTask = assessmentMap.remove(task.getId());
+            //         if (previousTask != null) {
+            //             previousTask.cancel(false);
+            //         }
 
-                    ScheduledFuture<?> future = executorService.schedule(() -> {
-                        try {
-                            processAssessment(task, keycloakSubject);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }, 1, TimeUnit.MINUTES);
+            //         ScheduledFuture<?> future = executorService.schedule(() -> {
+            //             try {
+            //                 processAssessment(task, keycloakSubject);
+            //             } catch (Exception e) {
+            //                 e.printStackTrace();
+            //             }
+            //         }, 1, TimeUnit.MINUTES);
 
-                    assessmentMap.put(task.getId(), future);
-                } finally {
-                    lock.unlock();
-                }
+            //         assessmentMap.put(task.getId(), future);
+            //     } finally {
+            //         lock.unlock();
+            //     }
                 
-            }
+            // }
 
             return Response.ok(note).build(); // returns the note object
 
