@@ -203,6 +203,7 @@ public class RedisSearchIndexer {
             // Get the keycloak subject
             String keycloakSubject = parameters.getSubject();
             String keycloakSubjectSearch = keycloakSubject.replaceAll("-", "");
+            System.out.println("keycloakSubjectSearch in searchQuery: " + keycloakSubjectSearch);
             System.out.println("keycloaksubject in searchQuery: " + keycloakSubject);
             String hybridFields = "(@subjectsearch:" + keycloakSubjectSearch +" " + taskIdsQuery + ")";
             //String hybridFields = "*";
