@@ -207,7 +207,7 @@ public class RedisSearchIndexer {
             if (!taskIdsQuery.isEmpty()) {
                 hybridFields += " " + taskIdsQuery;
             }
-            String searchQueryText = hybridFields + "=>[KNN 30 @embedding $vector] " + hybridFields;
+            String searchQueryText = hybridFields + "=>[KNN 30 @embedding $vector] ";
 
             // Create a new search query
             Query searchQuery = new Query(searchQueryText)
