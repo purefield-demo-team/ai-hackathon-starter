@@ -197,16 +197,16 @@ public class RedisSearchIndexer {
                 String taskIdsString = taskIds.stream()
                     .map(Object::toString)
                     .collect(Collectors.joining("|"));
-                taskIdsQuery = "(@task_ids:{" + taskIdsString + "})";
+                taskIdsQuery = "@task_ids:{" + taskIdsString + "}";
             }
 
             // Get the keycloak subject
             String keycloakSubject = parameters.getSubject();
             String keycloakSubjectSearch = keycloakSubject.replaceAll("-", "");
             System.out.println("keycloaksubject in searchQuery: " + keycloakSubject);
-            String hybridFields = "(@subjectsearch:" + keycloakSubjectSearch +")";
+            String hybridFields = "(@subjectsearch:" + keycloakSubjectSearch +" " + taskIdsQuery + ")";
             //String hybridFields = "*";
-            String searchQueryText = taskIdsQuery + "=>[KNN 30 @embedding $vector]";
+            String searchQueryText = hybridFields + "=>[KNN 30 @embedding $vector]";
 
             // Create a new search query
             Query searchQuery = new Query(searchQueryText)
