@@ -1,0 +1,9 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: quarkus-datasource-config
+  namespace: raft-infra
+data:
+  DB_PASSWORD: H077Xs5DwUbAfQ2U
+  DB_USERNAME: userSF3
+  JDBC_URL: 'jdbc:postgresql://postgresql-redhat-sales.raft-infra.svc.cluster.local:5432/redhat_sales'

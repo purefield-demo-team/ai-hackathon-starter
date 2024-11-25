@@ -46,6 +46,9 @@ spec:
               value: "{{ .Values.strapi.token }}"
             - name: redis.host
               value: "{{ .Values.redis.host }}"
+          envFrom:
+            - configMapRef:
+                name: quarkus-datasource-config
           resources: {}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
