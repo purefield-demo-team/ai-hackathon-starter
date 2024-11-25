@@ -166,28 +166,34 @@ public class RedisSearchIndexer {
         }
         return sb.toString();
     }
-    
+
     public List<Document> vectorSimilarityQuery(QuestionParameters parameters, EmbeddingResponse queryEmbedding) {
         List<Document> documents = null;
+        // Use the "embedding" field in Redis as vectorKey
         String vectorKey = "embedding";
-        String vectorScoreField = "vector_score"; // You can use "__score" if preferred
-    
+
+        // Assuming that the EmbeddingResponse contains multiple EmbeddingData 
+        // each of which includes the embeddings of the query article.
         List<EmbeddingData> queryEmbeddingData = queryEmbedding.getData();
-    
+        String keycloakSubject = parameters.getSubject();
+        // Convert the query vector to a byte array for each embedding and execute the query.
+        Entry<SearchResult, Map<String, Object>> result = null;
         for (EmbeddingData eData : queryEmbeddingData) {
+            
+            // Convert the query vector to a byte array
+            
             byte[] queryVector = null;
             try {
                 queryVector = floatArrayToBytesLittleEndianOrder(eData.getEmbedding().toArray(new Float[0]));
             } catch (IOException e) {
+                // TODO Auto-generated catch block
                 e.printStackTrace();
-                continue; // Skip this iteration if there's an error
             }
-    
-            String keycloakSubject = parameters.getSubject();
-            String keycloakSubjectSearch = keycloakSubject.replaceAll("-", "");
-    
+
             // Prepare task IDs for the query
             List<Long> taskIds = parameters.getTaskIds();
+            String keycloakSubjectSearch = keycloakSubject.replaceAll("-", "");
+            System.out.println("keycloaksubject in searchQuery: " + keycloakSubject);
             String taskIdsQuery = "";
             if (taskIds != null && !taskIds.isEmpty()) {
                 String taskIdsString = taskIds.stream()
@@ -197,33 +203,91 @@ public class RedisSearchIndexer {
             }
     
             // Combine filters
-            String hybridFields = "(@subjectsearch:" + keycloakSubjectSearch + ")" 
-                + (taskIdsQuery.isEmpty() ? "" : " " + taskIdsQuery);
-    
-            // Remove single quotes around $vector
-            String searchQueryText = "* => [KNN 30 @" + vectorKey + " $vector] " + hybridFields;
-    
-            System.out.println("Constructed Query: " + searchQueryText);
-    
-            // Create and execute the search query
-            Query searchQuery = new Query(searchQueryText)
-                .addParam("vector", queryVector)
-                .setSortBy(vectorScoreField, true)
-                .returnFields("title", "description", "index", vectorScoreField, "subjectsearch")
-                .dialect(2); // Ensure the dialect is set to 2 or higher
-    
-            try {
-                SearchResult searchResult = jedis.ftSearch(INDEX_NAME, searchQuery);
-                documents = searchResult.getDocuments();
-            } catch (Exception e) {
-                System.err.println("An error occurred during search execution:");
-                e.printStackTrace();
-                return Collections.emptyList(); // Return an empty list to prevent NullPointerException
+            String hybridFields = "(@subjectsearch:" + keycloakSubjectSearch + ")";
+            if (!taskIdsQuery.isEmpty()) {
+                hybridFields += " " + taskIdsQuery;
             }
+            String searchQueryText = hybridFields + "=>[KNN 30 @embedding $vector] " + hybridFields;
+
+            // Create a new search query
+            Query searchQuery = new Query(searchQueryText)
+                                        //.addParam("subject", keycloakSubject.replaceAll("-", ""))
+                                        .addParam("task_ids", taskIdsQuery)
+                                        .addParam("vector", queryVector)
+                                        .setSortBy("__" + vectorKey + "_score", true)
+                                        .returnFields("title", "description", "index",  "__" + vectorKey + "_score", "subjectsearch")
+                                        .dialect(2);
+            //Query searchQuery = new Query(hybridFields);
+            searchQuery.setWithScores();
+            System.out.println("getting with scores?: " + searchQuery.getWithScores());
+            System.out.println("Search query: " + searchQueryText);
+            System.out.println("Searchsubject: " + keycloakSubjectSearch);
+            // Execute the search query
+            SearchResult searchResult = jedis.ftSearch(INDEX_NAME, searchQuery);
+            searchResult.getDocuments().forEach(doc -> System.out.println(doc.getString("title") + " " + doc.get("__" + vectorKey + "_score")));
+            documents = searchResult.getDocuments();
         }
-    
+
         return documents;
     }
+    
+    // public List<Document> vectorSimilarityQuery(QuestionParameters parameters, EmbeddingResponse queryEmbedding) {
+    //     List<Document> documents = null;
+    //     String vectorKey = "embedding";
+    //     String vectorScoreField = "vector_score"; // You can use "__score" if preferred
+    
+    //     List<EmbeddingData> queryEmbeddingData = queryEmbedding.getData();
+    
+    //     for (EmbeddingData eData : queryEmbeddingData) {
+    //         byte[] queryVector = null;
+    //         try {
+    //             queryVector = floatArrayToBytesLittleEndianOrder(eData.getEmbedding().toArray(new Float[0]));
+    //         } catch (IOException e) {
+    //             e.printStackTrace();
+    //             continue; // Skip this iteration if there's an error
+    //         }
+    
+    //         String keycloakSubject = parameters.getSubject();
+    //         String keycloakSubjectSearch = keycloakSubject.replaceAll("-", "");
+    
+    //         // Prepare task IDs for the query
+    //         List<Long> taskIds = parameters.getTaskIds();
+    //         String taskIdsQuery = "";
+    //         if (taskIds != null && !taskIds.isEmpty()) {
+    //             String taskIdsString = taskIds.stream()
+    //                 .map(Object::toString)
+    //                 .collect(Collectors.joining("|"));
+    //             taskIdsQuery = "(@task_ids:{" + taskIdsString + "})";
+    //         }
+    
+    //         // Combine filters
+    //         String hybridFields = "(@subjectsearch:" + keycloakSubjectSearch + ")" 
+    //             + (taskIdsQuery.isEmpty() ? "" : " " + taskIdsQuery);
+    
+    //         // Remove single quotes around $vector
+    //         String searchQueryText = "* => [KNN 30 @" + vectorKey + " $vector] " + hybridFields;
+    
+    //         System.out.println("Constructed Query: " + searchQueryText);
+    
+    //         // Create and execute the search query
+    //         Query searchQuery = new Query(searchQueryText)
+    //             .addParam("vector", queryVector)
+    //             .setSortBy(vectorScoreField, true)
+    //             .returnFields("title", "description", "index", vectorScoreField, "subjectsearch")
+    //             .dialect(2); // Ensure the dialect is set to 2 or higher
+    
+    //         try {
+    //             SearchResult searchResult = jedis.ftSearch(INDEX_NAME, searchQuery);
+    //             documents = searchResult.getDocuments();
+    //         } catch (Exception e) {
+    //             System.err.println("An error occurred during search execution:");
+    //             e.printStackTrace();
+    //             return Collections.emptyList(); // Return an empty list to prevent NullPointerException
+    //         }
+    //     }
+    
+    //     return documents;
+    // }
                 
    
 
