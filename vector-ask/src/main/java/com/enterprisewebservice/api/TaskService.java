@@ -111,7 +111,7 @@ public class TaskService {
         
         if(containsSqlAsWord(query))
         {
-            answer = chatService.askVllmForSQL(parameters, query, 3);
+            answer = chatService.ask(parameters, query, 3);
         }
         else if(llmModel.equals("llama3"))
         {
