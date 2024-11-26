@@ -71,6 +71,14 @@ public class TaskResource {
             {
                 answer = chatService.askVllmForSQL(parameters, query, 3);
             }
+            else if(llmModel.equals("openaisql"))
+            {
+                answer = chatService.askOpenAIForSQL(parameters, query, 0);
+            }
+            else
+            {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Invalid LLM model").build();
+            }
 
             return Response.ok(answer.getChoices().get(0).getMessage().getContent()).build();
 

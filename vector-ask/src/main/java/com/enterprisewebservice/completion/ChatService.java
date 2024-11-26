@@ -241,5 +241,78 @@ public class ChatService {
         return completionResponse;
     }
 
+    public CompletionResponse askOpenAIForSQL(QuestionParameters parameters, String query, int topN) throws IOException {
+        // Generate embeddings for the query
+        System.out.println("Generating embeddings for query: " + query);
+        EmbeddingResponse embeddingResponse = embeddingService.generateEmbeddings(List.of(query));
+
+        // Search for related articles
+        ArticleSearchResults articles = null;
+        try {
+            articles = articleSearchService.searchArticles(parameters, embeddingResponse, topN);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Construct the system message content
+        StringBuilder systemContentBuilder = new StringBuilder();
+        systemContentBuilder.append("You generate SQL. Use the below information to help generate the correct SQL.\"");
+
+        systemContentBuilder.append("\n\nNotes:\n\"\"\"\n").append(articles.getMessageSummary()).append("\n\"\"\"");
+
+        systemContentBuilder.append("\n\nMore Info: Give me SQL that can be copied and pasted. Nothing more.Do some research with the articles I gave you as well as your knowledge and give me a pure SQL statement.");
+
+        String systemContent = systemContentBuilder.toString();
+
+        // Construct the user message content
+        String userContent = query;
+
+        // Create the messages list
+        List<Message> messages = Arrays.asList(
+            new Message("system", systemContent),
+            new Message("user", userContent)
+        );
+
+        // Create the completion request
+        CompletionRequest completionRequest = new CompletionRequest();
+        completionRequest.setModel("meta-llama-31-8b-instruct");  // Or include extra quotes if needed
+        completionRequest.setMessages(messages);
+
+        // Serialize and log the request payload
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        String jsonPayload = null;
+        try {
+            jsonPayload = objectMapper.writeValueAsString(completionRequest);
+            System.out.println("Request Payload:\n" + jsonPayload);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        // Call the completion endpoint
+        CompletionResponse completionResponse = null;
+        try {
+            completionResponse = completionClient.createCompletion(completionRequest)
+            completionResponse.setArticleSearchResults(articles);
+        } catch (WebApplicationException e) {
+            Response response = e.getResponse();
+            String errorBody = response.readEntity(String.class);
+            System.err.println("Request failed with status code: " + response.getStatus());
+            System.err.println("Error body: " + errorBody);
+            throw e;
+        }
+
+        // Handle the response
+        if (completionResponse != null && completionResponse.getChoices() != null && !completionResponse.getChoices().isEmpty()) {
+            String assistantResponse = completionResponse.getChoices().get(0).getMessage().getContent();
+            System.out.println("Assistant's response: " + assistantResponse);
+        } else {
+            System.err.println("No response from the assistant or unexpected response format.");
+        }
+
+        // Return the response
+        return completionResponse;
+    }
+
 
 }
