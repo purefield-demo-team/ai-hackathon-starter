@@ -20,7 +20,7 @@ public class QueryExecutorResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<CustomerSales> executeQuery() {
-        String sql = "SELECT account_name, SUM(grand_total) AS total_sales " +
+        String sql = "SELECT account_name, SUM(grand_total::numeric) AS total_sales " +
                      "FROM public.data_21_24 " +
                      "WHERE product_offering_group = 'RHEL' " +
                      "  AND account_name NOT IN ( " +
