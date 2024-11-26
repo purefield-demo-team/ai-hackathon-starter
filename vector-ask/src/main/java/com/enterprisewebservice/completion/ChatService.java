@@ -125,7 +125,7 @@ public class ChatService {
 
         // Create the completion request
         VllmCompletionRequest completionRequest = new VllmCompletionRequest();
-        completionRequest.setModel("meta-llama-31-8b-instruct");  // Or include extra quotes if needed
+        completionRequest.setModel("bagel8bv1");  // Or include extra quotes if needed
         completionRequest.setMessages(messages);
         completionRequest.setMaxTokens(2000);
         completionRequest.setTemperature(0.0);
@@ -200,7 +200,7 @@ public class ChatService {
 
         // Create the completion request
         VllmCompletionRequest completionRequest = new VllmCompletionRequest();
-        completionRequest.setModel("meta-llama-31-8b-instruct");  // Or include extra quotes if needed
+        completionRequest.setModel("bagel8bv1");  // Or include extra quotes if needed
         completionRequest.setMessages(messages);
         completionRequest.setMaxTokens(2000);
         completionRequest.setTemperature(0.0);
