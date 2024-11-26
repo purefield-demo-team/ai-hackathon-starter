@@ -275,7 +275,7 @@ public class ChatService {
 
         // Create the completion request
         CompletionRequest completionRequest = new CompletionRequest();
-        completionRequest.setModel("meta-llama-31-8b-instruct");  // Or include extra quotes if needed
+        completionRequest.setModel("gpt-4");  // Or include extra quotes if needed
         completionRequest.setMessages(messages);
 
         // Serialize and log the request payload
