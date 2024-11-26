@@ -1,5 +1,4 @@
 package com.enterprisewebservice.database;
-i
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
