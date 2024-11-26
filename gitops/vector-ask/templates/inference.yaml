@@ -2,11 +2,11 @@ apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
   annotations:
-    openshift.io/display-name: Meta-Llama-31-8B-Instruct
+    openshift.io/display-name: bagel-8b-v1.0
     serving.knative.openshift.io/enablePassthrough: 'true'
     sidecar.istio.io/inject: 'true'
     sidecar.istio.io/rewriteAppHTTPProbers: 'true'
-  name: meta-llama-31-8b-instruct
+  name: bagel-8b-v1.0
   namespace: fihr-rag-serving
   labels:
     opendatahub.io/dashboard: 'true'
@@ -30,10 +30,10 @@ spec:
           cpu: '6'
           memory: 16Gi
           nvidia.com/gpu: '2'
-      runtime: meta-llama-31-8b-instruct
+      runtime: bagel-8b-v1.0
       storage:
         key: aws-connection-aws-s3-models
-        path: models/Llama-3.1-8B-Instruct
+        path: models/bagel-8b-v1.0
     tolerations:
       - effect: NoSchedule
         key: nvidia.com/gpu
