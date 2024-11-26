@@ -17,6 +17,8 @@ import jakarta.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.enterprisewebservice.completion.vllm.*;
 
@@ -84,6 +86,14 @@ public class TaskService {
 
     }
 
+    public static boolean containsSqlAsWord(String input) {
+        // Regex to match 'SQL' as a standalone word, case-insensitively
+        String regex = "\\b(?i)sql\\b";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(input);
+        return matcher.find();
+    }
+
     public CompletionResponse askQuestion(Integer id, String keycloakSubject) throws IOException {
         StrapiServiceResponse<Task> result = getTask(id);
         String query = "Can you help me complete the following task with name: " 
@@ -98,7 +108,12 @@ public class TaskService {
         QuestionParameters parameters = new QuestionParameters();
         parameters.setSubject(keycloakSubject);
         parameters.setTaskIds(taskIds);
-        if(llmModel.equals("llama3"))
+        
+        if(containsSqlAsWord(query))
+        {
+            answer = chatService.askVllmForSQL(parameters, query, 3);
+        }
+        else if(llmModel.equals("llama3"))
         {
             answer = chatService.askVllm(parameters, query, 3);
         }

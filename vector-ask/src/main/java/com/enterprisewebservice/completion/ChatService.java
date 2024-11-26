@@ -181,12 +181,12 @@ public class ChatService {
 
         // Construct the system message content
         StringBuilder systemContentBuilder = new StringBuilder();
-        systemContentBuilder.append("You generate SQL. Use the below information to help generate the correct SQL.\"");
+        systemContentBuilder.append("You generate SQL and only SQL with the following structure: <sql>SELECT * FROM public.data_21_24 WHERE product_offereing_group = 'RHEL'</sql>. You must have the open and closing <sql> tags. Use the below information to generate the correct SQL. Don't write out anything else, just give me SQL I can copy and paste.\"");
 
         systemContentBuilder.append("\n\nNotes:\n\"\"\"\n").append(articles.getMessageSummary()).append("\n\"\"\"");
 
         systemContentBuilder.append("\n\nMore Info: Give me SQL that can be copied and pasted. Nothing more.Do some research with the articles I gave you as well as your knowledge and give me a pure SQL statement.");
-
+        systemContentBuilder.append("\n\nExample Output: <sql>SELECT * FROM public.data_21_24 WHERE product_offereing_group = 'RHEL'</sql>. Yes insert the beginning and ending <sql> tags").append(query);
         String systemContent = systemContentBuilder.toString();
 
         // Construct the user message content
