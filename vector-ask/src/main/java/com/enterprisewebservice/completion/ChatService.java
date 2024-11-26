@@ -127,7 +127,7 @@ public class ChatService {
         VllmCompletionRequest completionRequest = new VllmCompletionRequest();
         completionRequest.setModel("bagel8bv1");  // Or include extra quotes if needed
         completionRequest.setMessages(messages);
-        completionRequest.setMaxTokens(2000);
+        completionRequest.setMaxTokens(4000);
         completionRequest.setTemperature(0.0);
 
         // Serialize and log the request payload
