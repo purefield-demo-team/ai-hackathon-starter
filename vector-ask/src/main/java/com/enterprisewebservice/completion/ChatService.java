@@ -292,7 +292,7 @@ public class ChatService {
         // Call the completion endpoint
         CompletionResponse completionResponse = null;
         try {
-            completionResponse = completionClient.createCompletion(completionRequest)
+            completionResponse = completionClient.createCompletion(completionRequest);
             completionResponse.setArticleSearchResults(articles);
         } catch (WebApplicationException e) {
             Response response = e.getResponse();
