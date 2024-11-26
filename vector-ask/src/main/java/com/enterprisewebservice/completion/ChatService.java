@@ -256,7 +256,7 @@ public class ChatService {
 
         // Construct the system message content
         StringBuilder systemContentBuilder = new StringBuilder();
-        systemContentBuilder.append("You generate SQL. Use the below information to help generate the correct SQL.\"");
+        systemContentBuilder.append("You generate SQL and only SQL. Use the below information to generate the correct SQL. Don't write out anything else, just give me SQL I can copy and paste.\"");
 
         systemContentBuilder.append("\n\nNotes:\n\"\"\"\n").append(articles.getMessageSummary()).append("\n\"\"\"");
 
