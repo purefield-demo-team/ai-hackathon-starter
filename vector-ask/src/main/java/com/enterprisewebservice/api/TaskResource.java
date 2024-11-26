@@ -63,12 +63,14 @@ public class TaskResource {
             {
                 answer = chatService.askVllm(parameters, query, 3);
             }
-            else
+            else if(llmModel.equals("openai"))
             {
                 answer = chatService.ask(parameters, query, 3);
             }
-
-            
+            else if(llmModel.equals("sql"))
+            {
+                answer = chatService.askVllmForSQL(parameters, query, 3);
+            }
 
             return Response.ok(answer.getChoices().get(0).getMessage().getContent()).build();
 
