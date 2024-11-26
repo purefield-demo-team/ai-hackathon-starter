@@ -243,7 +243,7 @@ public class ChatService {
 
     public CompletionResponse askOpenAIForSQL(QuestionParameters parameters, String query, int topN) throws IOException {
         // Generate embeddings for the query
-        Sytem.out.println("insid ask open ai for sql");
+        System.out.println("insid ask open ai for sql");
         System.out.println("Generating embeddings for query: " + query);
         EmbeddingResponse embeddingResponse = embeddingService.generateEmbeddings(List.of(query));
 
