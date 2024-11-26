@@ -261,7 +261,7 @@ public class ChatService {
         systemContentBuilder.append("\n\nNotes:\n\"\"\"\n").append(articles.getMessageSummary()).append("\n\"\"\"");
 
         systemContentBuilder.append("\n\nMore Info: Give me SQL that can be copied and pasted. Nothing more.Do some research with the articles I gave you as well as your knowledge and give me a pure SQL statement.");
-        systemContentBuilder.append("\n\nExample Output: <sql>SELECT * FROM public.data_21_24 WHERE product_offereing_group = 'RHEL'<sql>").append(query);
+        systemContentBuilder.append("\n\nExample Output: <sql>SELECT * FROM public.data_21_24 WHERE product_offereing_group = 'RHEL'</sql>. Yes insert the beginning and ending <sql> tags").append(query);
         String systemContent = systemContentBuilder.toString();
 
         // Construct the user message content
