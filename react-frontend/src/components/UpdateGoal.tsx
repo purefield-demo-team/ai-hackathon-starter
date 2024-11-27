@@ -52,6 +52,7 @@ const UpdateGoal: React.FC = () => {
   const [dueDate, setDueDate] = useState<string | undefined>(undefined);
   const [status, setStatus] = useState<TaskStatus>('not started');
   const [refreshFilter, setRefreshFilter] = useState(false);
+  const [isChatAccordionOpen, setIsChatAccordionOpen] = useState(true);
 
   useEffect(() => {
     setRefreshFilter(false); // Reset the refreshFilter state variable
@@ -363,6 +364,8 @@ const UpdateGoal: React.FC = () => {
               onSubmit={handleSubmit}
               onChange={handleFormChange}
               showGoalsDropdown={false}
+              isChatAccordionOpen={isChatAccordionOpen}
+              setIsChatAccordionOpen={setIsChatAccordionOpen}
             >
               <Grid container justifyContent="space-between" alignItems="center" mt={2}>
                 <Grid item>

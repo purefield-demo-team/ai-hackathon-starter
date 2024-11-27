@@ -52,6 +52,7 @@ const UpdateTask: React.FC = () => {
   const [isPrepopulated, setIsPrepopulated] = useState(true);
   const [preSelectedNotes, setPreSelectedNotes] = useState<Note[]>([]);
   const [initialAssessmentIds, setInitialAssessmentIds] = useState<number[]>([]);
+  const [isChatAccordionOpen, setIsChatAccordionOpen] = useState(true);
 
   const [isCreatingAssessment, setIsCreatingAssessment] = useState(false);
   const [latestAssessment, setLatestAssessment] = useState<GPTAssessment | null>(null);
@@ -357,6 +358,7 @@ const UpdateTask: React.FC = () => {
   
     // Start loading animation
     setIsCreatingAssessment(true);
+    setIsChatAccordionOpen(false);
   
     // Fetch the current assessments and store their IDs
     let currentAssessmentIds: number[] = [];
@@ -493,6 +495,8 @@ const UpdateTask: React.FC = () => {
           onSubmit={handleUpdate}
           onChange={handleFormChange}
           onGoalsChange={handleGoalsChange}
+          isChatAccordionOpen={isChatAccordionOpen}
+          setIsChatAccordionOpen={setIsChatAccordionOpen}
           showGoalsDropdown={true}
         >
          
@@ -559,12 +563,11 @@ const UpdateTask: React.FC = () => {
 
               {/* Rest of your content */}
               <Typography variant="h6" style={{ color: 'white' }}>
-                Latest Assessment
+                Response
               </Typography>
               <Typography
                 variant="body1"
-                onClick={() => openModal(latestAssessment)}
-                style={{ cursor: 'pointer', textDecoration: 'underline', color: 'white' }}
+                style={{ cursor: 'pointer', color: 'white' }}
               >
                 <ReactMarkdown>{displayedAssessment}</ReactMarkdown>
               </Typography>

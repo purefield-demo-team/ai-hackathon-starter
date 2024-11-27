@@ -40,6 +40,7 @@ const Dashboard: React.FC = () => {
     const { selectedTags, setSelectedTags } = useTags();
     const [openModal, setOpenModal] = useState(false);
     const [dialogTags, setDialogTags] = useState<Tag[]>([]);
+    const [isChatAccordionOpen, setIsChatAccordionOpen] = useState(true);
     
     const [metrics, setMetrics] = useState<{
         goalCount: number;
@@ -367,6 +368,8 @@ const Dashboard: React.FC = () => {
               onSubmit={handleSubmit}
               onChange={handleFormChange}
               showGoalsDropdown={false}
+              isChatAccordionOpen={isChatAccordionOpen}
+              setIsChatAccordionOpen={setIsChatAccordionOpen}
             >
               <Grid container justifyContent="space-between" alignItems="center" mt={2}>
                 <Grid item>

@@ -14,6 +14,8 @@ type TaskFormProps = {
   onChange: (field: keyof Task, value: any) => void;
   onGoalsChange?: (selectedGoals: Goal[]) => void;
   children: React.ReactNode;
+  isChatAccordionOpen: boolean;
+  setIsChatAccordionOpen: (isOpen: boolean) => void;
   showGoalsDropdown?: boolean;
 };
 
@@ -26,6 +28,8 @@ const TaskForm: React.FC<TaskFormProps> = ({
   onChange,
   onGoalsChange,
   children,
+  isChatAccordionOpen,
+  setIsChatAccordionOpen,
   showGoalsDropdown,
 }) => {
   // Add state for selected goals
@@ -45,9 +49,14 @@ const TaskForm: React.FC<TaskFormProps> = ({
     setExpanded(isExpanded);
   };
 
+  const handleChatAccordionChange = (event: React.SyntheticEvent, isExpanded: boolean) => {
+    setIsChatAccordionOpen(isExpanded);
+  };
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    setExpanded(false); // Close the accordion on submit
+    setExpanded(false);
+    setIsChatAccordionOpen(false); // Close the accordion on submit
     onSubmit(event);    // Call the onSubmit prop passed from UpdateTask.tsx
   };
 
@@ -158,12 +167,22 @@ const TaskForm: React.FC<TaskFormProps> = ({
             />
           </Grid>
           <Grid item xs={12} sm={12}>
-            <MUIQuillEditor
-                value={description} // Use the `description` field
-                onChange={(value) => onChange('description', value)} // Update the `description` field
-                style={{ marginBottom: '40px', height: '300px' }}// Add a margin to the MUIQuillEditor component
-              />
-            
+            <Accordion expanded={isChatAccordionOpen} onChange={handleChatAccordionChange}>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="chat-fields-content"
+                id="chat-fields-header"
+              >
+                <Typography>Chat</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+              <MUIQuillEditor
+                  value={description} // Use the `description` field
+                  onChange={(value) => onChange('description', value)} // Update the `description` field
+                  style={{ marginBottom: '40px', height: '300px' }}// Add a margin to the MUIQuillEditor component
+                />
+              </AccordionDetails>
+            </Accordion>
           </Grid>
           <Grid item xs={12}>
             <Accordion expanded={expanded} onChange={handleAccordionChange}>

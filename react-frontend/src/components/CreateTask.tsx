@@ -30,6 +30,7 @@ const CreateTask: React.FC = () => {
   const { keycloak } = useKeycloak();
   const navigate = useNavigate();
   const { userProfile, setUserProfile } = useUserProfile();
+  const [isChatAccordionOpen, setIsChatAccordionOpen] = useState(true);
   const [task, setTask] = useState<Task>({
     title: '',
     description: '',
@@ -167,6 +168,8 @@ const CreateTask: React.FC = () => {
           onSubmit={handleSubmit}
           onChange={handleFormChange}
           showGoalsDropdown={true}
+          isChatAccordionOpen={isChatAccordionOpen}
+          setIsChatAccordionOpen={setIsChatAccordionOpen}
         >
           <Grid container justifyContent="space-between" alignItems="center" mt={2}>
             <Grid item>
