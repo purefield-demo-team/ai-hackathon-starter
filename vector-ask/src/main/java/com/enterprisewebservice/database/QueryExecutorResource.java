@@ -29,7 +29,7 @@ public class QueryExecutorResource {
 
             while (resultSet.next()) {
                 String accountName = resultSet.getString("account_name");
-                BigDecimal totalSales = resultSet.getBigDecimal("total_sales");
+                BigDecimal totalSales = resultSet.getBigDecimal("grand_total");
                 results.add(new CustomerSales(accountName, totalSales));
             }
 
