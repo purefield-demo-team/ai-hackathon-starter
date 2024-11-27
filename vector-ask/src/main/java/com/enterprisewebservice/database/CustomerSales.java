@@ -4,13 +4,13 @@ import java.math.BigDecimal;
 
 public class CustomerSales {
     public String accountName;
-    public BigDecimal totalSales;
+    public BigDecimal grandTotal;
 
     public CustomerSales() {
     }
 
-    public CustomerSales(String accountName, BigDecimal totalSales) {
+    public CustomerSales(String accountName, BigDecimal grandTotal) {
         this.accountName = accountName;
-        this.totalSales = totalSales;
+        this.grandTotal = grandTotal;
     }
 }
