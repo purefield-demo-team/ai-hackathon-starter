@@ -27,11 +27,21 @@ public class QueryExecutorResource {
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {
 
-            while (resultSet.next()) {
-                String accountName = resultSet.getString("account_name");
-                BigDecimal totalSales = resultSet.getBigDecimal("grand_total");
-                results.add(new CustomerSales(accountName, totalSales));
-            }
+                while (resultSet.next()) {
+                    String accountName = resultSet.getString("account_name");
+                    String grandTotalStr = resultSet.getString("grand_total");
+                
+                    // Keep the formatted money string
+                    String totalSalesFormatted = grandTotalStr;
+                
+                    // Remove currency symbols and commas
+                    String grandTotalCleaned = grandTotalStr.replaceAll("[^\\d.-]", "");
+                
+                    // Parse the cleaned string into BigDecimal
+                    BigDecimal totalSales = new BigDecimal(grandTotalCleaned);
+                
+                    results.add(new CustomerSales(accountName, totalSales, totalSalesFormatted));
+                }
 
         } catch (SQLException e) {
             e.printStackTrace();
