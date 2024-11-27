@@ -68,6 +68,10 @@
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-qute</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5</artifactId>
       <scope>test</scope>
     </dependency>
@@ -92,8 +96,8 @@
       <version>4.5.13</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore</artifactId>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
       <version>4.4.14</version>
     </dependency>
     <dependency>
@@ -102,8 +106,8 @@
       <version>3.6.1</version>
     </dependency>
     <dependency>
-        <groupId>software.amazon.awssdk</groupId>
-        <artifactId>bedrockruntime</artifactId>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>bedrockruntime</artifactId>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>

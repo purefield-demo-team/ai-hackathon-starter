@@ -1,0 +1,18 @@
+<!-- src/main/resources/templates/customersales.html -->
+<table>
+    <thead>
+      <tr>
+        <th>Account Name</th>
+        <th>Total Sales</th>
+      </tr>
+    </thead>
+    <tbody>
+      {#for cs in customerSalesList}
+        <tr>
+          <td>{cs.accountName}</td>
+          <td>{cs.totalSales}</td>
+        </tr>
+      {/for}
+    </tbody>
+  </table>
+  

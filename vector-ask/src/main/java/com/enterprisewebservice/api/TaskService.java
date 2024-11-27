@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.postgresql.core.QueryExecutor;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -21,6 +22,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.enterprisewebservice.completion.vllm.*;
+import com.enterprisewebservice.database.CustomerSales;
+import com.enterprisewebservice.database.CustomerSalesResource;
+import com.enterprisewebservice.database.QueryExecutorResource;
+import com.enterprisewebservice.database.SqlUtil;
 
 @ApplicationScoped
 public class TaskService {
@@ -30,6 +35,12 @@ public class TaskService {
 
     @Inject
     ChatService chatService;
+
+    @Inject
+    CustomerSalesResource customerSalesResource;
+
+    @Inject
+    QueryExecutorResource queryExecutorResource;
 
     @ConfigProperty(name = "llmmodel")
     String llmModel;
@@ -112,6 +123,9 @@ public class TaskService {
         if(containsSqlAsWord(query))
         {
             answer = chatService.askOpenAIForSQL(parameters, query, 3);
+            List<CustomerSales> salesInfo = queryExecutorResource.executeQuery(SqlUtil.stripSqlTags(answer.getChoices().get(0).getMessage().getContent()));
+            String htmlString = customerSalesResource.getCustomerSalesHtml(salesInfo);
+            answer.getChoices().get(0).getMessage().setContent(htmlString);
         }
         else if(llmModel.equals("llama3"))
         {
@@ -124,10 +138,16 @@ public class TaskService {
         else if(llmModel.equals("sql"))
         {
             answer = chatService.askVllmForSQL(parameters, query, 3);
+            List<CustomerSales> salesInfo = queryExecutorResource.executeQuery(SqlUtil.stripSqlTags(answer.getChoices().get(0).getMessage().getContent()));
+            String htmlString = customerSalesResource.getCustomerSalesHtml(salesInfo);
+            answer.getChoices().get(0).getMessage().setContent(htmlString);
         }
         else if(llmModel.equals("openaisql"))
         {
-            answer = chatService.askOpenAIForSQL(parameters, query, 0);
+            answer = chatService.askOpenAIForSQL(parameters, query, 3);
+            List<CustomerSales> salesInfo = queryExecutorResource.executeQuery(SqlUtil.stripSqlTags(answer.getChoices().get(0).getMessage().getContent()));
+            String htmlString = customerSalesResource.getCustomerSalesHtml(salesInfo);
+            answer.getChoices().get(0).getMessage().setContent(htmlString);
         }
         return answer;
     }
