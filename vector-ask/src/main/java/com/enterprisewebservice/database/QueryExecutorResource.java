@@ -22,7 +22,7 @@ public class QueryExecutorResource {
     public List<CustomerSales> executeQuery(String sql) {
 
         List<CustomerSales> results = new ArrayList<>();
-
+        System.out.println("The Query is: " + sql);
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {
