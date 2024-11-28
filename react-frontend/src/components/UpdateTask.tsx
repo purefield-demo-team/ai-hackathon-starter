@@ -29,6 +29,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import ReferenceSelector from './ReferenceSelector';
 import AddIcon from '@mui/icons-material/Add';
 import "./circularProgress.css";
+import rehypeRaw from 'rehype-raw';
 import '../App.css';
 
 
@@ -569,7 +570,7 @@ const UpdateTask: React.FC = () => {
                 variant="body1"
                 style={{ cursor: 'pointer', color: 'white' }}
               >
-                <ReactMarkdown>{displayedAssessment}</ReactMarkdown>
+                <ReactMarkdown rehypePlugins={[rehypeRaw]}>{displayedAssessment}</ReactMarkdown>
               </Typography>
 
               {/* References */}
