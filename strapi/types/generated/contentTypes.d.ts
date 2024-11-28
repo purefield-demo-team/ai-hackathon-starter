@@ -825,6 +825,43 @@ export interface ApiAgentRouterAgentRouter extends Schema.CollectionType {
   };
 }
 
+export interface ApiDataSourceDataSource extends Schema.CollectionType {
+  collectionName: 'data_sources';
+  info: {
+    singularName: 'data-source';
+    pluralName: 'data-sources';
+    displayName: 'Data Source';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    name: Attribute.String;
+    username: Attribute.String;
+    password: Attribute.String;
+    host: Attribute.String;
+    tlsRejectUnauthorized: Attribute.Integer;
+    clientType: Attribute.String;
+    ssl: Attribute.Boolean;
+    schema: Attribute.Text;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::data-source.data-source',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::data-source.data-source',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiGoalGoal extends Schema.CollectionType {
   collectionName: 'goals';
   info: {
@@ -1171,6 +1208,45 @@ export interface ApiTaskTask extends Schema.CollectionType {
   };
 }
 
+export interface ApiTaskDataSourceTaskDataSource extends Schema.CollectionType {
+  collectionName: 'task_data_sources';
+  info: {
+    singularName: 'task-data-source';
+    pluralName: 'task-data-sources';
+    displayName: 'Task Data Source';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    dataSource: Attribute.Relation<
+      'api::task-data-source.task-data-source',
+      'oneToOne',
+      'api::data-source.data-source'
+    >;
+    task: Attribute.Relation<
+      'api::task-data-source.task-data-source',
+      'oneToOne',
+      'api::task.task'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::task-data-source.task-data-source',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::task-data-source.task-data-source',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiTaskNoteTaskNote extends Schema.CollectionType {
   collectionName: 'task_notes';
   info: {
@@ -1203,6 +1279,45 @@ export interface ApiTaskNoteTaskNote extends Schema.CollectionType {
       Attribute.Private;
     updatedBy: Attribute.Relation<
       'api::task-note.task-note',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiUserDataSourceUserDataSource extends Schema.CollectionType {
+  collectionName: 'user_data_sources';
+  info: {
+    singularName: 'user-data-source';
+    pluralName: 'user-data-sources';
+    displayName: 'User Data Source';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    dataSource: Attribute.Relation<
+      'api::user-data-source.user-data-source',
+      'oneToOne',
+      'api::data-source.data-source'
+    >;
+    userProfile: Attribute.Relation<
+      'api::user-data-source.user-data-source',
+      'oneToOne',
+      'api::user-profile.user-profile'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::user-data-source.user-data-source',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::user-data-source.user-data-source',
       'oneToOne',
       'admin::user'
     > &
@@ -1272,6 +1387,7 @@ declare module '@strapi/types' {
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
       'api::agent-router.agent-router': ApiAgentRouterAgentRouter;
+      'api::data-source.data-source': ApiDataSourceDataSource;
       'api::goal.goal': ApiGoalGoal;
       'api::goal-task.goal-task': ApiGoalTaskGoalTask;
       'api::gpt-assessment.gpt-assessment': ApiGptAssessmentGptAssessment;
@@ -1281,7 +1397,9 @@ declare module '@strapi/types' {
       'api::note.note': ApiNoteNote;
       'api::tag.tag': ApiTagTag;
       'api::task.task': ApiTaskTask;
+      'api::task-data-source.task-data-source': ApiTaskDataSourceTaskDataSource;
       'api::task-note.task-note': ApiTaskNoteTaskNote;
+      'api::user-data-source.user-data-source': ApiUserDataSourceUserDataSource;
       'api::user-profile.user-profile': ApiUserProfileUserProfile;
     }
   }

@@ -1,0 +1,39 @@
+{
+  "kind": "collectionType",
+  "collectionName": "data_sources",
+  "info": {
+    "singularName": "data-source",
+    "pluralName": "data-sources",
+    "displayName": "Data Source"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "username": {
+      "type": "string"
+    },
+    "password": {
+      "type": "string"
+    },
+    "host": {
+      "type": "string"
+    },
+    "tlsRejectUnauthorized": {
+      "type": "integer"
+    },
+    "clientType": {
+      "type": "string"
+    },
+    "ssl": {
+      "type": "boolean"
+    },
+    "schema": {
+      "type": "text"
+    }
+  }
+}

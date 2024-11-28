@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "user_data_sources",
+  "info": {
+    "singularName": "user-data-source",
+    "pluralName": "user-data-sources",
+    "displayName": "User Data Source"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "dataSource": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::data-source.data-source"
+    },
+    "userProfile": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::user-profile.user-profile"
+    }
+  }
+}
