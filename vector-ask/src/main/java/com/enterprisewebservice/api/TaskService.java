@@ -5,6 +5,7 @@ import com.enterprisewebservice.completion.CompletionResponse;
 import com.enterprisewebservice.completion.QuestionParameters;
 import com.enterprisewebservice.model.ErrorResponse;
 import com.enterprisewebservice.model.Task;
+import com.enterprisewebservice.model.datasource.TaskDataSource;
 import com.enterprisewebservice.model.StrapiServiceResponse;
 import com.enterprisewebservice.model.Tag;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -38,6 +39,9 @@ public class TaskService {
 
     @Inject
     CustomerSalesResource customerSalesResource;
+
+    @Inject
+    TaskDataSourceService taskDataSourceService;
 
     @Inject
     QueryExecutorResource queryExecutorResource;
@@ -120,9 +124,24 @@ public class TaskService {
         parameters.setSubject(keycloakSubject);
         parameters.setTaskIds(taskIds);
         
-        if(containsSqlAsWord(query))
+        //Find if ww need to generate a query for a data source like postgresql
+        StrapiServiceResponse<List<TaskDataSource>> taskDataSourceStrapi = taskDataSourceService.getByTaskId(taskId.toString());
+        TaskDataSource taskDataSource = null;
+        if(taskDataSourceStrapi.getData() != null && taskDataSourceStrapi.getData().size() > 0)
+        {
+            taskDataSource = taskDataSourceStrapi.getData().get(0);
+        }
+
+        if(taskDataSource != null && llmModel.equals("openai"))
         {
             answer = chatService.askOpenAIForSQL(parameters, query, 3);
+            List<CustomerSales> salesInfo = queryExecutorResource.executeQuery(SqlUtil.stripSqlTags(answer.getChoices().get(0).getMessage().getContent()));
+            String htmlString = customerSalesResource.getCustomerSalesHtml(salesInfo);
+            answer.getChoices().get(0).getMessage().setContent(htmlString);
+        }
+        else if(taskDataSource != null && llmModel.equals("llama3"))
+        {
+            answer = chatService.askVllmForSQL(parameters, query, 3);
             List<CustomerSales> salesInfo = queryExecutorResource.executeQuery(SqlUtil.stripSqlTags(answer.getChoices().get(0).getMessage().getContent()));
             String htmlString = customerSalesResource.getCustomerSalesHtml(salesInfo);
             answer.getChoices().get(0).getMessage().setContent(htmlString);
@@ -134,20 +153,6 @@ public class TaskService {
         else if(llmModel.equals("openai"))
         {
             answer = chatService.ask(parameters, query, 3);
-        }
-        else if(llmModel.equals("sql"))
-        {
-            answer = chatService.askVllmForSQL(parameters, query, 3);
-            List<CustomerSales> salesInfo = queryExecutorResource.executeQuery(SqlUtil.stripSqlTags(answer.getChoices().get(0).getMessage().getContent()));
-            String htmlString = customerSalesResource.getCustomerSalesHtml(salesInfo);
-            answer.getChoices().get(0).getMessage().setContent(htmlString);
-        }
-        else if(llmModel.equals("openaisql"))
-        {
-            answer = chatService.askOpenAIForSQL(parameters, query, 3);
-            List<CustomerSales> salesInfo = queryExecutorResource.executeQuery(SqlUtil.stripSqlTags(answer.getChoices().get(0).getMessage().getContent()));
-            String htmlString = customerSalesResource.getCustomerSalesHtml(salesInfo);
-            answer.getChoices().get(0).getMessage().setContent(htmlString);
         }
         return answer;
     }
