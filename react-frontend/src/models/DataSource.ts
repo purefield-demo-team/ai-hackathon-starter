@@ -1,5 +1,6 @@
 import internal from 'stream';
 import { LlmAgentNode } from './LlmAgentNode';
+import { Media } from './media/Media';
 
 export interface DataSource {
     id?: number;
@@ -11,4 +12,5 @@ export interface DataSource {
     tlsRejectUnauthorized: number;
     ssl: boolean;
     schema: string;
+    image: Media;
 }

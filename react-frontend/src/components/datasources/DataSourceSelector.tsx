@@ -23,6 +23,11 @@ const DataSourceSelector: React.FC<DataSourceSelectorProps> = ({
   currentDataSourceId,
   onDataSourceSelect,
 }) => {
+
+  var  backendUrl = process.env.REACT_APP_STRAPI_API_URL;
+  if(backendUrl != undefined) {
+    backendUrl = backendUrl.slice(0, -4);
+  }
   if (!userDataSources || userDataSources.length === 0) {
     return <Typography variant="body1">No data sources available.</Typography>;
   }
@@ -64,7 +69,7 @@ const DataSourceSelector: React.FC<DataSourceSelectorProps> = ({
                     <CardMedia
                       component="img"
                       height="140"
-                      image={userDataSource.dataSource.image}
+                      image={backendUrl + userDataSource.dataSource.image.url}
                       alt={userDataSource.dataSource.name}
                     />
                   )}

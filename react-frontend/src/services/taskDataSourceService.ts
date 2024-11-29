@@ -29,11 +29,11 @@ const taskDataSourceService = {
       return result;
     }
   },
-  getByTaskId: async (id: string | undefined): Promise<StrapiServiceResponse<TaskDataSource>> => {
+  getByTaskId: async (id: string | undefined): Promise<StrapiServiceResponse<TaskDataSource[]>> => {
     try {
 
       if (!id) {
-        const result: StrapiServiceResponse<TaskDataSource> = {
+        const result: StrapiServiceResponse<TaskDataSource[]> = {
           data: null,
           error: {
             status: 400,
@@ -44,17 +44,17 @@ const taskDataSourceService = {
         return result;
       }
 
-      const response = await api.get(`/task-data-sources/?populate[0]=task&populate[1]=userProfile$filters[task][id][$eq]=${id}`);
-      const result: StrapiServiceResponse<TaskDataSource> = { data: response.data.data, error: null };
+      const response = await api.get(`/task-data-sources/?populate[0]=dataSource&populate[1]=task$filters[task][id][$eq]=${id}`);
+      const result: StrapiServiceResponse<TaskDataSource[]> = { data: response.data.data, error: null };
       return result;
     } catch (error) {
-      const result: StrapiServiceResponse<TaskDataSource> = { data: null, error: error as ErrorResponse };
+      const result: StrapiServiceResponse<TaskDataSource[]> = { data: null, error: error as ErrorResponse };
       return result;
     }
   },
   create: async (taskDataSource: TaskDataSource): Promise<StrapiServiceResponse<TaskDataSource>> => {
     try {
-      const response = await api.post('/task-data-sources', { data: taskDataSource });
+      const response = await api.post('/task-data-sources?populate[0]=task&populate[1]=dataSource', { data: taskDataSource });
       const result: StrapiServiceResponse<TaskDataSource> = { data: response.data.data, error: null };
       return result;
     } catch (error) {

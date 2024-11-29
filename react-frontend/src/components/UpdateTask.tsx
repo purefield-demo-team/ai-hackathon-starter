@@ -237,7 +237,7 @@ const UpdateTask: React.FC = () => {
     const fetchTaskDataSource = async () => {
       const response = await taskDataSourceService.getByTaskId(id);
       if (!response.error && response.data !== null) {
-        setTaskDataSource(response.data);
+        setTaskDataSource(response.data[0]);
       } else {
         setTaskDataSource(null);
       }
@@ -443,6 +443,12 @@ const UpdateTask: React.FC = () => {
     async (selectedUserDataSource: UserDataSource) => {
       if (!task || !userProfile) return;
 
+      if(taskDataSource != null && taskDataSource.dataSource != null && taskDataSource.dataSource.id != null && selectedUserDataSource.dataSource.id == taskDataSource.dataSource.id)
+      {
+        taskDataSourceService.delete(taskDataSource.id);
+        setTaskDataSource(null);
+        return;
+      } 
       // Delete existing TaskDataSource (if any)
       if (taskDataSource) {
         await taskDataSourceService.delete(taskDataSource.id);
