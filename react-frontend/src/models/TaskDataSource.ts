@@ -7,4 +7,5 @@ export interface TaskDataSource {
     id?: number;
     task: Task;
     dataSource: DataSource;
+    taskDataSourceId: string;
 }

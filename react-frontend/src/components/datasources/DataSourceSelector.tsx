@@ -1,7 +1,16 @@
 // DataSourceSelector.tsx
 import React from 'react';
 import { UserDataSource } from '../../models/UserDataSource';
-import { Box, Grid, Card, CardContent, Typography, CardActionArea } from '@mui/material';
+import {
+  Box,
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  CardActionArea,
+  CardMedia,
+} from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 interface DataSourceSelectorProps {
   userDataSources: UserDataSource[];
@@ -20,31 +29,58 @@ const DataSourceSelector: React.FC<DataSourceSelectorProps> = ({
 
   return (
     <Box>
-      <Typography variant="h6">Select Data Source</Typography>
+      <Typography variant="h6" gutterBottom>
+        Select Data Source
+      </Typography>
       <Grid container spacing={2}>
-        {userDataSources.map((userDataSource) => (
-          <Grid item xs={12} sm={6} md={4} key={userDataSource.id}>
-            <Card
-              style={{
-                border:
-                  currentDataSourceId === userDataSource.dataSource.id
-                    ? '2px solid blue'
-                    : '1px solid gray',
-              }}
-            >
-              <CardActionArea onClick={() => onDataSourceSelect(userDataSource)}>
-                <CardContent>
-                  <Typography variant="h6">
-                    {userDataSource.dataSource.name}
-                  </Typography>
-                  <Typography variant="body2">
-                    {userDataSource.dataSource.description}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
-        ))}
+        {userDataSources.map((userDataSource) => {
+          const isSelected =
+            currentDataSourceId === userDataSource.dataSource.id;
+          return (
+            <Grid item xs={12} sm={6} md={4} key={userDataSource.id}>
+              <Card
+                style={{
+                  border: isSelected ? '2px solid #4caf50' : '1px solid gray',
+                  position: 'relative',
+                }}
+              >
+                <CardActionArea
+                  onClick={() => onDataSourceSelect(userDataSource)}
+                >
+                  {/* Display the green checkmark if selected */}
+                  {isSelected && (
+                    <CheckCircleIcon
+                      style={{
+                        color: '#4caf50',
+                        position: 'absolute',
+                        top: 8,
+                        right: 8,
+                        fontSize: 32,
+                      }}
+                    />
+                  )}
+                  {/* Optional: Add an image or icon representing the data source */}
+                  {userDataSource.dataSource.image && (
+                    <CardMedia
+                      component="img"
+                      height="140"
+                      image={userDataSource.dataSource.image}
+                      alt={userDataSource.dataSource.name}
+                    />
+                  )}
+                  <CardContent>
+                    <Typography variant="h6">
+                      {userDataSource.dataSource.name}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {userDataSource.dataSource.description}
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
+          );
+        })}
       </Grid>
     </Box>
   );

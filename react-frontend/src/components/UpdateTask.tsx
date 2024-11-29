@@ -451,7 +451,8 @@ const UpdateTask: React.FC = () => {
       // Create new TaskDataSource
       const newTaskDataSource: TaskDataSource = {
         task: task,
-        dataSource: selectedUserDataSource.dataSource
+        dataSource: selectedUserDataSource.dataSource,
+        taskDataSourceId: task.id + '-'+ selectedUserDataSource.dataSource.id,
       };
 
       const response = await taskDataSourceService.create(newTaskDataSource);

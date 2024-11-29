@@ -846,6 +846,7 @@ export interface ApiDataSourceDataSource extends Schema.CollectionType {
     ssl: Attribute.Boolean;
     schema: Attribute.Text;
     description: Attribute.Text;
+    image: Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
