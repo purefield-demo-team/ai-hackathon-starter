@@ -831,6 +831,7 @@ export interface ApiDataSourceDataSource extends Schema.CollectionType {
     singularName: 'data-source';
     pluralName: 'data-sources';
     displayName: 'Data Source';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -844,6 +845,7 @@ export interface ApiDataSourceDataSource extends Schema.CollectionType {
     clientType: Attribute.String;
     ssl: Attribute.Boolean;
     schema: Attribute.Text;
+    description: Attribute.Text;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

@@ -27,6 +27,8 @@ import ReactMarkdown from 'react-markdown';
 import { IconButton } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ReferenceSelector from './ReferenceSelector';
+import userDataSourceService from '../services/userDataSourceService';
+import { UserDataSource } from '../models/UserDataSource';
 import AddIcon from '@mui/icons-material/Add';
 import "./circularProgress.css";
 import rehypeRaw from 'rehype-raw';
@@ -48,6 +50,7 @@ const UpdateTask: React.FC = () => {
   const [taskNotes, setTaskNotes] = useState<TaskNote[]>([]);
   const [preSelectedNotesLoading, setPreselectedNotesLoading] = useState(true);
   const [notes, setNotes] = useState<Note[]>([]);
+  const [userDataSources, setUserDataSources] = useState<UserDataSource[]>([]);
   const [refreshFilter, setRefreshFilter] = useState(false);
   const { selectedTasks, setSelectedTasks } = useTasks();
   const [isPrepopulated, setIsPrepopulated] = useState(true);
@@ -214,6 +217,19 @@ const UpdateTask: React.FC = () => {
       }
     };
     fetchNotes();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserDataSources = async () => {
+      const response: StrapiServiceResponse<UserDataSource[]> = await userDataSourceService.getAll(userProfile?.keycloaksubject);
+      if (!response.error && response.data !== null) {
+        setUserDataSources(response.data);
+      } else {
+        // handle error
+        console.log(response.error);
+      }
+    };
+    fetchUserDataSources();
   }, []);
 
   useEffect(() => {
@@ -487,8 +503,8 @@ const UpdateTask: React.FC = () => {
         <TasksFilter keycloakSubject={userProfile?.keycloaksubject} refresh={refreshFilter} />
       </Grid>
       <Grid item xs={12} sm={8} md={8} lg={10} className="main-content">
-        <TagInput task={task} onTagsChange={handleTagsChange} userProfile={userProfile} />
         <Typography variant="h4" gutterBottom>Update Task</Typography>
+        <TagInput task={task} onTagsChange={handleTagsChange} userProfile={userProfile} />
         {isDataLoaded ? <TaskForm
           task={task}
           goals={goals}

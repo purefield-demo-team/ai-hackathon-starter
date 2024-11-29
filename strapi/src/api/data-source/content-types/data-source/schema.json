@@ -4,7 +4,8 @@
   "info": {
     "singularName": "data-source",
     "pluralName": "data-sources",
-    "displayName": "Data Source"
+    "displayName": "Data Source",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -33,6 +34,9 @@
       "type": "boolean"
     },
     "schema": {
+      "type": "text"
+    },
+    "description": {
       "type": "text"
     }
   }
