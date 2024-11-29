@@ -1,7 +1,9 @@
 package com.enterprisewebservice.model.datasource;
 
 import com.enterprisewebservice.model.Task;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TaskDataSource {
     private Long id;
     private RagDataSource dataSource;
