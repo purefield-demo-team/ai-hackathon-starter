@@ -4,6 +4,7 @@ import { GoalTask } from '../models/GoalTask';
 import { Task, TaskStatus } from '../models/Task';
 import MUIQuillEditor from './MUIQuillEditor';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import DataSourceSelector from './datasources/DataSourceSelector';
 import { Button, TextField, FormControl, Typography, InputLabel, Select, MenuItem, Box, Grid, CircularProgress, SelectChangeEvent, Divider, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 
 type TaskFormProps = {
@@ -126,9 +127,8 @@ const TaskForm: React.FC<TaskFormProps> = ({
     <form onSubmit={handleSubmit}>
 
       <Box component="div" className="form-container">
-       
       <Grid container spacing={2}>
-          {goals && goals.length > 0  && showGoalsDropdown ? (
+          {/* {goals && goals.length > 0  && showGoalsDropdown ? (
             <Grid item xs={12}>
               <InputLabel>Goals</InputLabel>
               <Select
@@ -157,7 +157,8 @@ const TaskForm: React.FC<TaskFormProps> = ({
           </Grid>
           ) : (
           ""
-          )}
+          )} */}
+          <Grid item xs={12}></Grid>
           <Grid item xs={12}>
             <TextField
               fullWidth

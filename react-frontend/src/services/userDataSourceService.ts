@@ -20,7 +20,7 @@ const userDataSourceService = {
         };
         return result;
       }
-      const response = await api.get(`/user-data-sources?populate[0]=task&filters[userProfile][keycloaksubject][$eq]=${keycloakSubject}`);
+      const response = await api.get(`/user-data-sources?populate[0]=dataSource&filters[userProfile][keycloaksubject][$eq]=${keycloakSubject}`);
      
       const result: StrapiServiceResponse<UserDataSource[]> = { data: response.data.data, error: null };
       return result;

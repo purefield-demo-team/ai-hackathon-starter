@@ -29,7 +29,7 @@ const taskDataSourceService = {
       return result;
     }
   },
-  get: async (id: string | undefined): Promise<StrapiServiceResponse<TaskDataSource>> => {
+  getByTaskId: async (id: string | undefined): Promise<StrapiServiceResponse<TaskDataSource>> => {
     try {
 
       if (!id) {
@@ -60,6 +60,14 @@ const taskDataSourceService = {
     } catch (error) {
       const result: StrapiServiceResponse<TaskDataSource> = { data: null, error: error as ErrorResponse };
       return result;
+    }
+  },
+  delete: async (id: number | undefined): Promise<StrapiServiceResponse<TaskDataSource>> => {
+    try {
+      await api.delete(`/task-data-sources/${id}`);
+      return { data: null, error: null };
+    } catch (error) {
+      return { data: null, error: error as ErrorResponse };
     }
   },
 };

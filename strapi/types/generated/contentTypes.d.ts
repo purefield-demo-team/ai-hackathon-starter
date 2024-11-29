@@ -1216,6 +1216,7 @@ export interface ApiTaskDataSourceTaskDataSource extends Schema.CollectionType {
     singularName: 'task-data-source';
     pluralName: 'task-data-sources';
     displayName: 'Task Data Source';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -1231,6 +1232,7 @@ export interface ApiTaskDataSourceTaskDataSource extends Schema.CollectionType {
       'oneToOne',
       'api::task.task'
     >;
+    taskDataSourceId: Attribute.String & Attribute.Unique;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

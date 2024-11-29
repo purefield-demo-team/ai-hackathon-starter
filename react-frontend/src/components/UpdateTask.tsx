@@ -13,7 +13,8 @@ import { TagInput } from './TagInput';
 import { Tag } from '../models/Tag';
 import { TaskNote } from '../models/TaskNote';
 import TasksFilter from './TasksFilter';
-import { Container, Typography, Button, Box, Grid, CircularProgress, Modal } from '@mui/material';
+import { Container, Typography, Button, Box, Grid, CircularProgress, Modal, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
 import { StrapiServiceResponse } from '../types/StrapiServiceResponse';
 import taskNoteService from '../services/taskNoteService';
@@ -28,7 +29,10 @@ import { IconButton } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ReferenceSelector from './ReferenceSelector';
 import userDataSourceService from '../services/userDataSourceService';
+import taskDataSourceService from '../services/taskDataSourceService';
 import { UserDataSource } from '../models/UserDataSource';
+import { TaskDataSource } from '../models/TaskDataSource';
+import DataSourceSelector from './datasources/DataSourceSelector';
 import AddIcon from '@mui/icons-material/Add';
 import "./circularProgress.css";
 import rehypeRaw from 'rehype-raw';
@@ -67,11 +71,19 @@ const UpdateTask: React.FC = () => {
 
   const [isAssessmentVisible, setIsAssessmentVisible] = useState(true);
 
+  const [taskDataSource, setTaskDataSource] = useState<TaskDataSource | null>(null);
+
   
   const { userProfile, setUserProfile } = useUserProfile();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAssessment, setSelectedAssessment] = useState<GPTAssessment | null>(null);
+
+  const [settingsExpanded, setSettingsExpanded] = useState<boolean>(false);
+
+  const handleSettingsAccordionChange = (event: React.SyntheticEvent, isExpanded: boolean) => {
+    setSettingsExpanded(isExpanded);
+  };
 
   const openModal = (assessment: GPTAssessment) => {
     setSelectedAssessment(assessment);
@@ -218,6 +230,20 @@ const UpdateTask: React.FC = () => {
     };
     fetchNotes();
   }, []);
+
+
+  // Fetch the existing TaskDataSource for the task
+  useEffect(() => {
+    const fetchTaskDataSource = async () => {
+      const response = await taskDataSourceService.getByTaskId(id);
+      if (!response.error && response.data !== null) {
+        setTaskDataSource(response.data);
+      } else {
+        setTaskDataSource(null);
+      }
+    };
+    fetchTaskDataSource();
+  }, [id]);
 
   useEffect(() => {
     const fetchUserDataSources = async () => {
@@ -412,7 +438,31 @@ const UpdateTask: React.FC = () => {
     }
   };
    
-  
+  // Handle DataSource selection
+  const handleDataSourceSelection = useCallback(
+    async (selectedUserDataSource: UserDataSource) => {
+      if (!task || !userProfile) return;
+
+      // Delete existing TaskDataSource (if any)
+      if (taskDataSource) {
+        await taskDataSourceService.delete(taskDataSource.id);
+      }
+
+      // Create new TaskDataSource
+      const newTaskDataSource: TaskDataSource = {
+        task: task,
+        dataSource: selectedUserDataSource.dataSource
+      };
+
+      const response = await taskDataSourceService.create(newTaskDataSource);
+      if (!response.error && response.data) {
+        setTaskDataSource(response.data);
+      } else {
+        console.error('Error creating TaskDataSource:', response.error);
+      }
+    },
+    [task, taskDataSource, userProfile]
+  );
 
   const handleFormChange = (field: keyof Task, value: any) => {
     if (!task) return;
@@ -504,7 +554,28 @@ const UpdateTask: React.FC = () => {
       </Grid>
       <Grid item xs={12} sm={8} md={8} lg={10} className="main-content">
         <Typography variant="h4" gutterBottom>Update Task</Typography>
-        <TagInput task={task} onTagsChange={handleTagsChange} userProfile={userProfile} />
+        <Accordion expanded={settingsExpanded} onChange={handleSettingsAccordionChange}>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="settings-content"
+            id="settings-header"
+          >
+            <Typography>Settings</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+        
+          <TagInput task={task} onTagsChange={handleTagsChange} userProfile={userProfile} />
+          <Grid container direction="row" alignItems="center">
+            <Grid item xs>
+              <DataSourceSelector
+              userDataSources={userDataSources}
+              currentDataSourceId={taskDataSource?.dataSource?.id || null}
+              onDataSourceSelect={handleDataSourceSelection}
+              />
+              </Grid>
+            </Grid>
+          </AccordionDetails>
+        </Accordion>
         {isDataLoaded ? <TaskForm
           task={task}
           goals={goals}
@@ -516,7 +587,7 @@ const UpdateTask: React.FC = () => {
           setIsChatAccordionOpen={setIsChatAccordionOpen}
           showGoalsDropdown={true}
         >
-         
+          
           {(!preSelectedNotesLoading) && (
             <Grid container direction="row" alignItems="center">
               <Grid item xs>

@@ -4,7 +4,8 @@
   "info": {
     "singularName": "task-data-source",
     "pluralName": "task-data-sources",
-    "displayName": "Task Data Source"
+    "displayName": "Task Data Source",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -20,6 +21,10 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::task.task"
+    },
+    "taskDataSourceId": {
+      "type": "string",
+      "unique": true
     }
   }
 }

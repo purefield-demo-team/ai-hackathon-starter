@@ -1,7 +1,7 @@
 // DataSourceSelector.tsx
 import React from 'react';
 import { UserDataSource } from '../../models/UserDataSource';
-import { Box, Grid, Card, CardContent, Typography } from '@mui/material';
+import { Box, Grid, Card, CardContent, Typography, CardActionArea } from '@mui/material';
 
 interface DataSourceSelectorProps {
   userDataSources: UserDataSource[];
@@ -9,24 +9,39 @@ interface DataSourceSelectorProps {
   onDataSourceSelect: (selectedUserDataSource: UserDataSource) => void;
 }
 
-const DataSourceSelector: React.FC<DataSourceSelectorProps> = ({ userDataSources, currentDataSourceId, onDataSourceSelect }) => {
+const DataSourceSelector: React.FC<DataSourceSelectorProps> = ({
+  userDataSources,
+  currentDataSourceId,
+  onDataSourceSelect,
+}) => {
+  if (!userDataSources || userDataSources.length === 0) {
+    return <Typography variant="body1">No data sources available.</Typography>;
+  }
+
   return (
     <Box>
       <Typography variant="h6">Select Data Source</Typography>
       <Grid container spacing={2}>
-        {userDataSources.map(userDataSource => (
+        {userDataSources.map((userDataSource) => (
           <Grid item xs={12} sm={6} md={4} key={userDataSource.id}>
             <Card
-              onClick={() => onDataSourceSelect(userDataSource)}
               style={{
-                cursor: 'pointer',
-                border: currentDataSourceId === userDataSource.dataSource.id ? '2px solid blue' : '1px solid gray',
+                border:
+                  currentDataSourceId === userDataSource.dataSource.id
+                    ? '2px solid blue'
+                    : '1px solid gray',
               }}
             >
-              <CardContent>
-                <Typography variant="h6">{userDataSource.dataSource.name}</Typography>
-                <Typography variant="body2">{userDataSource.dataSource.description}</Typography>
-              </CardContent>
+              <CardActionArea onClick={() => onDataSourceSelect(userDataSource)}>
+                <CardContent>
+                  <Typography variant="h6">
+                    {userDataSource.dataSource.name}
+                  </Typography>
+                  <Typography variant="body2">
+                    {userDataSource.dataSource.description}
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
             </Card>
           </Grid>
         ))}
