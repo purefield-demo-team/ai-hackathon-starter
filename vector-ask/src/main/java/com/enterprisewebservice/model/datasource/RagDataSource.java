@@ -1,5 +1,8 @@
 package com.enterprisewebservice.model.datasource;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RagDataSource {
     private Long id;
 
