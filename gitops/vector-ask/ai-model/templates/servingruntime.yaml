@@ -7,42 +7,34 @@ metadata:
     opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
     opendatahub.io/template-display-name: vLLM ServingRuntime for KServe
     opendatahub.io/template-name: vllm-runtime
-    openshift.io/display-name: bagel-8b-v1.0
-  resourceVersion: '740127927'
-  name: bagel-8b-v1.0
-  namespace: fihr-rag-serving
+    openshift.io/display-name: {{ .Values.model.name }}
+  name: {{ .Values.model.name }}
+  namespace:  {{ .Values.namespace}}
   labels:
     opendatahub.io/dashboard: 'true'
 spec:
   annotations:
     prometheus.io/path: /metrics
-    prometheus.io/port: '8080'
+    prometheus.io/port: '{{ .Values.prometheus.service.port }}'
   containers:
     - args:
         - '--port=8080'
         - '--model=/mnt/models'
-        - '--served-model-name={{.Name}}'
+        - '--served-model-name={{.Values.model.name}}'
       command:
-        - python
-        - '-m'
-        - vllm.entrypoints.openai.api_server
+{{ toYaml .Values.container.command | indent 8 }}
       env:
-        - name: HF_HOME
-          value: /tmp/hf_home
-      image: 'quay.io/modh/vllm@sha256:97b91f9bd71202f5de8d379cfb61baec887b47f836a2ff8b158c946196de5660'
-      name: kserve-container
+{{ toYaml .Values.container.env | indent 8 }}
+      image: '{{ .Values.image.repository }}@{{ .Values.image.digest }}'
+      name: {{ .Values.container.name }}
       ports:
-        - containerPort: 8080
+        - containerPort: {{ .Values.prometheus.service.port }}
           protocol: TCP
       volumeMounts:
-        - mountPath: /dev/shm
-          name: shm
+{{ toYaml .Values.container.volumeMounts | indent 8 }}
   multiModel: false
   supportedModelFormats:
     - autoSelect: true
-      name: vLLM
+      name: {{ .Values.model.modelFormat.name }}
   volumes:
-    - emptyDir:
-        medium: Memory
-        sizeLimit: 2Gi
-      name: shm
+{{ toYaml .Values.volumes | indent 4 }}

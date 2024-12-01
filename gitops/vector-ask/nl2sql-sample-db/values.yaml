@@ -1,0 +1,34 @@
+replicas: 1
+
+route:
+  enabled: true
+  host: ""
+  tls:
+    termination: edge
+
+postgresql:
+  image: 'postgresql:latest'  # Base image for PostgreSQL
+  replicas: 1
+  port: 5432
+  resources:
+    limits:
+      memory: 512Mi
+  imagePullPolicy: IfNotPresent
+  volume:
+    size: 1Gi  # Adjust the size as needed
+  name: "nl2sql-sample"
+  user: "userM0I"
+  password: "SF0AvjnJ8md63T4l"  
+  adminPassword: "SF0AvjnJ8md63T4l"
+  
+cluster:
+  name: salamander
+  domain: aimlworkbench.com
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"

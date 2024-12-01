@@ -1,0 +1,60 @@
+model:
+  name: llama-3-sqlcoder-8b
+  modelFormat:
+    name: vLLM
+  args:
+    - '--dtype=float16'
+    - '--tensor-parallel-size=2'
+  resources:
+    limits:
+      cpu: '6'
+      memory: 20Gi
+      nvidia.com/gpu: '2'
+    requests:
+      cpu: '3'
+      memory: 16Gi
+      nvidia.com/gpu: '2'
+  runtime: llama-3-sqlcoder-8b
+  storage:
+    key: aws-connection-aws-s3-connection
+
+prometheus:
+  service:
+    port: 8080
+
+predictor:
+  maxReplicas: 1
+  minReplicas: 1
+  tolerations:
+    - effect: NoSchedule
+      key: nvidia.com/gpu
+      operator: Exists
+
+namespace: restore-db-test
+
+image:
+  repository: quay.io/modh/vllm
+  digest: sha256:97b91f9bd71202f5de8d379cfb61baec887b47f836a2ff8b158c946196de5660
+
+container:
+  name: kserve-container
+  command:
+    - python
+    - '-m'
+    - vllm.entrypoints.openai.api_server
+  env:
+    - name: HF_HOME
+      value: /tmp/hf_home
+  volumeMounts:
+    - mountPath: /dev/shm
+      name: shm
+
+volumes:
+  - emptyDir:
+      medium: Memory
+      sizeLimit: 2Gi
+    name: shm
+
+cluster:
+  name: salamander
+  domain: aimlworkbench.com

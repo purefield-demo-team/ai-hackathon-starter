@@ -69,8 +69,8 @@ strapi:
     jwt_secret: "LKEGc+nffqBecBTr9WcBLA=="
 
 cluster:
-  name: rosa.rosa-t8j8w.ft2c.p3
-  domain: openshiftapps.com
+  name: salamander
+  domain: aimlworkbench.com
 
 resources:
   requests:
