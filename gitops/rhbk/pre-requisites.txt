@@ -1,0 +1,5 @@
+openssl req -subj '/CN=keycloak-restore-db-test.apps.salamander.aimlworkbench.com/O=Test Keycloak./C=US' -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out certificate.pem
+
+oc create secret tls keycloak-tls-secret --cert certificate.pem --key key.pem
+
+after keycloak.backup is restored, the inital admin password is: 5cedc6c2e7474ea8b87b4cf0bcdd7812

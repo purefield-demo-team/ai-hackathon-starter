@@ -1,0 +1,15 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: keycloak-postgresql
+  finalizers:
+    - kubernetes.io/pvc-protection
+  labels:
+    template: postgresql-persistent-template
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  volumeMode: Filesystem

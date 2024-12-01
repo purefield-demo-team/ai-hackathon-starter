@@ -1,0 +1,19 @@
+replicas: 1
+
+route:
+  enabled: true
+  host: ""
+  tls:
+    termination: edge
+  
+cluster:
+  name: salamander
+  domain: aimlworkbench.com
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"

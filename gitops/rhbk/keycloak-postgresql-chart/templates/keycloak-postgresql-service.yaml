@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    template: postgresql-persistent-template
+  annotations:
+    template.openshift.io/expose-uri: 'postgres://{.spec.clusterIP}:{{ .Values.postgresql.port }}'
+spec:
+  ipFamilies:
+    - IPv4
+  ports:
+    - name: postgresql
+      protocol: TCP
+      port: {{ .Values.postgresql.port }}
+      targetPort: {{ .Values.postgresql.port }}
+  internalTrafficPolicy: Cluster
+  type: ClusterIP
+  ipFamilyPolicy: SingleStack
+  sessionAffinity: None
+  selector:
+    name: {{ .Release.Name }}

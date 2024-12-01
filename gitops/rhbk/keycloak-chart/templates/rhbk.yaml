@@ -1,0 +1,21 @@
+kind: Keycloak
+apiVersion: k8s.keycloak.org/v2alpha1
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: sso
+spec:
+  instances: 1
+  db:
+    vendor: postgres
+    host: {{ .Release.Name }}-postgresql
+    usernameSecret:
+      name: keycloak-postgresql
+      key: database-user
+    passwordSecret:
+      name: keycloak-postgresql
+      key: database-password
+  hostname:
+    hostname: {{ .Release.Name }}-{{ .Release.Namespace }}.apps.{{.Values.cluster.name}}.{{.Values.cluster.domain}}
+  http:
+    tlsSecret: keycloak-tls-secret
