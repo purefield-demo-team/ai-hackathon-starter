@@ -7,6 +7,8 @@ import jakarta.ws.rs.GET;
 
 import javax.sql.DataSource;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import com.enterprisewebservice.model.datasource.RagDataSource;
 
 import java.math.BigDecimal;
@@ -20,10 +22,13 @@ public class QueryExecutorResource {
     @Inject
     DataSource dataSource;
 
+    @ConfigProperty(name = "JDBC_URL")
+    String jdbcUrl;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<CustomerSales> executeQuery(String sql) {
-
+        System.out.println("The JDBC URL is: " + jdbcUrl);
         List<CustomerSales> results = new ArrayList<>();
         System.out.println("The Query is: " + sql);
         try (Connection connection = dataSource.getConnection();

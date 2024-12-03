@@ -67,5 +67,5 @@ llm:
 nl2sqldb:
   host: 'jdbc:postgresql://nl2sql-sample-postgresql-postgresql.restore-db-test.svc.cluster.local:5432/nl2sql-sample'
   port: 5432
-  username: 'userM0I'
+  username: 'postgres'
   password: 'SF0AvjnJ8md63T4l'
