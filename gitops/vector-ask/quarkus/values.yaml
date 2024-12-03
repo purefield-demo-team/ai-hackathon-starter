@@ -20,14 +20,14 @@ service:
   sessionAffinity: None
 
 openai:
-  key: "xxxxxxxxx"  # Replace with your actual OpenAI key
+  key: "xxxxxxxxxxx"  # Replace with your actual OpenAI key
 
 strapi:
   host: "https://strapi-restore-db-test.apps.salamander.aimlworkbench.com:1337"  # Replace with your Strapi host (service url with port 1337 but without /api at the end)
-  token: "xxxxxxxx"  # Replace with your Strapi token
+  token: "xxxxxxxxxxx"  # Replace with your Strapi token
 
 redis:
-  host: "https://redis-search-redis-stack-raft-infra.apps.salamander.aimlworkbench.com"  # Replace with your Redis host
+  host: "https://redis-search-redis-stack-restore-db-test.apps.salamander.aimlworkbench.com"  # Replace with your Redis host
 
 service:
   port: 8080
@@ -61,8 +61,10 @@ cluster:
   domain: aimlworkbench.com  # Replace with your actual cluster domain
 
 vllmApiUrl: 'https://llama-3-sqlcoder-8b-restore-db-test.apps.salamander.aimlworkbench.com'
+llm:
+  modeltype: 'llama3'
 nl2sqldb:
-  host: 'jdbc:postgresql://postgresql-nl2sql.raft-infra.svc.cluster.local:5432/nl2sql-sample'
+  host: 'jdbc:postgresql://nl2sql-sample-postgresql-postgresql.restore-db-test.svc.cluster.local:5432/nl2sql-sample'
   port: 5432
-  username: 'userSF3'
-  password: 'H077Xs5DwUbAfQ2U'
+  username: 'userM0I'
+  password: 'SF0AvjnJ8md63T4l'

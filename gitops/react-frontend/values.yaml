@@ -8,13 +8,13 @@ image:
 containerPort: 3000
 
 strapi:
-  url: "https://strapi-ai-rag-starter-kit.apps.rosa.rosa-t8j8w.ft2c.p3.openshiftapps.com/api"
+  url: "https://strapi-restore-db-test.apps.salamander.aimlworkbench.com/api"
 
 keycloak:
-  url: "https://ai-rag-starter-kit-keycloak.apps.rosa.rosa-t8j8w.ft2c.p3.openshiftapps.com/"
+  url: "https://keycloak-restore-db-test.apps.salamander.aimlworkbench.com/"
 
 openaiapi:
-  key: "xxxxxxxxx"
+  key: "xxxxxxxxxx"
 
 service:
   port: 3000

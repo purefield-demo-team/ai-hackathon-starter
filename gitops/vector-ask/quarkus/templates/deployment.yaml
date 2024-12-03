@@ -46,6 +46,8 @@ spec:
               value: "{{ .Values.strapi.token }}"
             - name: redis.host
               value: "{{ .Values.redis.host }}"
+            - name: llmmodel
+              value: "{{ .Values.llm.modeltype }}"
           envFrom:
             - configMapRef:
                 name: quarkus-config
