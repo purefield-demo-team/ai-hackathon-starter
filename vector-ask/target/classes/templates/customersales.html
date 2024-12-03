@@ -1,6 +1,18 @@
-{#set showAccountName = customerSalesList.?[accountName != null].size > 0}
-{#set showTotalSales = customerSalesList.?[totalSalesFormatted != null].size > 0}
-{#set showTitle = customerSalesList.?[title != null].size > 0}
+{#set showAccountName = false}
+{#set showTotalSales = false}
+{#set showTitle = false}
+
+{#for cs in customerSalesList}
+    {#if cs.accountName}
+        {#set showAccountName = true}
+    {/if}
+    {#if cs.totalSalesFormatted}
+        {#set showTotalSales = true}
+    {/if}
+    {#if cs.title}
+        {#set showTitle = true}
+    {/if}
+{/for}
 
 <table>
     <thead>
