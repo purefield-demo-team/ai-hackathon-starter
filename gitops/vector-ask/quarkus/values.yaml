@@ -63,6 +63,7 @@ cluster:
 vllmApiUrl: 'https://llama-3-sqlcoder-8b-restore-db-test.apps.salamander.aimlworkbench.com/v1'
 llm:
   modeltype: 'llama3'
+  modelname: 'llama-3-sqlcoder-8b'
 nl2sqldb:
   host: 'jdbc:postgresql://nl2sql-sample-postgresql-postgresql.restore-db-test.svc.cluster.local:5432/nl2sql-sample'
   port: 5432

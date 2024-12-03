@@ -46,8 +46,8 @@ public class TaskService {
     @Inject
     QueryExecutorResource queryExecutorResource;
 
-    @ConfigProperty(name = "llmmodel")
-    String llmModel;
+    @ConfigProperty(name = "modeltype")
+    String llmModelType;
     
     private final ObjectMapper objectMapper = new ObjectMapper(); // replace with your actual JSON library
 
@@ -132,25 +132,25 @@ public class TaskService {
             taskDataSource = taskDataSourceStrapi.getData().get(0);
         }
 
-        if(taskDataSource != null && llmModel.equals("openai"))
+        if(taskDataSource != null && llmModelType.equals("openai"))
         {
             answer = chatService.askOpenAIForSQL(parameters, query, 3);
             List<CustomerSales> salesInfo = queryExecutorResource.executeQuery(SqlUtil.stripSqlTags(answer.getChoices().get(0).getMessage().getContent()));
             String htmlString = customerSalesResource.getCustomerSalesHtml(salesInfo);
             answer.getChoices().get(0).getMessage().setContent(htmlString);
         }
-        else if(taskDataSource != null && llmModel.equals("llama3"))
+        else if(taskDataSource != null && llmModelType.equals("llama3"))
         {
             answer = chatService.askVllmForSQL(parameters, query, 3);
             List<CustomerSales> salesInfo = queryExecutorResource.executeQuery(SqlUtil.stripSqlTags(answer.getChoices().get(0).getMessage().getContent()));
             String htmlString = customerSalesResource.getCustomerSalesHtml(salesInfo);
             answer.getChoices().get(0).getMessage().setContent(htmlString);
         }
-        else if(llmModel.equals("llama3"))
+        else if(llmModelType.equals("llama3"))
         {
             answer = chatService.askVllm(parameters, query, 3);
         }
-        else if(llmModel.equals("openai"))
+        else if(llmModelType.equals("openai"))
         {
             answer = chatService.ask(parameters, query, 3);
         }

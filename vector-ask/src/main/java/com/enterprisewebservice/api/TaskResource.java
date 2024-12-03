@@ -40,8 +40,8 @@ public class TaskResource {
     @Inject
     ChatService chatService;
 
-    @ConfigProperty(name = "llmmodel")
-    String llmModel;
+    @ConfigProperty(name = "modeltype")
+    String llmModelType;
 
     @GET
     @Path("/ask/{id}/question")
@@ -59,19 +59,19 @@ public class TaskResource {
             parameters.setSubject(keycloakSubject);
             parameters.setTaskIds(taskIds);
             CompletionResponse answer = null;
-            if(llmModel.equals("llama3"))
+            if(llmModelType.equals("llama3"))
             {
                 answer = chatService.askVllm(parameters, query, 3);
             }
-            else if(llmModel.equals("openai"))
+            else if(llmModelType.equals("openai"))
             {
                 answer = chatService.ask(parameters, query, 3);
             }
-            else if(llmModel.equals("sql"))
+            else if(llmModelType.equals("sql"))
             {
                 answer = chatService.askVllmForSQL(parameters, query, 3);
             }
-            else if(llmModel.equals("openaisql"))
+            else if(llmModelType.equals("openaisql"))
             {
                 answer = chatService.askOpenAIForSQL(parameters, query, 0);
             }

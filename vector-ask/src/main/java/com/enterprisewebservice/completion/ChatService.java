@@ -53,6 +53,8 @@ public class ChatService {
     @RestClient
     VllmCompletionClient vllmCompletionClient;
 
+    @ConfigProperty(name = "modelname")
+    String modelName;
 
     public CompletionResponse ask(QuestionParameters parameters, String query, int topN) throws IOException {
         // Create embeddings for the query
@@ -79,7 +81,7 @@ public class ChatService {
         message.append("\n\nMore Info: The Question above should be answered by giving me extra information about each of the items discussed. Don't just paste the question content back, do some research with the articles I gave you as well as your knowledge and give me a comprehensive response.");
         // Create completion request
         CompletionRequest completionRequest = new CompletionRequest();
-        completionRequest.setModel("gpt-4");
+        completionRequest.setModel(modelName);
         completionRequest.setMessages(Arrays.asList(
                 new Message("system", "You are a helpful assistant."),
                 new Message("user", message.toString())
@@ -125,7 +127,7 @@ public class ChatService {
 
         // Create the completion request
         VllmCompletionRequest completionRequest = new VllmCompletionRequest();
-        completionRequest.setModel("bagel8bv1");  // Or include extra quotes if needed
+        completionRequest.setModel(modelName);  // Or include extra quotes if needed
         completionRequest.setMessages(messages);
         completionRequest.setMaxTokens(4000);
         completionRequest.setTemperature(0.0);
@@ -200,7 +202,7 @@ public class ChatService {
 
         // Create the completion request
         VllmCompletionRequest completionRequest = new VllmCompletionRequest();
-        completionRequest.setModel("bagel8bv1");  // Or include extra quotes if needed
+        completionRequest.setModel(modelName);  // Or include extra quotes if needed
         completionRequest.setMessages(messages);
         completionRequest.setMaxTokens(2000);
         completionRequest.setTemperature(0.0);
