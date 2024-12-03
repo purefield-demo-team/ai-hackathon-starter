@@ -62,10 +62,11 @@ public class QueryExecutorResource {
                     }
                     try{
                         title = resultSet.getString("title");
+                        System.out.println("Adding title: " + title);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
-                
+                    System.out.println("Adding a new CustomerSales object");
                     results.add(new CustomerSales(accountName, totalSales, title, totalSalesFormatted));
                 }
 
