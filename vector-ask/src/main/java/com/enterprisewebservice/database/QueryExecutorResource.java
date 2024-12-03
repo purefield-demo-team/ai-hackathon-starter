@@ -45,7 +45,7 @@ public class QueryExecutorResource {
                     try{
                         accountName = resultSet.getString("account_name");
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        System.out.println("Error parsing account name");
                     }
                     try{
                         grandTotalStr = resultSet.getString("grand_total");
@@ -58,13 +58,13 @@ public class QueryExecutorResource {
                         // Parse the cleaned string into BigDecimal
                         totalSales = new BigDecimal(grandTotalCleaned);
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        System.out.println("Error parsing grand total");
                     }
                     try{
                         title = resultSet.getString("title");
                         System.out.println("Adding title: " + title);
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        System.out.println("Error parsing title");
                     }
                     System.out.println("Adding a new CustomerSales object");
                     results.add(new CustomerSales(accountName, totalSales, title, totalSalesFormatted));
