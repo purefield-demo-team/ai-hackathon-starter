@@ -142,7 +142,7 @@ public class TaskService {
         else if(taskDataSource != null && llmModelType.equals("llama3"))
         {
             System.out.println("model type is: " + llmModelType);
-            System.out.println("about to askVLLMForSQL")
+            System.out.println("about to askVLLMForSQL");
             answer = chatService.askVllmForSQL(parameters, query, 3);
             List<CustomerSales> salesInfo = queryExecutorResource.executeQuery(SqlUtil.stripSqlTags(answer.getChoices().get(0).getMessage().getContent()));
             String htmlString = customerSalesResource.getCustomerSalesHtml(salesInfo);
