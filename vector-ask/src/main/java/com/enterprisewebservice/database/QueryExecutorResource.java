@@ -36,19 +36,37 @@ public class QueryExecutorResource {
              ResultSet resultSet = preparedStatement.executeQuery()) {
 
                 while (resultSet.next()) {
-                    String accountName = resultSet.getString("account_name");
-                    String grandTotalStr = resultSet.getString("grand_total");
+                    String accountName = null;
+                    String grandTotalStr = null;
+                    String title = null;
+                    String totalSalesFormatted = null;
+                    String grandTotalCleaned = null;
+                    BigDecimal totalSales = null;
+                    try{
+                        accountName = resultSet.getString("account_name");
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    try{
+                        grandTotalStr = resultSet.getString("grand_total");
+                         // Keep the formatted money string
+                        totalSalesFormatted = grandTotalStr;
                 
-                    // Keep the formatted money string
-                    String totalSalesFormatted = grandTotalStr;
+                        // Remove currency symbols and commas
+                        grandTotalCleaned = grandTotalStr.replaceAll("[^\\d.-]", "");
                 
-                    // Remove currency symbols and commas
-                    String grandTotalCleaned = grandTotalStr.replaceAll("[^\\d.-]", "");
+                        // Parse the cleaned string into BigDecimal
+                        totalSales = new BigDecimal(grandTotalCleaned);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    try{
+                        title = resultSet.getString("title");
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                 
-                    // Parse the cleaned string into BigDecimal
-                    BigDecimal totalSales = new BigDecimal(grandTotalCleaned);
-                
-                    results.add(new CustomerSales(accountName, totalSales, totalSalesFormatted));
+                    results.add(new CustomerSales(accountName, totalSales, title, totalSalesFormatted));
                 }
 
         } catch (SQLException e) {

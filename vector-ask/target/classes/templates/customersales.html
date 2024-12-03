@@ -1,18 +1,34 @@
-<!-- src/main/resources/templates/customersales.html -->
+{#set showAccountName = customerSalesList.stream().anyMatch(cs -> cs.accountName != null)}
+{#set showTotalSales = customerSalesList.stream().anyMatch(cs -> cs.totalSalesFormatted != null)}
+{#set showTitle = customerSalesList.stream().anyMatch(cs -> cs.title != null)}
+
 <table>
     <thead>
       <tr>
-        <th>Account Name</th>
-        <th>Total Sales</th>
+        {#if showAccountName}
+          <th>Account Name</th>
+        {/if}
+        {#if showTotalSales}
+          <th>Total Sales</th>
+        {/if}
+        {#if showTitle}
+          <th>Title</th>
+        {/if}
       </tr>
     </thead>
     <tbody>
       {#for cs in customerSalesList}
         <tr>
-          <td>{cs.accountName}</td>
-          <td>{cs.totalSalesFormatted}</td>
+          {#if showAccountName}
+            <td>{cs.accountName}</td>
+          {/if}
+          {#if showTotalSales}
+            <td>{cs.totalSalesFormatted}</td>
+          {/if}
+          {#if showTitle}
+            <td>{cs.title}</td>
+          {/if}
         </tr>
       {/for}
     </tbody>
   </table>
-  
