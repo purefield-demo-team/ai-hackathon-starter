@@ -1,6 +1,6 @@
-{#set showAccountName = customerSalesList.stream().anyMatch(cs -> cs.accountName != null)}
-{#set showTotalSales = customerSalesList.stream().anyMatch(cs -> cs.totalSalesFormatted != null)}
-{#set showTitle = customerSalesList.stream().anyMatch(cs -> cs.title != null)}
+{#set showAccountName = customerSalesList.?[accountName != null].size > 0}
+{#set showTotalSales = customerSalesList.?[totalSalesFormatted != null].size > 0}
+{#set showTitle = customerSalesList.?[title != null].size > 0}
 
 <table>
     <thead>
