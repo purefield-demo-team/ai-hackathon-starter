@@ -23,11 +23,11 @@ openai:
   key: "xxxxxxxxxxx"  # Replace with your actual OpenAI key
 
 strapi:
-  host: "https://strapi-restore-db-test.apps.salamander.aimlworkbench.com:1337"  # Replace with your Strapi host (service url with port 1337 but without /api at the end)
+  host: "http://strapi.restore-db-test.svc.cluster.local:1337"  # Replace with your Strapi host (service url - NOT ROUTE - with port 1337 but without /api at the end)
   token: "xxxxxxxxxxx"  # Replace with your Strapi token
 
 redis:
-  host: "https://redis-search-redis-stack-restore-db-test.apps.salamander.aimlworkbench.com"  # Replace with your Redis host
+  host: "redis-stack.restore-db-test.svc.cluster.local"  # Replace with your Redis host service
 
 service:
   port: 8080
