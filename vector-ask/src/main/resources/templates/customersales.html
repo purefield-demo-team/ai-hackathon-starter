@@ -1,19 +1,5 @@
 {#let showAccountName = false showTotalSales = false showTitle = false}
 
-{#list customerSalesList as cs}
-    {#if cs.accountName != null}
-        {#set showAccountName = true}
-    {/if}
-    {#if cs.totalSalesFormatted != null}
-        {#set showTotalSales = true}
-    {/if}
-    {#if cs.title != null && showTitle == false}
-        {#set showTitle = true}
-    {/if}
-{/list}
-{#set showTotalSales = false}
-{#set showTitle = false}
-
 {#for cs in customerSalesList}
     {#if cs.accountName != null}
         {#set showAccountName = true}
@@ -56,4 +42,3 @@
       {/for}
     </tbody>
   </table>
-{/let}
