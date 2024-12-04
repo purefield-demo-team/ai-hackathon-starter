@@ -3,13 +3,13 @@
 {#set showTitle = false}
 
 {#for cs in customerSalesList}
-    {#if cs.accountName}
+    {#if cs.accountName && !showAccountName}
         {#set showAccountName = true}
     {/if}
-    {#if cs.totalSalesFormatted}
+    {#if cs.totalSalesFormatted && !showTotalSales}
         {#set showTotalSales = true}
     {/if}
-    {#if cs.title}
+    {#if cs.title && !showTitle}
         {#set showTitle = true}
     {/if}
 {/for}
