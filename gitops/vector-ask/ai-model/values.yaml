@@ -16,7 +16,7 @@ model:
       nvidia.com/gpu: '2'
   runtime: llama-3-sqlcoder-8b
   storage:
-    key: aws-connection-aws-s3-connection
+    key: aws-connection-my-storage
 
 prometheus:
   service:
