@@ -5,7 +5,7 @@ metadata:
   annotations:
     olm.providedAPIs: 'Keycloak.v2alpha1.k8s.keycloak.org,KeycloakRealmImport.v2alpha1.k8s.keycloak.org'
   namespace: {{.Release.Namespace}}
-  name: {{.Release.Namespace}}-{{ randAlphaNum 5 | quote }}
+  name: {{.Release.Namespace}}-{{ randAlphaNum 5 }}
 spec:
   targetNamespaces:
     - {{.Release.Namespace}}
