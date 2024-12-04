@@ -1,17 +1,8 @@
-{#let showAccountName = false showTotalSales = false showTitle = false}
+<!-- src/main/resources/templates/customersales.html -->
 
-{#for cs in customerSalesList}
-    {#if cs.accountName != null}
-        {#set showAccountName = true}
-    {/if}
-    {#if cs.totalSalesFormatted != null}
-        {#set showTotalSales = true}
-    {/if}
-    {#if cs.title != null && showTitle == false}
-        {#set showTitle = true}
-        <div>{showTitle} {cs.title}</div>
-    {/if}
-{/for}
+{#set showAccountName = customerSalesList.?[it.accountName != null].size > 0}
+{#set showTotalSales = customerSalesList.?[it.totalSalesFormatted != null].size > 0}
+{#set showTitle = customerSalesList.?[it.title != null].size > 0}
 
 <table>
     <thead>
@@ -22,7 +13,6 @@
         {#if showTotalSales}
           <th>Total Sales</th>
         {/if}
-        {showTitle}
         {#if showTitle}
           <th>Title</th>
         {/if}
@@ -32,14 +22,13 @@
       {#for cs in customerSalesList}
         <tr>
           {#if showAccountName}
-            <td>{cs.accountName}</td>
+            <td>{cs.accountName ?: ''}</td>
           {/if}
           {#if showTotalSales}
-            <td>{cs.totalSalesFormatted}</td>
+            <td>{cs.totalSalesFormatted ?: ''}</td>
           {/if}
-          {showTitle}
           {#if showTitle}
-            <td>{cs.title}</td>
+            <td>{cs.title ?: ''}</td>
           {/if}
         </tr>
       {/for}
