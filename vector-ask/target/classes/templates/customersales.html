@@ -1,15 +1,15 @@
 {#set showAccountName = false}
 {#set showTotalSales = false}
-{#set showTitle = true}
+{#set showTitle = false}
 
 {#for cs in customerSalesList}
-    {#if cs.accountName && !showAccountName}
+    {#if cs.accountName != null}
         {#set showAccountName = true}
     {/if}
-    {#if cs.totalSalesFormatted && !showTotalSales}
+    {#if cs.totalSalesFormatted != null}
         {#set showTotalSales = true}
     {/if}
-    {#if cs.title && !showTitle}
+    {#if cs.title != null && showTitle == false}
         {#set showTitle = true}
     {/if}
 {/for}
