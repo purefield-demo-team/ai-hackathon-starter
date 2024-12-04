@@ -22,6 +22,7 @@
         {#if showTotalSales}
           <th>Total Sales</th>
         {/if}
+        {showTitle}
         {#if showTitle}
           <th>Title</th>
         {/if}
@@ -36,6 +37,7 @@
           {#if showTotalSales}
             <td>{cs.totalSalesFormatted}</td>
           {/if}
+          {showTitle}
           {#if showTitle}
             <td>{cs.title}</td>
           {/if}
