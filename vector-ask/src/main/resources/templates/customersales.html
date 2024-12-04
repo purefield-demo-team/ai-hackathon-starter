@@ -1,36 +1,32 @@
 <!-- src/main/resources/templates/customersales.html -->
 
-{#set showAccountName = customerSalesList.?[it.accountName != null].size > 0}
-{#set showTotalSales = customerSalesList.?[it.totalSalesFormatted != null].size > 0}
-{#set showTitle = customerSalesList.?[it.title != null].size > 0}
-
 <table>
-    <thead>
+  <thead>
       <tr>
-        {#if showAccountName}
-          <th>Account Name</th>
-        {/if}
-        {#if showTotalSales}
-          <th>Total Sales</th>
-        {/if}
-        {#if showTitle}
-          <th>Title</th>
-        {/if}
-      </tr>
-    </thead>
-    <tbody>
-      {#for cs in customerSalesList}
-        <tr>
           {#if showAccountName}
-            <td>{cs.accountName ?: ''}</td>
+              <th>Account Name</th>
           {/if}
           {#if showTotalSales}
-            <td>{cs.totalSalesFormatted ?: ''}</td>
+              <th>Total Sales</th>
           {/if}
           {#if showTitle}
-            <td>{cs.title ?: ''}</td>
+              <th>Title</th>
           {/if}
-        </tr>
+      </tr>
+  </thead>
+  <tbody>
+      {#for cs in customerSalesList}
+          <tr>
+              {#if showAccountName}
+                  <td>{cs.accountName ?: ''}</td>
+              {/if}
+              {#if showTotalSales}
+                  <td>{cs.totalSalesFormatted ?: ''}</td>
+              {/if}
+              {#if showTitle}
+                  <td>{cs.title ?: ''}</td>
+              {/if}
+          </tr>
       {/for}
-    </tbody>
-  </table>
+  </tbody>
+</table>
