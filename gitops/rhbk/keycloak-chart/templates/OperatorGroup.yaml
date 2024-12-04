@@ -1,0 +1,11 @@
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  generateName: {{.Release.Namespace}}-
+  annotations:
+    olm.providedAPIs: 'Keycloak.v2alpha1.k8s.keycloak.org,KeycloakRealmImport.v2alpha1.k8s.keycloak.org'
+  namespace: {{.Release.Namespace}}
+spec:
+  targetNamespaces:
+    - {{.Release.Namespace}}
+  upgradeStrategy: Default
