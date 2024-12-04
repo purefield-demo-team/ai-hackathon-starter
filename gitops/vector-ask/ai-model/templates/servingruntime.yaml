@@ -9,7 +9,7 @@ metadata:
     opendatahub.io/template-name: vllm-runtime
     openshift.io/display-name: {{ .Values.model.name }}
   name: {{ .Values.model.name }}
-  namespace:  {{ .Values.namespace}}
+  namespace:  {{ .Release.namespace}}
   labels:
     opendatahub.io/dashboard: 'true'
 spec:

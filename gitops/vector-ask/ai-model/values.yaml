@@ -30,8 +30,6 @@ predictor:
       key: nvidia.com/gpu
       operator: Exists
 
-namespace: restore-db-test
-
 image:
   repository: quay.io/modh/vllm
   digest: sha256:97b91f9bd71202f5de8d379cfb61baec887b47f836a2ff8b158c946196de5660
