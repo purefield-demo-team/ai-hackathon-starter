@@ -1,0 +1,15 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  creationTimestamp: '2024-12-01T02:21:04Z'
+  generation: 1
+  labels:
+    operators.coreos.com/rhbk-operator.{{ .Release.Namespace }}: ''
+  name: rhbk-operator
+spec:
+  channel: stable-v26.0
+  installPlanApproval: Automatic
+  name: rhbk-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+  startingCSV: rhbk-operator.v26.0.6-opr.1
