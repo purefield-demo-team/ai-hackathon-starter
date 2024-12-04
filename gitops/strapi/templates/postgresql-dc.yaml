@@ -6,6 +6,7 @@ metadata:
     template.alpha.openshift.io/wait-for-ready: 'true'
   labels:
     app.kubernetes.io/part-of: {{ .Chart.Name }}
+    name: strapi-postgresql
     template: postgresql-persistent-template
     template.openshift.io/template-instance-owner: {{ .Release.Service }}
 spec:
