@@ -8,7 +8,7 @@
 4. cd to gitops/rhbk/keycloak-postgresql-chart
 5. In the values.yaml file update the cluster name and domain values to match your cluster’s values. Keep everything else the same in the values.yaml file. You will be restoring a database that needs to match the other values in the file
 6. Run **helm install keycloak-postgresql .**
-7. ![[ai-starter-kit-readme/image39.png]]
+7. ![image39.png](image39.png)
 8. Use pgAdmin-4 to restore the keycloak.backup file in the gitops/rhbk folder
 9. **oc port-forward svc/keycloak-postgresql 5432**
 10. ![[image8.png]]
