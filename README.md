@@ -5,5 +5,6 @@
 4. [Install Red Hat Build of Keycloak](install-keycloak-readme)
 5. [Install Strapi Headless CMS](install-strapi-readme)
 6. [Install the Redis Search Vector Database](install-redis-search-readme)
-7. [Deploy the React-Frontend application](install-react-frontend-readme)
-8. [Trying Things Out](testing-the-application-readme)
+7. [Install vector-ask Quarkus backend](install-quarkus-backend-readme)
+8. [Deploy the React-Frontend application](install-react-frontend-readme)
+9. [Trying Things Out](testing-the-application-readme)
