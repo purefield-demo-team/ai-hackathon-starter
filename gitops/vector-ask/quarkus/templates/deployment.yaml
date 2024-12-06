@@ -41,11 +41,11 @@ spec:
             - name: openaikey
               value: "{{ .Values.openai.key }}"
             - name: strapihost
-              value: "{{ .Values.strapi.host }}"
+              value: "http://strapi.{{.Release.Namespace}}.svc.cluster.local:1337"
             - name: strapitoken
               value: "{{ .Values.strapi.token }}"
             - name: redis.host
-              value: "{{ .Values.redis.host }}"
+              value: "redis-stack.{{.Release.Namespace}}.svc.cluster.local"
             - name: modeltype
               value: "{{ .Values.llm.modeltype }}"
             - name: modelname
