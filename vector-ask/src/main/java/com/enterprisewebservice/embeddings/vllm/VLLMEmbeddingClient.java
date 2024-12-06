@@ -10,7 +10,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 
 @ApplicationScoped
-@RegisterRestClient(configKey="vllm.api")
+@RegisterRestClient(configKey="vllmembedding.api")
 public interface VLLMEmbeddingClient {
 
     @POST
