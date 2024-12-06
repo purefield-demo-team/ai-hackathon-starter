@@ -1,41 +1,25 @@
 package com.enterprisewebservice.completion;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.core.MultivaluedMap;
-import jakarta.ws.rs.core.MultivaluedHashMap;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.apache.http.impl.client.HttpClients;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import jakarta.ws.rs.WebApplicationException;
-
-import jakarta.ws.rs.core.Response;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+
+import com.enterprisewebservice.completion.vllm.VllmCompletionClient;
+import com.enterprisewebservice.completion.vllm.VllmCompletionRequest;
 import com.enterprisewebservice.embeddings.EmbeddingResponse;
 import com.enterprisewebservice.embeddings.EmbeddingService;
-import com.enterprisewebservice.model.Task;
-import com.enterprisewebservice.completion.CompletionRequest;
+import com.enterprisewebservice.embeddings.vllm.VLLMEmbeddingService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
-import com.enterprisewebservice.completion.vllm.*;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 public class ChatService {
@@ -44,6 +28,9 @@ public class ChatService {
     
     @Inject
     EmbeddingService embeddingService;
+
+    @Inject
+    VLLMEmbeddingService vllmEmbeddingService;
 
     @Inject
     @RestClient
@@ -56,10 +43,21 @@ public class ChatService {
     @ConfigProperty(name = "modelname")
     String modelName;
 
+    @ConfigProperty(name = "modeltype")
+    String modelType;
+
     public CompletionResponse ask(QuestionParameters parameters, String query, int topN) throws IOException {
         // Create embeddings for the query
         System.out.println("Generating embeddings for query: " + query);
-        EmbeddingResponse embeddingResponse = embeddingService.generateEmbeddings(List.of(query));
+
+        EmbeddingResponse embeddingResponse = null;
+        
+        if (modelType.equals("openai")) {
+            embeddingResponse = embeddingService.generateEmbeddings(List.of(query));
+        } else {
+            embeddingResponse = vllmEmbeddingService.generateEmbeddings(List.of(query));
+            
+        }
 
         // Search for related articles
        ArticleSearchResults articles = null;
@@ -96,7 +94,14 @@ public class ChatService {
     public CompletionResponse askVllm(QuestionParameters parameters, String query, int topN) throws IOException {
         // Generate embeddings for the query
         System.out.println("Generating embeddings for query: " + query);
-        EmbeddingResponse embeddingResponse = embeddingService.generateEmbeddings(List.of(query));
+        EmbeddingResponse embeddingResponse = null;
+
+        if (modelType.equals("openai")) {
+            embeddingResponse = embeddingService.generateEmbeddings(List.of(query));
+        } else {
+            embeddingResponse = vllmEmbeddingService.generateEmbeddings(List.of(query));
+            
+        }
 
         // Search for related articles
         ArticleSearchResults articles = null;
@@ -171,7 +176,13 @@ public class ChatService {
     public CompletionResponse askVllmForSQL(QuestionParameters parameters, String query, int topN) throws IOException {
         // Generate embeddings for the query
         System.out.println("Generating embeddings for query: " + query);
-        EmbeddingResponse embeddingResponse = embeddingService.generateEmbeddings(List.of(query));
+        EmbeddingResponse embeddingResponse = null;
+        if (modelType.equals("openai")) {
+            embeddingResponse = embeddingService.generateEmbeddings(List.of(query));
+        } else {
+            embeddingResponse = vllmEmbeddingService.generateEmbeddings(List.of(query));
+            
+        }
 
         // Search for related articles
         ArticleSearchResults articles = null;
@@ -247,7 +258,13 @@ public class ChatService {
         // Generate embeddings for the query
         System.out.println("insid ask open ai for sql");
         System.out.println("Generating embeddings for query: " + query);
-        EmbeddingResponse embeddingResponse = embeddingService.generateEmbeddings(List.of(query));
+        EmbeddingResponse embeddingResponse = null;
+        if (modelType.equals("openai")) {
+            embeddingResponse = embeddingService.generateEmbeddings(List.of(query));
+        } else {
+            embeddingResponse = vllmEmbeddingService.generateEmbeddings(List.of(query));
+            
+        }
 
         // Search for related articles
         ArticleSearchResults articles = null;

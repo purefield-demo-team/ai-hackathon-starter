@@ -1,46 +1,40 @@
 package com.enterprisewebservice.api;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.GET;
-import java.util.List;
-import java.util.Set;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-
-import java.util.concurrent.*;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.enterprisewebservice.api.NoteService;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+import com.enterprisewebservice.RedisSearchIndexer;
 import com.enterprisewebservice.completion.CompletionResponse;
+import com.enterprisewebservice.embeddings.ChunkingService;
+import com.enterprisewebservice.embeddings.EmbeddingResponse;
+import com.enterprisewebservice.embeddings.EmbeddingService;
+import com.enterprisewebservice.embeddings.vllm.VLLMEmbeddingService;
+import com.enterprisewebservice.model.Note;
+import com.enterprisewebservice.model.StrapiEventPayload;
 import com.enterprisewebservice.model.StrapiServiceResponse;
 import com.enterprisewebservice.model.Task;
 import com.enterprisewebservice.model.TaskNote;
-import com.enterprisewebservice.embeddings.EmbeddingService;
-import com.enterprisewebservice.model.GPTAssessment;
-import com.enterprisewebservice.model.Note;
-import com.enterprisewebservice.model.StrapiEventPayload;
-import com.enterprisewebservice.embeddings.EmbeddingResponse;
-import com.enterprisewebservice.embeddings.ChunkingService;
-import com.enterprisewebservice.embeddings.EmbeddingData;
-import com.enterprisewebservice.RedisSearchIndexer;
-
-import com.enterprisewebservice.completion.vllm.*;
 
 import io.micrometer.core.annotation.Counted;
 import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/notes")
 @Produces(MediaType.APPLICATION_JSON)
@@ -57,6 +51,9 @@ public class NoteResource {
     EmbeddingService embeddingService;
 
     @Inject
+    VLLMEmbeddingService vllmEmbeddingService;
+
+    @Inject
     TaskNoteService taskNoteService;
 
     @Inject
@@ -67,6 +64,9 @@ public class NoteResource {
 
     @Inject
     GPTAssessmentService gptAssessmentService;
+
+    @ConfigProperty(name = "modeltype")
+    String modelType;
 
     private Set<Long> processingSet = ConcurrentHashMap.newKeySet();
 
@@ -184,7 +184,14 @@ public class NoteResource {
             System.out.println("Before Embedding response");
             //EmbeddingResponse embeddingResponse = awsBedrockService.invokeTitanEmbedding(chunks);
             
-            EmbeddingResponse embeddingResponse = embeddingService.generateEmbeddings(chunks);
+            EmbeddingResponse embeddingResponse = null;
+            
+            if (modelType.equals("openai")) {
+                embeddingResponse = embeddingService.generateEmbeddings(chunks);
+            } else {
+                embeddingResponse = vllmEmbeddingService.generateEmbeddings(chunks);
+            }
+
             System.out.println("Embedding response object: " + embeddingResponse.getObject());
 
             // Fetch the TaskNote objects by Note id
