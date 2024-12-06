@@ -26,7 +26,7 @@ public class VLLMEmbeddingService {
 
         // Directly call the endpoint without adding any headers.
         EmbeddingResponse response = vllmEmbeddingClient.createEmbedding(request);
-        
+        System.out.println("Received embeddings from vLLM: " + response.getData());
         // Handle the response as needed.
         return response;
     }
