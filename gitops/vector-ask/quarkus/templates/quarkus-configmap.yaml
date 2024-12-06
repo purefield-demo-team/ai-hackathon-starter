@@ -7,4 +7,5 @@ data:
   DB_USERNAME: {{ .Values.nl2sqldb.username }}
   JDBC_URL: jdbc:postgresql://nl2sql-sample-postgresql-postgresql.{{.Release.Namespace}}.svc.cluster.local:5432/nl2sql-sample
   VLLM_API_URL: {{ .Values.vllmApiUrl }}
+  VLLM_EMBEDDING_API_URL: {{ .Values.vllmEmbeddingApiUrl }}
   
