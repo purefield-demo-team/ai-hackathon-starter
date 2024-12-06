@@ -24,16 +24,16 @@ embeddingmodel:
     name: vLLM
   args:
     - '--dtype=float16'
-    - '--tensor-parallel-size=1'
+    - '--tensor-parallel-size=2'
   resources:
     limits:
       cpu: '6'
       memory: 20Gi
-      nvidia.com/gpu: '1'
+      nvidia.com/gpu: '2'
     requests:
       cpu: '3'
       memory: 16Gi
-      nvidia.com/gpu: '1'
+      nvidia.com/gpu: '2'
   runtime: e5-mistral-7b-instruct
   storage:
     key: aws-connection-my-storage
