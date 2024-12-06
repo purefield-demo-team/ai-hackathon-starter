@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,16 +13,12 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import com.enterprisewebservice.api.MessageChunkService;
-import com.enterprisewebservice.api.NoteService;
 import com.enterprisewebservice.completion.QuestionParameters;
 import com.enterprisewebservice.embeddings.EmbeddingData;
 import com.enterprisewebservice.embeddings.EmbeddingResponse;
 import com.enterprisewebservice.model.MessageChunk;
 import com.enterprisewebservice.model.Note;
-import com.enterprisewebservice.model.StrapiServiceResponse;
-import com.enterprisewebservice.model.Task;
 
-import jakarta.inject.Inject;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPooled;
 import redis.clients.jedis.exceptions.JedisDataException;
@@ -41,7 +36,7 @@ public class RedisSearchIndexer {
 
     private JedisPooled jedis;
     private JedisPool jedisPool;
-    private static final String VECTOR_DIM = "1536";
+    private static final String VECTOR_DIM = "1024";
     private static final String VECTOR_NUMBER = "1600";
     private static final String INDEX_NAME = "nizer5-embeddings";
     //private static final String PREFIX = "goalora:";
