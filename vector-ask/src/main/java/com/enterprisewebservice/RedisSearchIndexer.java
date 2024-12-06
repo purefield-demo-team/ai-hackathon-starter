@@ -38,7 +38,7 @@ public class RedisSearchIndexer {
     private JedisPool jedisPool;
     private static final String VECTOR_DIM = "1024";
     private static final String VECTOR_NUMBER = "1600";
-    private static final String INDEX_NAME = "nizer5-embeddings";
+    private static final String INDEX_NAME = "nizer6-embeddings";
     //private static final String PREFIX = "goalora:";
     private static final String DISTANCE_METRIC = "COSINE";
 
