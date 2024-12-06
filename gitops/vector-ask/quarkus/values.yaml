@@ -23,7 +23,7 @@ openai:
   key: openaikey  # Replace with your actual OpenAI key
 
 strapi:
-  token: strapi  # Replace with your Strapi token
+  token: 21121f4efc5c1747793b161b34d0952e7585963c71dc720565a731605f503edd12178ddad8fb3623c33f6aada133cd36bdc8f26372d5423ac9b39ea2a61f3c180ce644a4e92197b016a60f2c56ae7ab7168066216ec31a3920a692e334667bd10be83aa2b42b7985d8251b5048454f3ba3caa0214ba040ad0eef80a4fa0cd901  # Replace with your Strapi token
 
 service:
   port: 8080

@@ -43,5 +43,5 @@ imagestream:
     local: false  # Set to true if you want the image lookup to prefer local image streams
 
 cluster:
-  name: salamander
-  domain: aimlworkbench.com
+  name: __cluster_name__
+  domain: __cluster_domain__
