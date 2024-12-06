@@ -158,6 +158,7 @@ public class NoteResource {
     @Path("/create-embedding")
     public Response getNoteAndIndex(StrapiEventPayload payload) {
         try {
+           System.out.println("Payload in create embedding: " + payload.toString());
            System.out.println("Payload: " + payload.toString());
            if (payload == null || !payload.getModel().equals("note")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Payload is not a note").build();
