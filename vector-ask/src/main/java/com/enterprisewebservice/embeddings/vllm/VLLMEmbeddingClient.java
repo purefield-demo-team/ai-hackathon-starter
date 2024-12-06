@@ -14,6 +14,6 @@ import jakarta.ws.rs.Path;
 public interface VLLMEmbeddingClient {
 
     @POST
-    @Path("/v1/embeddings")
+    @Path("/embeddings")
     EmbeddingResponse createEmbedding(EmbeddingRequest request);
 }
