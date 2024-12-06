@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import com.enterprisewebservice.api.MessageChunkService;
 import com.enterprisewebservice.completion.QuestionParameters;
 import com.enterprisewebservice.embeddings.EmbeddingData;
@@ -34,9 +36,12 @@ import redis.clients.jedis.search.schemafields.VectorField;
 
 public class RedisSearchIndexer {
 
+    @ConfigProperty(name = "modeltype")
+    String modelType;
+
     private JedisPooled jedis;
     private JedisPool jedisPool;
-    private static final String VECTOR_DIM = "4096";
+    
     private static final String VECTOR_NUMBER = "1600";
     private static final String INDEX_NAME = "nizer7-embeddings";
     //private static final String PREFIX = "goalora:";
@@ -55,7 +60,7 @@ public class RedisSearchIndexer {
         // Set defaultAttributes for the embedding_vector field
         Map<String, Object> defaultAttributes = new HashMap<>();
         defaultAttributes.put("TYPE", "FLOAT32");
-        defaultAttributes.put("DIM", VECTOR_DIM);
+        defaultAttributes.put("DIM", (modelType.equals("openai") ? "1536" : "4096"));
         defaultAttributes.put("DISTANCE_METRIC", DISTANCE_METRIC);
         defaultAttributes.put("INITIAL_CAP", VECTOR_NUMBER);
     
