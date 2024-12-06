@@ -2,11 +2,11 @@ apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
   annotations:
-    openshift.io/display-name: {{ .Values.inferencemodel.name }}
+    openshift.io/display-name: {{ .Values.embeddingmodel.name }}
     serving.knative.openshift.io/enablePassthrough: 'true'
     sidecar.istio.io/inject: 'true'
     sidecar.istio.io/rewriteAppHTTPProbers: 'true'
-  name: {{ .Values.inferencemodel.name }}
+  name: {{ .Values.embeddingmodel.name }}
   namespace:  {{ .Release.Namespace}}
   labels:
     opendatahub.io/dashboard: 'true'
@@ -16,15 +16,15 @@ spec:
     minReplicas: {{ .Values.predictor.minReplicas }}
     model:
       args:
-{{ toYaml .Values.inferencemodel.args | indent 8 }}
+{{ toYaml .Values.embeddingmodel.args | indent 8 }}
       modelFormat:
-        name: {{ .Values.inferencemodel.modelFormat.name }}
+        name: {{ .Values.embeddingmodel.modelFormat.name }}
       name: ''
       resources:
-{{ toYaml .Values.inferencemodel.resources | indent 8 }}
-      runtime: {{ .Values.inferencemodel.runtime }}
+{{ toYaml .Values.embeddingmodel.resources | indent 8 }}
+      runtime: {{ .Values.embeddingmodel.runtime }}
       storage:
-        key: {{ .Values.inferencemodel.storage.key }}
-        path: models/{{ .Values.inferencemodel.name }}
+        key: {{ .Values.embeddingmodel.storage.key }}
+        path: models/{{ .Values.embeddingmodel.name }}
     tolerations:
 {{ toYaml .Values.predictor.tolerations | indent 6 }}

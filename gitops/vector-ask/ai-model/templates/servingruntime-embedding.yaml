@@ -7,8 +7,8 @@ metadata:
     opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
     opendatahub.io/template-display-name: vLLM ServingRuntime for KServe
     opendatahub.io/template-name: vllm-runtime
-    openshift.io/display-name: {{ .Values.inferencemodel.name }}
-  name: {{ .Values.inferencemodel.name }}
+    openshift.io/display-name: {{ .Values.embeddingmodel.name }}
+  name: {{ .Values.embeddingmodel.name }}
   namespace:  {{ .Release.namespace}}
   labels:
     opendatahub.io/dashboard: 'true'
@@ -20,7 +20,7 @@ spec:
     - args:
         - '--port=8080'
         - '--model=/mnt/models'
-        - '--served-model-name={{.Values.inferencemodel.name}}'
+        - '--served-model-name={{.Values.embeddingmodel.name}}'
       command:
 {{ toYaml .Values.container.command | indent 8 }}
       env:
@@ -35,6 +35,6 @@ spec:
   multiModel: false
   supportedModelFormats:
     - autoSelect: true
-      name: {{ .Values.inferencemodel.modelFormat.name }}
+      name: {{ .Values.embeddingmodel.modelFormat.name }}
   volumes:
 {{ toYaml .Values.volumes | indent 4 }}
