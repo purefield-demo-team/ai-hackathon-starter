@@ -13,8 +13,8 @@ Try out the system. It can do both Natural Language to SQL and general RAG for a
 12. Add the title: "Blood Pressure Categories for Adolescents and Adults"
 13. And the following note content:
 ```
-{
-    1. **Normal Blood Pressure**:
+
+1. **Normal Blood Pressure**:
    - Systolic <120 mmHg and Diastolic <80 mmHg
 2. **Elevated Blood Pressure (Prehypertension in older guidelines)**:
    - Systolic 120-129 mmHg and Diastolic <80 mmHg
@@ -36,7 +36,7 @@ For children and adolescents (1-13 years), the classifications differ:
 - Always ensure proper measurement techniques and conditions to minimize errors.
 It is important to recognize that hypertension definitions can evolve, and updated guidelines may refine these categories. Always consult the latest standards from authoritative bodies such as the American Academy of Pediatrics or the American Heart Association.
 
-}
+
 ```
 14. ![bp-guidelines](bp-guidelines.png)
 15. The note will auto save so there is no need to press a button
@@ -44,8 +44,8 @@ It is important to recognize that hypertension definitions can evolve, and updat
 17. Add another note that contains Tommy's patient history:
 18. 
 ```
-{
-    Age 14 yrs
+
+Age 14 yrs
 Weight 68 Kg
 Height 168 cm
 98.1 F
@@ -56,7 +56,7 @@ Blood Pressure 133/86 mm Hg
 Blood Pressure 133/86 mm Hg
 Blood Pressure 133/86 mm Hg
 
-}
+
 ```
 19. Click the Previous button again to return to the Update Task page
 20. Click the Submit button
