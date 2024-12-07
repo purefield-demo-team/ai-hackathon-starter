@@ -1,5 +1,5 @@
 Try out the system. It can do both **Natural Language to SQL** and **general RAG** for accomplishing Goals and Tasks
-## 1 General RAG Use Case
+## Use Case 1: General RAG
 1. Log into the react-frontend application
 2. In the upper right click on “Tasks”
 3. ![image3.png](image3.png)
@@ -63,7 +63,7 @@ Blood Pressure 133/86 mm Hg
 20. Now you should get a much better response. The response may not be ideal because we are using a llama 3 model that was fine tuned for sql generation. For better results a different model can be easily swapped in
 21. ![tommy-response-with-notes.png](tommy-response-with-notes.png)
 
-## 2 NL2SQL Use Case
+## Use Case 2: NL2SQL
 1. Add a new Task
 2. ![image37.png](image37.png)
 3. Add some notes about the n2sql sample database tables. This will generate embeddings, store them in redis search and be used to help generate sql with the local model
