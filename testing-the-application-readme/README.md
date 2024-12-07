@@ -1,17 +1,17 @@
-Try out the system. It can do both Natural Language to SQL and general RAG for accomplishing Goals and Tasks
+Try out the system. It can do both **Natural Language to SQL** and **general RAG** for accomplishing Goals and Tasks
+## 1 General RAG Use Case
 1. Log into the react-frontend application
 2. In the upper right click on “Tasks”
 3. ![image3.png](image3.png)
-4. **Simple RAG Use Case**
-5. ![create-tommy-task.png](create-tommy-task.png)
-6. Click Create Task button
-7. On the Update page click Submit
-8. You will get a response that says it is unable to find the answer
-9. ![no-response.png](no-response.png)
-10. Now add some notes. Click the Add Note button
-11. ![add-note.png](add-note.png)
-12. Add the title: "Blood Pressure Categories for Adolescents and Adults"
-13. And the following note content:
+4. ![create-tommy-task.png](create-tommy-task.png)
+5. Click Create Task button
+6. On the Update page click Submit
+7. You will get a response that says it is unable to find the answer
+8. ![no-response.png](no-response.png)
+9. Now add some notes. Click the Add Note button
+10. ![add-note.png](add-note.png)
+11. Add the title: "Blood Pressure Categories for Adolescents and Adults"
+12. And the following note content:
 ```
 
 1. **Normal Blood Pressure**:
@@ -38,11 +38,11 @@ It is important to recognize that hypertension definitions can evolve, and updat
 
 
 ```
-14. ![bp-guidelines](bp-guidelines.png)
-15. The note will auto save so there is no need to press a button
-16. Click the Previous button to return to the Update Task page
-17. Add another note that contains Tommy's patient history:
-18. 
+13. ![bp-guidelines](bp-guidelines.png)
+14. The note will auto save so there is no need to press a button
+15. Click the Previous button to return to the Update Task page
+16. Add another note that contains Tommy's patient history:
+17. 
 ```
 
 Age 14 yrs
@@ -58,12 +58,12 @@ Blood Pressure 133/86 mm Hg
 
 
 ```
-19. Click the Previous button again to return to the Update Task page
-20. Click the Submit button
-21. Now you should get a much better response. The response may not be ideal because we are using a llama 3 model that was fine tuned for sql generation. For better results a different model can be easily swapped in
-22. ![tommy-response-with-notes.png](tommy-response-with-notes.png)
+18. Click the Previous button again to return to the Update Task page
+19. Click the Submit button
+20. Now you should get a much better response. The response may not be ideal because we are using a llama 3 model that was fine tuned for sql generation. For better results a different model can be easily swapped in
+21. ![tommy-response-with-notes.png](tommy-response-with-notes.png)
 
-**NL2SQL Use Case**
+## 2 NL2SQL Use Case
 1. Add a new Task
 2. ![image37.png](image37.png)
 3. Add some notes about the n2sql sample database tables. This will generate embeddings, store them in redis search and be used to help generate sql with the local model
