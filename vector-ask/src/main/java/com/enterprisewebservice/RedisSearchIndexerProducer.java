@@ -12,8 +12,11 @@ public class RedisSearchIndexerProducer {
     @ConfigProperty(name = "redis.host")
     String redisHost;
 
+    @ConfigProperty(name = "modeltype")
+    String modelType;
+
     @Produces
     public RedisSearchIndexer createRedisSearchIndexer() {
-        return new RedisSearchIndexer(new JedisPooled(redisHost, 6379), new JedisPool(redisHost, 6379));
+        return new RedisSearchIndexer(new JedisPooled(redisHost, 6379), new JedisPool(redisHost, 6379), modelType);
     }
 }

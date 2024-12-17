@@ -36,20 +36,19 @@ import redis.clients.jedis.search.schemafields.VectorField;
 
 public class RedisSearchIndexer {
 
-    @ConfigProperty(name = "modeltype")
-    String modelType;
-
     private JedisPooled jedis;
     private JedisPool jedisPool;
+    private String modelType;
     
     private static final String VECTOR_NUMBER = "1600";
     private static final String INDEX_NAME = "nizer7-embeddings";
     //private static final String PREFIX = "goalora:";
     private static final String DISTANCE_METRIC = "COSINE";
 
-    public RedisSearchIndexer(JedisPooled jedis, JedisPool jedisPool) {
+    public RedisSearchIndexer(JedisPooled jedis, JedisPool jedisPool, String modelType) {
         this.jedis = jedis;
         this.jedisPool = jedisPool;
+        this.modelType = modelType;
     }
 
     public void createIndex() {
